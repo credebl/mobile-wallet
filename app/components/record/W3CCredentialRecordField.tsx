@@ -72,6 +72,7 @@ const W3CCredentialRecordField: React.FC<W3CCredentialRecordFieldProps> = ({
     valueText: {
       ...ListItems.recordAttributeText,
       paddingVertical: 4,
+      width: '90%',
     },
   })
 
