@@ -47,6 +47,23 @@ const paddingHorizontal = 24
 const paddingVertical = 16
 const logoHeight = 80
 
+const getPageSize = (prettyVc: { orientation: 'landscape' | 'portrait'; height?: number; width?: number }) => {
+  if (prettyVc?.height && prettyVc?.width) {
+    const height = prettyVc.height * 0.75
+    const width = prettyVc.width * 0.75
+
+    return {
+      width,
+      height,
+    }
+  }
+
+  return {
+    width: prettyVc.orientation === 'landscape' ? 595 : 842,
+    height: prettyVc.orientation === 'landscape' ? 420 : 595,
+  }
+}
+
 const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, route }) => {
   if (!route?.params) {
     throw new Error('CredentialDetails route prams were not set properly')
@@ -314,13 +331,6 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
     )
   }
 
-  const getA4Sizes = (type: 'landscape' | 'portrait') => {
-    return {
-      width: type === 'landscape' ? 842 : 595,
-      height: type === 'landscape' ? 595 : 842,
-    }
-  }
-
   const generateQRCodeString = async (text: string) => {
     return toQRCodeString(text, {
       width: 95,
@@ -369,8 +379,7 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
         fileName: w3cCredential?.credential.type[1],
         padding: 0,
         directory: 'Documents',
-        // add height and width to the options of a4 paper size
-        ...getA4Sizes(prettyVc.orientation),
+        ...getPageSize(prettyVc),
       }
 
       const file = await RNHTMLtoPDF.convert(options)
