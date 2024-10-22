@@ -81,8 +81,8 @@ android {
         applicationId "id.credebl.adeya"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "1.0.11"
+        versionCode 18
+        versionName "1.0.12"
 
         missingDimensionStrategy 'react-native-camera', 'general'
     }
