@@ -54,7 +54,7 @@ const RenderCertificate: React.FC<RenderCertificateProps> = ({ navigation, route
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <Pdf source={{ uri: filePath }} style={styles.pdf} />
+      <Pdf source={{ uri: filePath }} style={styles.pdf} maxScale={10.0} />
     </SafeAreaView>
   )
 }
