@@ -2,12 +2,12 @@ import type { StackScreenProps } from '@react-navigation/stack'
 
 import {
   CredentialExchangeRecord,
-  W3cCredentialRecord,
-  getW3cCredentialRecordById,
-  deleteCredentialExchangeRecordById,
-  useCredentialByState,
   CredentialState,
+  W3cCredentialRecord,
+  deleteCredentialExchangeRecordById,
+  getW3cCredentialRecordById,
   useConnections,
+  useCredentialByState,
 } from '@adeya/ssi'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
@@ -49,8 +49,18 @@ const logoHeight = 80
 
 const getPageSize = (prettyVc: { orientation: 'landscape' | 'portrait'; height?: number; width?: number }) => {
   if (prettyVc?.height && prettyVc?.width) {
-    const height = prettyVc.height * 0.75
-    const width = prettyVc.width * 0.75
+    if (Platform.OS === 'android') {
+      const height = prettyVc.height * 0.75
+      const width = prettyVc.width * 0.75
+
+      return {
+        width,
+        height,
+      }
+    }
+
+    const height = prettyVc.height * 0.81
+    const width = prettyVc.width * 0.81
 
     return {
       width,
