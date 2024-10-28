@@ -1,40 +1,44 @@
 import {
-  useCredentialById,
-  AnonCredsCredentialOffer,
   AnonCredsCredentialMetadataKey,
+  AnonCredsCredentialOffer,
+  AutoAcceptCredential,
   CredentialPreviewAttribute,
   JsonLdFormatDataCredentialDetail,
-  getFormattedCredentialData,
   acceptCredentialOffer,
   declineCredentialOffer,
+  getFormattedCredentialData,
   sendCredentialProblemReport,
-  AutoAcceptCredential,
   useConnections,
+  useCredentialById,
 } from '@adeya/ssi'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
 import { StackScreenProps } from '@react-navigation/stack'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { saveHistory } from '../components/History/HistoryManager'
+import { HistoryCardType, HistoryRecord } from '../components/History/types'
 import Button, { ButtonType } from '../components/buttons/Button'
 import ConnectionImage from '../components/misc/ConnectionImage'
 import CredentialCard from '../components/misc/CredentialCard'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import Record from '../components/record/Record'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
-import { EventTypes } from '../constants'
+import { CREDENTIAL_W3C, EventTypes } from '../constants'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
+import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'
-import { TabStacks, NotificationStackParams, Screens } from '../types/navigators'
+import { NotificationStackParams, Screens, TabStacks } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
 import { ModalUsage } from '../types/remove'
 import { useAppAgent } from '../utils/agent'
+import { parseCredDefFromId } from '../utils/cred-def'
 import { buildFieldsFromJSONLDCredential, formatCredentialSubject, getCredentialIdentifiers } from '../utils/credential'
 import { getCredentialConnectionLabel, getDefaultHolderDidDocument } from '../utils/helpers'
 import { buildFieldsFromAnonCredsCredential } from '../utils/oca'
@@ -67,6 +71,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
   const [tables, setTables] = useState<W3CCredentialAttributeField[]>([])
   const { records } = useConnections()
   const credentialConnectionLabel = getCredentialConnectionLabel(records, credential)
+  const [store] = useStore()
 
   const styles = StyleSheet.create({
     headerTextContainer: {
@@ -149,6 +154,39 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
 
   const toggleDeclineModalVisible = () => setDeclineModalVisible(!declineModalVisible)
 
+  const logHistoryRecord = useCallback(
+    async (credentialType?: string, credentialName?: string) => {
+      try {
+        if (!(agent && store.preferences.useHistoryCapability)) {
+          return
+        }
+
+        const type = HistoryCardType.CardAccepted
+        if (!credential) {
+          return
+        }
+        const ids = getCredentialIdentifiers(credential)
+        const name =
+          credentialType === CREDENTIAL_W3C
+            ? credentialName
+            : parseCredDefFromId(ids.credentialDefinitionId, ids.schemaId)
+
+        /** Save history record for card accepted */
+        const recordData: HistoryRecord = {
+          type: type,
+          message: type,
+          createdAt: credential?.createdAt,
+          correspondenceId: credentialId,
+          correspondenceName: name,
+        }
+        await saveHistory(recordData, agent)
+      } catch (err: unknown) {
+        // error when agent and preferences not getting
+      }
+    },
+    [agent, store.preferences.useHistoryCapability, credential, credentialId],
+  )
+
   const handleAcceptTouched = async () => {
     try {
       if (!(agent && credential && assertConnectedNetwork())) {
@@ -184,8 +222,10 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
           // we added auto accept credential to always accept the credential further flows
           autoAcceptCredential: AutoAcceptCredential.Always,
         })
+        await logHistoryRecord(CREDENTIAL_W3C, credentialFormatData?.offer?.jsonld?.credential?.type[1])
       } else {
         await acceptCredentialOffer(agent, { credentialRecordId: credential.id })
+        await logHistoryRecord()
       }
     } catch (err: unknown) {
       setButtonsVisible(true)

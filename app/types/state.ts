@@ -15,6 +15,7 @@ export interface Preferences {
   useDevVerifierTemplates?: boolean
   walletName: string
   useDataRetention: boolean
+  useHistoryCapability?: boolean
 }
 
 export interface Tours {

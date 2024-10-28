@@ -1,5 +1,6 @@
 import { CredentialExchangeRecord, W3cCredentialRecord } from '@adeya/ssi'
 import { NavigatorScreenParams } from '@react-navigation/core'
+import { StackNavigationOptions } from '@react-navigation/stack'
 
 export enum Screens {
   AttemptLockout = 'Temporarily Locked',
@@ -53,6 +54,7 @@ export enum Screens {
   OrganizationDetails = 'Organization Details',
   RenderCertificate = 'Render Certificate',
   GoogleDriveSignIn = 'Google Drive Sign In',
+  HistoryPage = 'History',
 }
 
 export enum Stacks {
@@ -65,6 +67,7 @@ export enum Stacks {
   ProofRequestsStack = 'Proof Requests Stack',
   NotificationStack = 'Notifications Stack',
   ConnectionStack = 'Connection Stack',
+  HistoryStack = 'History Stack',
 }
 
 export enum TabStacks {
@@ -82,6 +85,7 @@ export type RootStackParams = {
   [Stacks.ContactStack]: NavigatorScreenParams<ContactStackParams>
   [Stacks.ProofRequestsStack]: NavigatorScreenParams<ProofRequestsStackParams>
   [Stacks.NotificationStack]: NavigatorScreenParams<NotificationStackParams>
+  [Stacks.HistoryStack]: NavigatorScreenParams<HistoryStackParams>
 }
 
 export type TabStackParams = {
@@ -207,3 +211,9 @@ export type DeliveryStackParams = {
   [Screens.Chat]: { connectionId: string }
   [Screens.ContactDetails]: { connectionId: string }
 }
+
+export type HistoryStackParams = {
+  [Screens.HistoryPage]: undefined
+}
+
+export type ScreenOptionsType = Partial<Record<Screens, StackNavigationOptions>>

@@ -143,8 +143,12 @@ export const getProofData = async (agent: AdeyaAgent, recordId: string) => {
   } else if (data.request?.indy && data.presentation?.indy) {
     return parseAnonCredsProof(data.request.indy, data.presentation.indy)
   }
-
   return undefined
+}
+
+export const getProofDataForHistory = async (agent: AdeyaAgent, recordId: string) => {
+  const data = await getProofFormatData(agent, recordId)
+  return data
 }
 
 /*
