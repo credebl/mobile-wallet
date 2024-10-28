@@ -40,6 +40,7 @@ import { testIdWithKey } from '../utils/testable'
 import ConnectStack from './ConnectStack'
 import ContactStack from './ContactStack'
 import DeliveryStack from './DeliveryStack'
+import HistoryStack from './HistoryStack'
 import NotificationStack from './NotificationStack'
 import ProofRequestStack from './ProofRequestStack'
 import SettingStack from './SettingStack'
@@ -290,6 +291,7 @@ const RootStack: React.FC = () => {
         <Stack.Screen name={Stacks.NotificationStack} component={NotificationStack} />
         <Stack.Screen name={Stacks.ConnectionStack} component={DeliveryStack} />
         <Stack.Screen name={Stacks.ProofRequestsStack} component={ProofRequestStack} />
+        <Stack.Screen name={Stacks.HistoryStack} component={HistoryStack} />
       </Stack.Navigator>
     )
   }

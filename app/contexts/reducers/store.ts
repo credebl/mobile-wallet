@@ -37,6 +37,7 @@ enum PreferencesDispatchAction {
   USE_DEV_VERIFIER_TEMPLATES = 'preferences/useDevVerifierTemplates',
   UPDATE_WALLET_NAME = 'preferences/updateWalletName',
   USE_DATA_RETENTION = 'preferences/useDataRetention',
+  HISTORY_CAPABILITY = 'preferences/historyCapability',
 }
 
 enum ToursDispatchAction {
@@ -132,6 +133,21 @@ export const reducer = <S extends State>(state: S, action: ReducerAction<Dispatc
       const preferences = {
         ...state.preferences,
         useConnectionInviterCapability: choice,
+      }
+      const newState = {
+        ...state,
+        preferences,
+      }
+
+      AsyncStorage.setItem(LocalStorageKeys.Preferences, JSON.stringify(preferences))
+
+      return newState
+    }
+    case PreferencesDispatchAction.HISTORY_CAPABILITY: {
+      const choice = (action?.payload ?? []).pop() ?? false
+      const preferences = {
+        ...state.preferences,
+        useHistoryCapability: choice,
       }
       const newState = {
         ...state,
