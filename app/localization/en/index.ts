@@ -37,6 +37,8 @@ const translation = {
     "Remove": "Remove",
     "Yes": "Yes",
     "No": "No",
+    "History": "History",
+    "SaveSettings": "Save Settings",
   },
   "Date": {
     "ShortFormat": "MMM D",
@@ -574,6 +576,8 @@ const translation = {
     "OrganizationConnection": "Connection",
     "RenderCertificate": "Certificate",
     "GoogleDriveSignIn": "Google Drive Sign In",
+    "HistorySettings": "History Settings",
+    "History": "History",
   },
   "Loading": {
     "TakingTooLong": "This is taking longer than usual. You can return to home or continue waiting.",
@@ -731,6 +735,30 @@ const translation = {
     "RestoreInstructions": "Note: To restore your wallet, you can use a backup from your cloud storage or local device. Please ensure that the Google Drive app is installed on your device and you are signed in.",
     "RestoreInstructionsIOS": "If you can't see Google Drive in the file picker, open the Files app --> tap on the three dots at the top --> select 'Edit' --> enable Google Drive.",
   },
+  "History" : {
+    "SortFilterButton":"Sort/Filter",
+    "CardTitle":{
+      "CardAccepted": "You have successfully added a new credential {{Credential}}.",
+      "CardDeclined": "You have declined the card.",
+      "CardExpired": "The card has expired.",
+      "CardRevoked": "The card has been revoked.",
+      "InformationSent": "Information has been sent to the recipient.",
+      "WalletPinUpdated": "Your wallet PIN has been successfully updated.",
+      "ProofRequest": "You have successfully shared your credentials with {{Credential}}.",
+      "Connection": "You have successfully added a new connection with {{Credential}}.",
+    },
+    "CardDescription":{
+      "CardExpired": "{{cardName}} expired",
+      "CardRevoked": "{{cardName}} revoked",
+      "WalletPinUpdated": "New PIN set",
+      "ProofRequested": "Proof request",
+      "Connection": "Connection",
+    },
+    "Today": "Today",
+  },
+  "ActivityHistory": {
+    "NoHistory": "No History",
+  }
 }
 
 export default translation

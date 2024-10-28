@@ -1,25 +1,28 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
 import {
-  useConnectionById,
-  useProofById,
+  acceptProofRequest,
   AnonCredsCredentialsForProofRequest,
   AnonCredsRequestedAttributeMatch,
   AnonCredsRequestedPredicateMatch,
+  CredentialExchangeRecord,
+  declineProofRequest,
   deleteConnectionRecordById,
   getProofFormatData,
-  acceptProofRequest,
-  declineProofRequest,
   sendProofProblemReport,
-  CredentialExchangeRecord,
+  useConnectionById,
+  useProofById,
 } from '@adeya/ssi'
 import moment from 'moment'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
+import { getProofDataForHistory } from '../../verifier/utils/proof'
+import { saveHistory } from '../components/History/HistoryManager'
+import { HistoryCardType, HistoryRecord } from '../components/History/types'
 import Button, { ButtonType } from '../components/buttons/Button'
 import { CredentialCard } from '../components/misc'
 import ConnectionImage from '../components/misc/ConnectionImage'
@@ -28,6 +31,7 @@ import { EventTypes } from '../constants'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
+import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { useOutOfBandByConnectionId } from '../hooks/connections'
 import { useAllCredentialsForProof } from '../hooks/proofs'
@@ -77,6 +81,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
   const [activeCreds, setActiveCreds] = useState<ProofCredentialItems[]>([])
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([])
   const credProofPromise = useAllCredentialsForProof(proofId)
+  const [store] = useStore()
 
   const hasMatchingCredDef = useMemo(() => activeCreds.some(cred => cred.credDefId !== undefined), [activeCreds])
   const styles = StyleSheet.create({
@@ -302,6 +307,41 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
       }, {})
   }
 
+  const logHistoryRecord = useCallback(async () => {
+    try {
+      if (!(agent && store.preferences.useHistoryCapability)) {
+        return
+      }
+      const type = HistoryCardType.ProofRequest
+      if (!proof) {
+        return
+      }
+      try {
+        // Fetch proof data asynchronously
+        const data = await getProofDataForHistory(agent, proofId)
+        // Handle the case when data is not null or undefined
+        if (data) {
+          const requestName = proofConnectionLabel || data?.request?.indy?.name
+          // Prepare the history record object
+          const recordData: HistoryRecord = {
+            type: type,
+            message: type,
+            createdAt: proof?.createdAt, // Assuming `data` has `createdAt` field
+            correspondenceId: proofId,
+            correspondenceName: requestName,
+          }
+
+          // Save the history record asynchronously
+          await saveHistory(recordData, agent)
+        }
+      } catch (error) {
+        // error when save history
+      }
+    } catch (err: unknown) {
+      // error when agent and preferences not getting
+    }
+  }, [agent, store.preferences.useHistoryCapability, proof, proofId])
+
   const handleAcceptPress = async () => {
     try {
       if (!(agent && proof && assertConnectedNetwork())) {
@@ -339,6 +379,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
         proofRecordId: proof.id,
         proofFormats: automaticRequestedCreds.proofFormats,
       })
+      await logHistoryRecord()
       if (proof.connectionId && goalCode && goalCode.endsWith('verify.once')) {
         await deleteConnectionRecordById(agent, proof.connectionId)
       }
