@@ -1,0 +1,34 @@
+name: adeya-wallet
+id: ari:cloud:compass:6095931c-8137-4ae1-822a-2d7411835fc7:component/9029b47a-062e-4e25-a761-a2c0fc9ebd98/e4d43fb5-7631-4e1d-8630-b10d9722e3fd
+description: SSI Wallet App & SDK, built on the foundation of Hyperledger Aries Mobile Agent React Native (Bifold) project
+configVersion: 1
+typeId: APPLICATION
+ownerId: ari:cloud:identity::team/6fe50e36-8efb-47a6-aab5-ea47bd10ec4e
+fields:
+  tier: 4
+links:
+  - name: null
+    type: REPOSITORY
+    url: https://github.com/credebl/adeya-wallet
+relationships:
+  DEPENDS_ON: []
+labels:
+  - adeya-wallet
+  - anoncreds
+  - aries-bifold
+  - aries-framework
+  - credebl-wallet
+  - did
+  - digital-credentials
+  - digital-public-goods
+  - edge-wallet
+  - language:typescript
+  - self-sovereign-identity
+  - source:github
+  - ssi
+  - ssi-wallet
+  - user-privacy
+  - verifiable-credentials
+  - w3c
+  - zero-knowledge-proof
+customFields: null
