@@ -54,6 +54,7 @@ export enum Screens {
   CredentialDetailsW3C = 'Credential Details W3C',
   ProofChangeCredential = 'Choose a credential',
   ProofChangeCredentialW3C = 'Choose a W3C credential',
+  ProofChangeCredentialOpenId4VP = 'Choose a OpenId4VP credential',
   DataRetention = 'Data Retention',
   Explore = 'Explore',
   OrganizationDetails = 'Organization Details',
@@ -145,6 +146,12 @@ export type ProofRequestsStackParams = {
     onCredChange: (arg: string) => void
   }
   [Screens.ProofChangeCredentialW3C]: {
+    selectedCred: string
+    altCredentials: string[]
+    proofId: string
+    onCredChange: (arg: string) => void
+  }
+  [Screens.ProofChangeCredentialOpenId4VP]: {
     selectedCred: string
     altCredentials: string[]
     proofId: string

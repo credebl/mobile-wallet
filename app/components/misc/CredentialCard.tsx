@@ -10,7 +10,6 @@ import { ViewStyle } from 'react-native'
 
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
-import { GenericFn } from '../../types/fn'
 import OpenIdCredentialCard from '../OpenId/OpenIDCredentialCard'
 
 import CredentialCard10 from './CredentialCard10'
@@ -21,7 +20,7 @@ interface CredentialCardProps {
   credDefId?: string
   schemaId?: string
   credName?: string
-  onPress?: GenericFn
+  onPress?: () => void
   style?: ViewStyle
   proof?: boolean
   displayItems?: (Attribute | Predicate)[]

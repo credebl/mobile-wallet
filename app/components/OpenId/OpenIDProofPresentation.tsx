@@ -1,16 +1,25 @@
-import { formatDifPexCredentialsForRequest, sanitizeString, shareProof, useAdeyaAgent } from '@adeya/ssi'
+import {
+  ClaimFormat,
+  CredentialMetadata,
+  DisplayImage,
+  formatDifPexCredentialsForRequest,
+  sanitizeString,
+  shareProof,
+  useAdeyaAgent,
+} from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DeviceEventEmitter, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { DeviceEventEmitter, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { EventTypes } from '../../constants'
 import { useTheme } from '../../contexts/theme'
 import ProofRequestAccept from '../../screens/ProofRequestAccept'
 import { ListItems, TextTheme } from '../../theme'
 import { BifoldError } from '../../types/error'
-import { NotificationStackParams, Screens, TabStacks } from '../../types/navigators'
+import { NotificationStackParams, Screens, Stacks, TabStacks } from '../../types/navigators'
 import { ModalUsage } from '../../types/remove'
 import { testIdWithKey } from '../../utils/testable'
 import Button, { ButtonType } from '../buttons/Button'
@@ -40,6 +49,11 @@ const styles = StyleSheet.create({
   footerButton: {
     paddingTop: 10,
   },
+  credActionText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
 })
 
 const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
@@ -51,6 +65,7 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
   const [declineModalVisible, setDeclineModalVisible] = useState(false)
   const [buttonsVisible, setButtonsVisible] = useState(true)
   const [acceptModalVisible, setAcceptModalVisible] = useState(false)
+  const [selectedCredId, setSelectedCredId] = useState<string | null>(null)
 
   const { ColorPallet } = useTheme()
   const { t } = useTranslation()
@@ -66,21 +81,23 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
     [credential],
   )
 
-  const selectedCredentials:
-    | {
-        [inputDescriptorId: string]: string
-      }
-    | undefined = useMemo(
-    () =>
-      submission?.entries.reduce((acc, entry) => {
-        if (entry.isSatisfied) {
-          //TODO: Support multiplae credentials
-          return { ...acc, [entry.inputDescriptorId]: entry.credentials[0].id }
+  const selectedCredentials = useMemo(() => {
+    return submission?.entries.reduce((acc, entry) => {
+      // Check if the entry is satisfied and has credentials
+      if (entry.isSatisfied) {
+        // Iterate through the credentials for the entry
+        const selectedCredential = entry.credentials.find(item => item.id === selectedCredId)
+        if (selectedCredential) {
+          // If found, add it to the accumulator with the appropriate inputDescriptorId
+          return { ...acc, [entry.inputDescriptorId]: selectedCredential.id }
         }
-        return acc
-      }, {}),
-    [submission],
-  )
+      }
+
+      return acc
+    }, {}) // Default empty object for accumulator
+  }, [submission, selectedCredId])
+
+  useEffect(() => {}, [selectedCredentials])
 
   const { verifierName } = useMemo(() => {
     return { verifierName: credential?.verifierHostName }
@@ -124,21 +141,51 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
     )
   }
 
+  const onCredChange = (credId: string) => {
+    setSelectedCredId(credId)
+  }
+  const handleAltCredChange = (
+    selectedCred: {
+      id: string
+      credentialName: string
+      issuerName?: string
+      requestedAttributes?: string[]
+      disclosedPayload?: Record<string, unknown>
+      metadata?: CredentialMetadata
+      backgroundColor?: string
+      backgroundImage?: DisplayImage
+      claimFormat: ClaimFormat | undefined | 'AnonCreds'
+    }[],
+    proofId: string,
+  ) => {
+    navigation.getParent()?.navigate(Stacks.ProofRequestsStack, {
+      screen: Screens.ProofChangeCredentialOpenId4VP,
+      params: {
+        selectedCred,
+        proofId,
+        onCredChange,
+      },
+    })
+  }
   const renderBody = () => {
     if (!submission) return null
 
     return (
       <View style={styles.credentialsList}>
-        {submission.entries.map((s, i) => {
+        {submission.entries.map((credential, index) => {
           //TODO: Support multiple credentials
-          const selectedCredential = s.credentials[0]
-
+          const selectedCredential = credential.credentials[0]
           return (
-            <View key={i}>
-              <OpenIDCredentialRowCard name={s.name} issuer={verifierName} onPress={() => {}} />
-              {s.isSatisfied && selectedCredential?.requestedAttributes ? (
+            <View key={index}>
+              <OpenIDCredentialRowCard
+                name={credential.name}
+                bgImage={selectedCredential.backgroundImage?.url}
+                issuer={verifierName}
+                onPress={() => {}}
+              />
+              {credential.isSatisfied && selectedCredential?.requestedAttributes ? (
                 <View style={{ marginTop: 16, gap: 8 }}>
-                  {s.description && <Text style={TextTheme.labelSubtitle}>{s.description}</Text>}
+                  {credential.description && <Text style={TextTheme.labelSubtitle}>{credential.description}</Text>}
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                     {selectedCredential.requestedAttributes.map(a => (
                       <View key={a} style={{ flexBasis: '50%' }}>
@@ -149,6 +196,20 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
                 </View>
               ) : (
                 <Text style={TextTheme.title}>This credential is not present in your wallet.</Text>
+              )}
+              {credential.credentials.length > 1 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    handleAltCredChange(credential.credentials, credential.inputDescriptorId)
+                  }}
+                  testID={testIdWithKey('changeCredential')}
+                  style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 40 }}>
+                  <Text style={styles.credActionText}>{t('ProofRequest.ChangeCredential')}</Text>
+                  <Icon
+                    style={{ ...styles.credActionText, fontSize: styles.credActionText.fontSize + 5 }}
+                    name="chevron-right"
+                  />
+                </TouchableOpacity>
               )}
             </View>
           )
