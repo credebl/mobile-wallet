@@ -38,6 +38,8 @@ enum PreferencesDispatchAction {
   UPDATE_WALLET_NAME = 'preferences/updateWalletName',
   USE_DATA_RETENTION = 'preferences/useDataRetention',
   HISTORY_CAPABILITY = 'preferences/historyCapability',
+  PROOF_VERIFICATION_TYPE = 'preferences/proofVerificationType',
+  BLE_ROLE = 'preferences/bleRole',
 }
 
 enum ToursDispatchAction {
@@ -158,6 +160,35 @@ export const reducer = <S extends State>(state: S, action: ReducerAction<Dispatc
 
       return newState
     }
+
+    case PreferencesDispatchAction.PROOF_VERIFICATION_TYPE: {
+      const choice = (action?.payload ?? []).pop() ?? 'online'
+      const preferences = {
+        ...state.preferences,
+        proofVerificationType: choice,
+      }
+      const newState = {
+        ...state,
+        preferences,
+      }
+
+      return newState
+    }
+
+    case PreferencesDispatchAction.BLE_ROLE: {
+      const choice = (action?.payload ?? []).pop() ?? 'verifier'
+      const preferences = {
+        ...state.preferences,
+        bleRole: choice,
+      }
+      const newState = {
+        ...state,
+        preferences,
+      }
+
+      return newState
+    }
+
     case PreferencesDispatchAction.USE_DEV_VERIFIER_TEMPLATES: {
       const choice = (action?.payload ?? []).pop() ?? false
       const preferences = {

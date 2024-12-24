@@ -328,7 +328,12 @@ const ProofRequestDetails: React.FC<ProofRequestDetailsProps> = ({ route, naviga
       navigation.getParent()?.navigate(Screens.Chat, { connectionId })
     } else {
       // Else redirect to the screen with connectionless request
-      navigation.navigate(Screens.ProofRequesting, { templateId, predicateValues: customPredicateValues })
+      // if verification type is bluetooth, then redirect to the screen with connectionless request
+      if (store.preferences.proofVerificationType === 'bluetooth') {
+        navigation.navigate(Screens.ProofRequestingBle, { templateId, predicateValues: customPredicateValues })
+      } else {
+        navigation.navigate(Screens.ProofRequesting, { templateId, predicateValues: customPredicateValues })
+      }
     }
   }, [agent, template, templateId, connectionId, customPredicateValues, invalidPredicate])
 

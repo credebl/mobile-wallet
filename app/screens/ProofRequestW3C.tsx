@@ -76,6 +76,10 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([])
   const credProofPromise = useAllCredentialsForProof(proofId)
 
+  if (!proofId) {
+    return <View />
+  }
+
   const hasMatchingCredDef = useMemo(
     () => activeCreds.some(cred => cred.credExchangeRecord !== undefined),
     [activeCreds],
@@ -445,6 +449,10 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
         }}
       />
     )
+  }
+
+  if (!proofId) {
+    return <View />
   }
 
   return (

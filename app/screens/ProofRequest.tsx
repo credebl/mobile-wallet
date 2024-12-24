@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import type { StackScreenProps } from '@react-navigation/stack'
 
 import {
@@ -13,6 +14,11 @@ import {
   useConnectionById,
   useProofById,
 } from '@adeya/ssi'
+import {
+  useCentral,
+  useCentralShutdownOnUnmount,
+  useCloseTransportsOnUnmount,
+} from '@animo-id/react-native-ble-didcomm'
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -35,6 +41,7 @@ import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { useOutOfBandByConnectionId } from '../hooks/connections'
 import { useAllCredentialsForProof } from '../hooks/proofs'
+import { bleShareData } from '../services/bluetooth/ble-share-data'
 import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { ProofCredentialAttributes, ProofCredentialItems, ProofCredentialPredicates } from '../types/proof-items'
@@ -61,9 +68,11 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
   }
 
   // eslint-disable-next-line no-unsafe-optional-chaining
-  const { proofId } = route?.params
+  const { proofId: proofRecordId, serviceUuid } = route?.params
   const { agent } = useAppAgent()
   const { t } = useTranslation()
+  const [proofId, setProofId] = useState<string>(proofRecordId)
+  const { central } = useCentral()
   const { assertConnectedNetwork } = useNetwork()
   const proof = useProofById(proofId)
   const connection = proof?.connectionId ? useConnectionById(proof.connectionId) : undefined
@@ -83,7 +92,6 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
   const credProofPromise = useAllCredentialsForProof(proofId)
   const [store] = useStore()
 
-  const hasMatchingCredDef = useMemo(() => activeCreds.some(cred => cred.credDefId !== undefined), [activeCreds])
   const styles = StyleSheet.create({
     pageContainer: {
       flex: 1,
@@ -132,8 +140,32 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
     },
   })
 
+  const onFailure = () => console.error('[CENTRAL]: failure')
+  const onConnected = () => console.log('[CENTRAL]: connected')
+  const onDisconnected = () => console.log('[CENTRAL]: disconnected')
+
+  if (serviceUuid) {
+    useCentralShutdownOnUnmount()
+    useCloseTransportsOnUnmount(agent)
+  }
+
   useEffect(() => {
-    if (!agent && !proof) {
+    if (serviceUuid && !proofId) {
+      bleShareData({
+        onFailure,
+        serviceUuid,
+        central,
+        agent,
+        onConnected,
+        onDisconnected,
+      }).then(({ proofRecordId }) => {
+        setProofId(proofRecordId)
+      })
+    }
+  }, [serviceUuid, proofId])
+
+  useEffect(() => {
+    if (!agent) {
       DeviceEventEmitter.emit(
         EventTypes.ERROR_ADDED,
         new BifoldError(t('Error.Title1034'), t('Error.Message1034'), t('ProofRequest.ProofRequestNotFound'), 1034),
@@ -255,7 +287,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
         )
         DeviceEventEmitter.emit(EventTypes.ERROR_ADDED, error)
       })
-  }, [selectedCredentials])
+  }, [proofId, selectedCredentials])
 
   const toggleDeclineModalVisible = () => {
     setDeclineModalVisible(!declineModalVisible)
@@ -282,12 +314,6 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
       return foundPI
     })
   }, [activeCreds])
-
-  const hasAvailableCredentials = useMemo(() => {
-    const fields = getCredentialsFields()
-
-    return !!retrievedCredentials && Object.values(fields).every(c => c.length > 0)
-  }, [retrievedCredentials])
 
   const hasSatisfiedPredicates = (fields: Fields, credId?: string) =>
     activeCreds.flatMap(item => evaluatePredicates(fields, credId)(item)).every(p => p.satisfied)
@@ -380,6 +406,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
         proofFormats: automaticRequestedCreds.proofFormats,
       })
       await logHistoryRecord()
+
       if (proof.connectionId && goalCode && goalCode.endsWith('verify.once')) {
         await deleteConnectionRecordById(agent, proof.connectionId)
       }
@@ -414,6 +441,14 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
 
     navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
   }
+
+  const hasAvailableCredentials = useMemo(() => {
+    const fields = getCredentialsFields()
+
+    return !!retrievedCredentials && Object.values(fields).every(c => c.length > 0)
+  }, [retrievedCredentials])
+
+  const hasMatchingCredDef = useMemo(() => activeCreds.some(cred => cred.credDefId !== undefined), [activeCreds])
 
   const proofPageHeader = () => {
     return (
@@ -575,6 +610,14 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
           )
         }}
       />
+    )
+  }
+
+  if (!proofId) {
+    return (
+      <View style={styles.cardLoading}>
+        <RecordLoading />
+      </View>
     )
   }
 

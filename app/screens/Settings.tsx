@@ -347,8 +347,9 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
         testID: testIdWithKey('ProofRequests'),
         onPress: () =>
           navigation.getParent()?.navigate(Stacks.ProofRequestsStack, {
-            screen: Screens.ProofRequests,
-            params: { navigation: navigation },
+            screen: Screens.ProofVerificationType,
+            // screen: Screens.ProofRequests,
+            // params: { navigation: navigation },
           }),
       },
     ],

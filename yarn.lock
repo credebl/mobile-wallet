@@ -34,6 +34,14 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@animo-id/react-native-ble-didcomm@^0.9.2":
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/@animo-id/react-native-ble-didcomm/-/react-native-ble-didcomm-0.9.2.tgz#00db0a804c8df45b87ec845f876b361e388d8bbc"
+  integrity sha512-4a0LqW9f2KMwVf5p878DsklkbJftceunNVn5hatnV2WDHPnsBRrLO0ZxJfaSYtfYOgNyRZnsOx1Q5rEZqBK05g==
+  dependencies:
+    "@credo-ts/transport-ble" "^0.3.0"
+    buffer "^6.0.3"
+
 "@aries-framework/anoncreds@^0.4.0":
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/@aries-framework/anoncreds/-/anoncreds-0.4.2.tgz#0d2bc7a40c8fac777c18325199939866d03c9ea3"
@@ -1636,6 +1644,11 @@
     "@azure/core-asynciterator-polyfill" "^1.0.2"
     "@credo-ts/core" "0.5.3"
     events "^3.3.0"
+
+"@credo-ts/transport-ble@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@credo-ts/transport-ble/-/transport-ble-0.3.0.tgz#3e48051e3eda26aa88649b56ee356274c90917ea"
+  integrity sha512-2cVUSRPzd37vR0BW9dmJDjP2JjI/M3vhZXTthwJK+S/7Vu8uj48tBg3hi1rstE3ut0+2bqoFhUduzDM0l0L8HA==
 
 "@digitalbazaar/bitstring@^3.0.0":
   version "3.1.0"

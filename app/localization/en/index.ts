@@ -578,6 +578,7 @@ const translation = {
     "GoogleDriveSignIn": "Google Drive Sign In",
     "HistorySettings": "History Settings",
     "History": "History",
+    "ProofVerificationType": 'Proof Verification Type',
   },
   "Loading": {
     "TakingTooLong": "This is taking longer than usual. You can return to home or continue waiting.",

@@ -16,6 +16,8 @@ export interface Preferences {
   walletName: string
   useDataRetention: boolean
   useHistoryCapability?: boolean
+  proofVerificationType: 'online' | 'bluetooth'
+  bleRole: 'verifier' | 'prover'
 }
 
 export interface Tours {

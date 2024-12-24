@@ -2,6 +2,7 @@
 import 'reflect-metadata'
 
 import { isWalletPinCorrect } from '@adeya/ssi'
+import { Central, CentralProvider, Peripheral, PeripheralProvider } from '@animo-id/react-native-ble-didcomm'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import React, { PropsWithChildren, createContext, useContext, useState, useEffect } from 'react'
@@ -41,7 +42,7 @@ export const AuthContext = createContext<AuthContext>(null as unknown as AuthCon
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [walletSecret, setWalletSecret] = useState<WalletSecret>()
   const [isGoogleAccountSignedIn, setIsGoogleAccountSignedIn] = useState(false)
-  const [, dispatch] = useStore()
+  const [store, dispatch] = useStore()
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -160,7 +161,11 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
         googleSignIn,
         googleSignOut,
       }}>
-      {children}
+      {store.preferences.bleRole === 'prover' ? (
+        <CentralProvider central={new Central()}>{children}</CentralProvider>
+      ) : (
+        <PeripheralProvider peripheral={new Peripheral()}>{children}</PeripheralProvider>
+      )}
     </AuthContext.Provider>
   )
 }

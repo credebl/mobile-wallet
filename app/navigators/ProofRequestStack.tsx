@@ -12,6 +12,8 @@ import ProofDetails from '../screens/ProofDetails'
 import ProofRequestDetails from '../screens/ProofRequestDetails'
 import ProofRequestUsageHistory from '../screens/ProofRequestUsageHistory'
 import ProofRequesting from '../screens/ProofRequesting'
+import ProofRequestingBle from '../screens/ProofRequestingBle'
+import ProofVerificationType from '../screens/ProofVerificationType'
 import { ProofRequestsStackParams, Screens } from '../types/navigators'
 import { testIdWithKey } from '../utils/testable'
 
@@ -64,6 +66,22 @@ const ProofRequestStack: React.FC = () => {
         })}
       />
       <Stack.Screen
+        name={Screens.ProofRequestingBle}
+        component={ProofRequestingBle}
+        options={({ navigation }) => ({
+          title: '',
+          headerLeft: () => (
+            <HeaderButton
+              buttonLocation={ButtonLocation.Left}
+              accessibilityLabel={t('Global.Back')}
+              testID={testIdWithKey('BackButton')}
+              onPress={() => navigation.navigate(Screens.ProofRequests, {})}
+              icon="arrow-left"
+            />
+          ),
+        })}
+      />
+      <Stack.Screen
         name={Screens.ProofDetails}
         component={ProofDetails}
         options={({ navigation, route }) => ({
@@ -92,6 +110,13 @@ const ProofRequestStack: React.FC = () => {
         options={() => ({
           title: t('Screens.ProofRequestUsageHistory'),
           headerRight: () => <HeaderRightHome />,
+        })}
+      />
+      <Stack.Screen
+        name={Screens.ProofVerificationType}
+        component={ProofVerificationType}
+        options={() => ({
+          title: t('Screens.ProofVerificationType'),
         })}
       />
     </Stack.Navigator>

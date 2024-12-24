@@ -40,6 +40,8 @@ export const defaultState: State = {
     walletName: generateRandomWalletName(),
     useDataRetention: true,
     useHistoryCapability: true,
+    proofVerificationType: 'online',
+    bleRole: 'verifier',
   },
   tours: {
     seenToursPrompt: false,

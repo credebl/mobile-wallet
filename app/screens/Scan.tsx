@@ -12,7 +12,9 @@ import QRScanner from '../components/misc/QRScanner'
 import CameraDisclosureModal from '../components/modals/CameraDisclosureModal'
 import LoadingModal from '../components/modals/LoadingModal'
 import { ToastType } from '../components/toast/BaseToast'
+import { DispatchAction } from '../contexts/reducers/store'
 import { useStore } from '../contexts/store'
+import { requestPermissions } from '../services/bluetooth'
 import { BifoldError, QrCodeScanError } from '../types/error'
 import { ConnectStackParams, Screens, Stacks } from '../types/navigators'
 import { PermissionContract } from '../types/permissions'
@@ -32,7 +34,7 @@ export type ScanProps = StackScreenProps<ConnectStackParams>
 const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
   const { agent } = useAppAgent()
   const { t } = useTranslation()
-  const [store] = useStore()
+  const [store, dispatch] = useStore()
   const [loading, setLoading] = useState<boolean>(true)
   const [showDisclosureModal, setShowDisclosureModal] = useState<boolean>(true)
   const [qrCodeScanError, setQrCodeScanError] = useState<QrCodeScanError | null>(null)
@@ -44,6 +46,37 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
   const handleInvitation = async (value: string): Promise<void> => {
     try {
       setLoading(true)
+
+      if (value.startsWith('ble://')) {
+        setLoading(false)
+
+        const serviceUuid = value.split('ble://')[1].split('&')[0].split('service=')[1]
+        const proofType = value.split('ble://')[1].split('&')[1].split('type=')[1]
+
+        if (Platform.OS === 'android') {
+          await requestPermissions()
+        }
+
+        // update ble role
+        dispatch({
+          type: DispatchAction.BLE_ROLE,
+          payload: ['prover'],
+        })
+
+        if (proofType === 'indy' || proofType === 'anoncreds') {
+          navigation.navigate(Stacks.ContactStack as any, {
+            screen: Screens.ProofRequest,
+            params: { serviceUuid },
+          })
+        } else {
+          navigation.navigate(Stacks.ContactStack as any, {
+            screen: Screens.ProofRequestW3C,
+            params: { serviceUuid },
+          })
+        }
+
+        return
+      }
 
       const isAlreadyConnected = await checkIfAlreadyConnected(agent, value)
 

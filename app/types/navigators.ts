@@ -35,6 +35,7 @@ export enum Screens {
   CustomNotification = 'Custom Notification',
   ProofRequests = 'Proof Requests',
   ProofRequesting = 'Proof Requesting',
+  ProofRequestingBle = 'Proof Requesting BLE',
   ProofDetails = 'Proof Details',
   ConnectionInvitation = 'Connection Invitation',
   NameWallet = 'Name Wallet',
@@ -55,6 +56,7 @@ export enum Screens {
   RenderCertificate = 'Render Certificate',
   GoogleDriveSignIn = 'Google Drive Sign In',
   HistoryPage = 'History',
+  ProofVerificationType = 'Proof Verification Type',
 }
 
 export enum Stacks {
@@ -130,6 +132,7 @@ export type ContactStackParams = {
 export type ProofRequestsStackParams = {
   [Screens.ProofRequests]: { connectionId?: string }
   [Screens.ProofRequesting]: { templateId: string; predicateValues?: Record<string, Record<string, number>> }
+  [Screens.ProofRequestingBle]: { templateId: string; predicateValues?: Record<string, Record<string, number>> }
   [Screens.ProofDetails]: { recordId: string; isHistory?: boolean; senderReview?: boolean }
   [Screens.ProofRequestDetails]: { templateId: string; connectionId?: string }
   [Screens.ProofRequestUsageHistory]: { templateId: string }
@@ -145,6 +148,7 @@ export type ProofRequestsStackParams = {
     proofId: string
     onCredChange: (arg: string) => void
   }
+  [Screens.ProofVerificationType]: undefined
 }
 
 export type CredentialStackParams = {
@@ -196,8 +200,14 @@ export type SettingStackParams = {
 export type NotificationStackParams = {
   [Screens.CredentialDetails]: { credentialId: string }
   [Screens.CredentialOffer]: { credentialId: string }
-  [Screens.ProofRequest]: { proofId: string }
-  [Screens.ProofRequestW3C]: { proofId: string }
+  [Screens.ProofRequest]: {
+    proofId: string
+    serviceUuid?: string
+  }
+  [Screens.ProofRequestW3C]: {
+    proofId: string
+    serviceUuid?: string
+  }
   [Screens.CustomNotification]: undefined
   [Screens.ProofDetails]: { recordId: string }
 }
