@@ -314,11 +314,11 @@ const CommonRemoveModal: React.FC<CommonRemoveModalProps> = ({ usage, visible, d
             <Text style={[styles.declineBodyText, { marginTop: 30 }]}>{t('ProofRequest.DeclineBulletPoint1')}</Text>
             <Text style={[styles.declineBodyText]}>{t('ProofRequest.DeclineBulletPoint2')}</Text>
             <Text style={[styles.declineBodyText]}>{t('ProofRequest.DeclineBulletPoint3')}</Text>
-            <Text style={[styles.bodyTextReason]}>{'Reason for declined proof request'}</Text>
+            <Text style={[styles.bodyTextReason]}>{t('ProofRequest.DeclinedReasonInputTitle')}</Text>
             <TextInput
               keyboardType="default"
               style={styles.input}
-              placeholder="Please enter your reason"
+              placeholder={t('ProofRequest.EnterReasonPlaceholder')}
               onChangeText={value => {
                 setInputReason(value)
               }}>
