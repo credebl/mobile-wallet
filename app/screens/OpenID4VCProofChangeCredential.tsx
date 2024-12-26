@@ -57,12 +57,13 @@ const OpenID4VCProofChangeCredential: React.FC<ProofChangeProps> = ({ route, nav
   const renderCredential = ({ item }: { item: any }) => {
     const displayItems = [
       { label: 'Issuer', value: item?.issuerName },
-      ...Object.entries(item?.disclosedPayload || {}).map(([key, value]) => ({
-        label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize key
-        value: value?.toString() ?? '',
-      })),
+      ...Object.entries(item?.disclosedPayload || {})
+        .filter(([key]) => key.toLowerCase() !== 'id') // Exclude the "Id" field
+        .map(([key, value]) => ({
+          label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the key
+          value: value?.toString() ?? '',
+        })),
     ]
-
     return (
       <View style={styles.pageMargin}>
         <View

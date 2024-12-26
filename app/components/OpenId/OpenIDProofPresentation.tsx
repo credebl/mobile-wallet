@@ -187,9 +187,9 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
                 <View style={{ marginTop: 16, gap: 8 }}>
                   {credential.description && <Text style={TextTheme.labelSubtitle}>{credential.description}</Text>}
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                    {selectedCredential.requestedAttributes.map(a => (
-                      <View key={a} style={{ flexBasis: '50%' }}>
-                        <Text style={TextTheme.normal}>• {sanitizeString(a)}</Text>
+                    {selectedCredential.requestedAttributes.map(attribute => (
+                      <View key={attribute} style={{ flexBasis: '50%' }}>
+                        <Text style={TextTheme.normal}>• {sanitizeString(attribute)}</Text>
                       </View>
                     ))}
                   </View>
