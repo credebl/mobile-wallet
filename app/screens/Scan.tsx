@@ -88,9 +88,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         if (invitationData.type === 'openid-authorization-request') {
           const uri = invitationData.data as string
           resolveOpenIDPresentationRequest(uri).then(value => {
-            // if (value) {
-            //   setOpenIdRecord(value)
-            // }
+            setLoading(false)
             navigation.getParent()?.navigate(Stacks.NotificationStack, {
               screen: Screens.OpenIDProofPresentation,
               params: { credential: value },
