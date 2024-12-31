@@ -465,6 +465,8 @@ const translation = {
     "DeclineBulletPoint1": "Organizations and services require that you prove you're eligible to continue with their service or access.",
     "DeclineBulletPoint2": "In order to receive the proof request again, you will need to restart the process with the service.",
     "DeclineBulletPoint3": "Are you sure you want to decline this proof request?",
+    "DeclinedReasonInputTitle":"Reason for declined proof request",
+    "EnterReasonPlaceholder":"Please enter your reason"
   },
   "Settings": {
     "Help": "Help",
