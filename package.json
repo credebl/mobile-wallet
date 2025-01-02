@@ -13,7 +13,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@adeya/ssi": "0.0.1-alpha.30",
+    "@adeya/ssi": "1.0.1-alpha.0",
     "@ayanworks/credo-polygon-w3c-module": "1.0.0",
     "@ethersproject/shims": "^5.7.0",
     "@formatjs/intl-datetimeformat": "^6.10.0",
