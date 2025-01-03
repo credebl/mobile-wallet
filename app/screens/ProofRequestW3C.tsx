@@ -1,14 +1,14 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
 import {
-  useConnectionById,
-  useProofById,
-  deleteConnectionRecordById,
   acceptProofRequest,
   declineProofRequest,
-  sendProofProblemReport,
-  GetCredentialsForRequestReturn,
+  deleteConnectionRecordById,
   DifPresentationExchangeProofFormatService,
+  GetCredentialsForRequestReturn,
+  sendProofProblemReport,
+  useConnectionById,
+  useProofById,
   utils,
 } from '@adeya/ssi'
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -125,6 +125,11 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
       marginVertical: 35,
       borderRadius: 15,
       paddingHorizontal: 10,
+    },
+    input: {
+      textAlign: 'center',
+      borderBottomColor: ColorPallet.grayscale.black,
+      borderBottomWidth: 1,
     },
   })
 
@@ -275,14 +280,17 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
     }
   }
 
-  const handleDeclineTouched = async () => {
+  const handleDeclineTouched = async (reason: string | undefined) => {
     try {
       if (proof) {
         await declineProofRequest(agent, { proofRecordId: proof.id })
 
         // sending a problem report fails if there is neither a connectionId nor a ~service decorator
         if (proof.connectionId) {
-          await sendProofProblemReport(agent, { proofRecordId: proof.id, description: t('ProofRequest.Declined') })
+          await sendProofProblemReport(agent, {
+            proofRecordId: proof.id,
+            description: reason ? reason : t('ProofRequest.Declined'),
+          })
           if (goalCode && goalCode.endsWith('verify.once')) {
             await deleteConnectionRecordById(agent, proof.connectionId)
           }
@@ -492,7 +500,9 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
         <CommonRemoveModal
           usage={ModalUsage.ProofRequestDecline}
           visible={declineModalVisible}
-          onSubmit={handleDeclineTouched}
+          onSubmit={(reason: string | undefined) => {
+            handleDeclineTouched(reason)
+          }}
           onCancel={toggleDeclineModalVisible}
         />
       </ScrollView>
