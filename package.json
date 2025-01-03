@@ -155,5 +155,6 @@
     "@credo-ts/core": "0.5.11",
     "@credo-ts/askar": "0.5.11",
     "nanoid": "^5.0.9"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }
