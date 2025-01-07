@@ -11,6 +11,7 @@ import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 
 import { animatedComponents } from './app/animated-components'
+import { OpenIDCredentialRecordProvider } from './app/components/Provider/OpenIDCredentialRecordProvider'
 import PushNotifications from './app/components/PushNotifications'
 import ErrorModal from './app/components/modals/ErrorModal'
 import NetInfo from './app/components/network/NetInfo'
@@ -54,31 +55,33 @@ const App = () => {
   return (
     <StoreProvider>
       <AdeyaAgentProvider>
-        <ThemeProvider value={theme}>
-          <AnimatedComponentsProvider value={animatedComponents}>
-            <ConfigurationProvider value={defaultConfiguration}>
-              <CommonUtilProvider>
-                <AuthProvider>
-                  <NetworkProvider>
-                    <StatusBar
-                      hidden={false}
-                      barStyle="light-content"
-                      backgroundColor={theme.ColorPallet.brand.primary}
-                      translucent={false}
-                    />
-                    <NetInfo />
-                    <ErrorModal />
-                    <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
-                      <RootStack />
-                    </TourProvider>
-                    <Toast topOffset={15} config={toastConfig} />
-                    <PushNotifications />
-                  </NetworkProvider>
-                </AuthProvider>
-              </CommonUtilProvider>
-            </ConfigurationProvider>
-          </AnimatedComponentsProvider>
-        </ThemeProvider>
+        <OpenIDCredentialRecordProvider>
+          <ThemeProvider value={theme}>
+            <AnimatedComponentsProvider value={animatedComponents}>
+              <ConfigurationProvider value={defaultConfiguration}>
+                <CommonUtilProvider>
+                  <AuthProvider>
+                    <NetworkProvider>
+                      <StatusBar
+                        hidden={false}
+                        barStyle="light-content"
+                        backgroundColor={theme.ColorPallet.brand.primary}
+                        translucent={false}
+                      />
+                      <NetInfo />
+                      <ErrorModal />
+                      <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
+                        <RootStack />
+                      </TourProvider>
+                      <Toast topOffset={15} config={toastConfig} />
+                      <PushNotifications />
+                    </NetworkProvider>
+                  </AuthProvider>
+                </CommonUtilProvider>
+              </ConfigurationProvider>
+            </AnimatedComponentsProvider>
+          </ThemeProvider>
+        </OpenIDCredentialRecordProvider>
       </AdeyaAgentProvider>
     </StoreProvider>
   )

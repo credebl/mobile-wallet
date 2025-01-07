@@ -1,11 +1,13 @@
-import type { W3cCredentialRecord } from '@adeya/ssi'
-
 import {
-  useCredentialByState,
+  AnonCredsCredentialMetadataKey,
   CredentialExchangeRecord,
   CredentialState,
-  useConnections,
+  GenericCredentialExchangeRecord,
   getAllW3cCredentialRecords,
+  openId4VcCredentialMetadataKey,
+  useConnections,
+  useCredentialByState,
+  W3cCredentialRecord,
 } from '@adeya/ssi'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -13,13 +15,14 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, StyleSheet, View } from 'react-native'
 
+import { useOpenIDCredentials } from '../components/Provider/OpenIDCredentialRecordProvider'
 import ScanButton from '../components/common/ScanButton'
 import CredentialCard from '../components/misc/CredentialCard'
+import { OpenIDCredScreenMode } from '../constants'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { CredentialStackParams, Screens } from '../types/navigators'
 import { useAppAgent } from '../utils/agent'
-import { isW3CCredential } from '../utils/credential'
 
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string
@@ -37,9 +40,13 @@ const ListCredentials: React.FC = () => {
   const { t } = useTranslation()
   const { agent } = useAppAgent()
   const { credentialListOptions: CredentialListOptions, credentialEmptyList: CredentialEmptyList } = useConfiguration()
-  const credentials = [
+  const {
+    openIdState: { w3cCredentialRecords },
+  } = useOpenIDCredentials()
+  const credentials: GenericCredentialExchangeRecord[] = [
     ...useCredentialByState(CredentialState.CredentialReceived),
     ...useCredentialByState(CredentialState.Done),
+    ...w3cCredentialRecords,
   ]
   const [credentialList, setCredentialList] = useState<(CredentialExchangeRecord | EnhancedW3CRecord)[] | undefined>([])
   const { records: connectionRecords } = useConnections()
@@ -56,8 +63,11 @@ const ListCredentials: React.FC = () => {
       const w3cCredentialRecords = await getAllW3cCredentialRecords(agent)
 
       const updatedCredentials = credentials.map(credential => {
-        if (isW3CCredential(credential)) {
-          const credentialRecordId = credential.credentials[0].credentialRecordId
+        if (
+          !Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey) &&
+          !Object.keys(credential.metadata.data).includes(AnonCredsCredentialMetadataKey)
+        ) {
+          const credentialRecordId = credential?.credentials[0].credentialRecordId
           try {
             const record = w3cCredentialRecords.find(record => record.id === credentialRecordId)
             if (!credential?.connectionId) {
@@ -109,7 +119,16 @@ const ListCredentials: React.FC = () => {
                   schemaId={credential.credential.type[1]}
                   connectionLabel={credential.connectionLabel}
                   credential={credential}
-                  onPress={() => navigation.navigate(Screens.CredentialDetailsW3C, { credential: credential })}
+                  onPress={() => {
+                    if (!Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey)) {
+                      navigation.navigate(Screens.CredentialDetailsW3C, { credential: credential })
+                    } else {
+                      navigation.navigate(Screens.OpenIDCredentialDetails, {
+                        credential: credential,
+                        screenMode: OpenIDCredScreenMode.details,
+                      })
+                    }
+                  }}
                 />
               )}
             </View>

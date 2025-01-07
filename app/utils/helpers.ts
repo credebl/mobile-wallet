@@ -177,8 +177,8 @@ function getFormattedTimeForDefault(
     trim && sameYear
       ? momentTime.format(formatString)
       : isNonEnglish
-      ? `${momentTime.format(formatString)} ${momentTime.format('YYYY')}`
-      : `${momentTime.format(formatString)}, ${momentTime.format('YYYY')}`
+        ? `${momentTime.format(formatString)} ${momentTime.format('YYYY')}`
+        : `${momentTime.format(formatString)}, ${momentTime.format('YYYY')}`
   if (includeHour) {
     formattedTime = `${formattedTime}, ${momentTime.format(hoursFormat)}`
   }
@@ -726,8 +726,8 @@ export const mergeAttributesAndPredicates = (
   for (const [key, predicate] of Object.entries(predicates)) {
     const existingEntry = merged[key]
     if (existingEntry) {
-      const mergedAltCreds = existingEntry?.altCredentials?.filter(
-        (credId: string) => predicate?.altCredentials?.includes(credId),
+      const mergedAltCreds = existingEntry?.altCredentials?.filter((credId: string) =>
+        predicate?.altCredentials?.includes(credId),
       )
       merged[key] = { ...existingEntry, ...predicate }
       merged[key].altCredentials = mergedAltCreds
