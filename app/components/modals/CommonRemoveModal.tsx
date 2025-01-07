@@ -384,10 +384,10 @@ const CommonRemoveModal: React.FC<CommonRemoveModalProps> = ({ usage, visible, d
                 usage === ModalUsage.ContactRemoveWithCredentials
                   ? ButtonType.ModalPrimary
                   : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithCredentialsOffer
-                  ? ButtonType.ModalPrimary
-                  : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithProofRequest
-                  ? ButtonType.ModalPrimary
-                  : ButtonType.ModalCritical
+                    ? ButtonType.ModalPrimary
+                    : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithProofRequest
+                      ? ButtonType.ModalPrimary
+                      : ButtonType.ModalCritical
               }
             />
           </View>

@@ -9,6 +9,7 @@ import Chat from '../screens/Chat'
 import Connection from '../screens/Connection'
 import ContactDetails from '../screens/ContactDetails'
 import CredentialOffer from '../screens/CredentialOffer'
+import OpenIDCredentialDetails from '../screens/OpenIDCredentialOffer'
 import ProofRequest from '../screens/ProofRequest'
 import ProofRequestW3C from '../screens/ProofRequestW3C'
 import { DeliveryStackParams, Screens, TabStacks } from '../types/navigators'
@@ -53,6 +54,11 @@ const DeliveryStack: React.FC = () => {
         name={Screens.ContactDetails}
         component={ContactDetails}
         options={{ title: t('Screens.ContactDetails'), headerBackTestID: testIdWithKey('Back') }}
+      />
+      <Stack.Screen
+        name={Screens.OpenIDCredentialDetails}
+        component={OpenIDCredentialDetails}
+        options={{ title: t('Screens.CredentialOffer') }}
       />
       <Stack.Screen
         name={Screens.Chat}

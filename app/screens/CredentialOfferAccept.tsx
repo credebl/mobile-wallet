@@ -22,9 +22,10 @@ enum DeliveryStatus {
 export interface CredentialOfferAcceptProps {
   visible: boolean
   credentialId: string
+  confirmationOnly?: boolean
 }
 
-const CredentialOfferAccept: React.FC<CredentialOfferAcceptProps> = ({ visible, credentialId }) => {
+const CredentialOfferAccept: React.FC<CredentialOfferAcceptProps> = ({ visible, credentialId, confirmationOnly }) => {
   const { t } = useTranslation()
   const [shouldShowDelayMessage, setShouldShowDelayMessage] = useState<boolean>(false)
   const [credentialDeliveryStatus, setCredentialDeliveryStatus] = useState<DeliveryStatus>(DeliveryStatus.Pending)
@@ -63,8 +64,8 @@ const CredentialOfferAccept: React.FC<CredentialOfferAcceptProps> = ({ visible, 
     },
   })
 
-  if (!credential) {
-    throw new Error('Unable to fetch credential from AFJ')
+  if (!credential && !confirmationOnly) {
+    throw new Error('Unable to fetch credential from Credo')
   }
 
   const onBackToHomeTouched = () => {
@@ -76,11 +77,21 @@ const CredentialOfferAccept: React.FC<CredentialOfferAcceptProps> = ({ visible, 
   }
 
   useEffect(() => {
+    if (!credential) {
+      return
+    }
     if (credential.state === CredentialState.CredentialReceived || credential.state === CredentialState.Done) {
       timer && clearTimeout(timer)
       setCredentialDeliveryStatus(DeliveryStatus.Completed)
     }
   }, [credential])
+
+  useEffect(() => {
+    if (confirmationOnly) {
+      timer && clearTimeout(timer)
+      setCredentialDeliveryStatus(DeliveryStatus.Completed)
+    }
+  }, [confirmationOnly, timer])
 
   useEffect(() => {
     if (timerDidFire || credentialDeliveryStatus !== DeliveryStatus.Pending || !visible) {
