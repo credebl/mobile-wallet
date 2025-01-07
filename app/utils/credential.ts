@@ -7,10 +7,13 @@ import { luminanceForHexColor } from './luminance'
 
 export const isValidAnonCredsCredential = (credential: CredentialExchangeRecord) => {
   return (
-    credential &&
-    credential.state === CredentialState.OfferReceived &&
-    credential.credentialAttributes &&
-    credential.credentialAttributes?.length > 0
+    (credential &&
+      credential.state === CredentialState.OfferReceived &&
+      credential.credentialAttributes &&
+      credential.credentialAttributes?.length > 0) ||
+    credential.state === CredentialState.OfferReceived ||
+    (Boolean(credential.metadata.get(AnonCredsCredentialMetadataKey)) &&
+      credential.credentials.find(c => c.credentialRecordType === 'anoncreds' || c.credentialRecordType === 'w3c'))
   )
 }
 
@@ -40,8 +43,9 @@ export const getCredentialIdentifiers = (credential: CredentialExchangeRecord) =
 export const isW3CCredential = (credential: CredentialExchangeRecord) => {
   return (
     credential &&
-    credential.credentials[0].credentialRecordType === 'w3c' &&
-    credential.credentialAttributes?.length === 0
+    credential?.credentials[0].credentialRecordType === 'w3c' &&
+    !credential.metadata.get(AnonCredsCredentialMetadataKey)?.credentialDefinitionId &&
+    credential?.credentialAttributes?.length === 0
   )
 }
 
@@ -56,6 +60,29 @@ export const sanitizeString = (str: string) => {
     }
   })
   return words.join(' ')
+}
+
+export function getHostNameFromUrl(url: string) {
+  //TODO: Find more elegant way to extract host name
+  // const urlRegex = /^(.*:)\/\/([A-Za-z0-9-.]+)(:[0-9]+)?(.*)$/
+  // const parts = urlRegex.exec(url)
+  // return parts ? parts[2] : undefined
+  return url.split('https://')[1]
+}
+
+export const buildFieldsFromOpenIDTemplate = (data: { [key: string]: unknown }): Array<Field> => {
+  const fields = []
+  for (const key of Object.keys(data)) {
+    // omit id and type
+    if (key === 'id' || key === 'type') continue
+
+    let pushedVal: string | number | null = null
+    if (typeof data[key] === 'string' || typeof data[key] === 'number') {
+      pushedVal = data[key] as string | number | null
+    }
+    fields.push(new Attribute({ name: key, value: pushedVal }))
+  }
+  return fields
 }
 
 export const formatCredentialSubject = (

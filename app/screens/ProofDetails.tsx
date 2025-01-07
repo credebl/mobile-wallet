@@ -99,7 +99,7 @@ const VerifiedProof: React.FC<VerifiedProofProps> = ({
 
   const connection = useConnectionById(record.connectionId || '')
   const connectionLabel = useMemo(
-    () => (connection ? getConnectionName(connection) ?? 'Connection' : t('Verifier.ConnectionLessLabel')),
+    () => (connection ? (getConnectionName(connection) ?? 'Connection') : t('Verifier.ConnectionLessLabel')),
     [connection],
   )
 

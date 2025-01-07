@@ -21,14 +21,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { saveHistory } from '../components/History/HistoryManager'
 import { HistoryCardType, HistoryRecord } from '../components/History/types'
-import Button, { ButtonType } from '../components/buttons/Button'
+import CommonFooter from '../components/common/FooterButton'
 import ConnectionImage from '../components/misc/ConnectionImage'
 import CredentialCard from '../components/misc/CredentialCard'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import Record from '../components/record/Record'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
 import { CREDENTIAL_W3C, EventTypes } from '../constants'
-import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
 import { useStore } from '../contexts/store'
@@ -57,8 +56,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
 
   const { agent } = useAppAgent()
   const { t, i18n } = useTranslation()
-  const { ListItems, ColorPallet } = useTheme()
-  const { RecordLoading } = useAnimatedComponents()
+  const { ListItems } = useTheme()
   const { assertConnectedNetwork } = useNetwork()
   const { OCABundleResolver } = useConfiguration()
   const [loading, setLoading] = useState<boolean>(true)
@@ -278,35 +276,12 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
 
   const footer = () => {
     return (
-      <View
-        style={{
-          paddingHorizontal: 25,
-          paddingVertical: 16,
-          paddingBottom: 26,
-          backgroundColor: ColorPallet.brand.secondaryBackground,
-        }}>
-        {loading ? <RecordLoading /> : null}
-        <View style={styles.footerButton}>
-          <Button
-            title={t('Global.Accept')}
-            accessibilityLabel={t('Global.Accept')}
-            testID={testIdWithKey('AcceptCredentialOffer')}
-            buttonType={ButtonType.Primary}
-            onPress={handleAcceptTouched}
-            disabled={!buttonsVisible}
-          />
-        </View>
-        <View style={styles.footerButton}>
-          <Button
-            title={t('Global.Decline')}
-            accessibilityLabel={t('Global.Decline')}
-            testID={testIdWithKey('DeclineCredentialOffer')}
-            buttonType={ButtonType.Secondary}
-            onPress={toggleDeclineModalVisible}
-            disabled={!buttonsVisible}
-          />
-        </View>
-      </View>
+      <CommonFooter
+        loading={loading}
+        buttonsVisible={buttonsVisible}
+        handleAcceptTouched={handleAcceptTouched}
+        toggleDeclineModalVisible={toggleDeclineModalVisible}
+      />
     )
   }
 
