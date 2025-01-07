@@ -1,9 +1,10 @@
 import type { BarCodeReadEvent } from 'react-native-camera'
 
+import { getOID4VCCredentialsForProofRequest, parseInvitationUrl } from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Platform } from 'react-native'
+import { DeviceEventEmitter, Platform } from 'react-native'
 import { check, Permission, PERMISSIONS, request, RESULTS } from 'react-native-permissions'
 import Toast from 'react-native-toast-message'
 
@@ -12,6 +13,7 @@ import QRScanner from '../components/misc/QRScanner'
 import CameraDisclosureModal from '../components/modals/CameraDisclosureModal'
 import LoadingModal from '../components/modals/LoadingModal'
 import { ToastType } from '../components/toast/BaseToast'
+import { EventTypes } from '../constants'
 import { useStore } from '../contexts/store'
 import { BifoldError, QrCodeScanError } from '../types/error'
 import { ConnectStackParams, Screens, Stacks } from '../types/navigators'
@@ -40,10 +42,61 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
   if (route?.params && route.params['defaultToConnect']) {
     defaultToConnect = route.params['defaultToConnect']
   }
+  const resolveOpenIDPresentationRequest = useCallback(
+    async (uri: string | undefined) => {
+      if (!agent) {
+        return
+      }
+      try {
+        const record = await getOID4VCCredentialsForProofRequest({
+          agent: agent,
+          uri: uri,
+        })
+        return record
+      } catch (err: unknown) {
+        const error = new BifoldError(
+          t('Error.Title1043'),
+          t('Error.Message1043'),
+          (err as Error)?.message ?? err,
+          1043,
+        )
+        DeviceEventEmitter.emit(EventTypes.ERROR_ADDED, error)
+      }
+    },
+    [agent, t],
+  )
 
+  const handleInvitationUrls = (url: string) => {
+    return parseInvitationUrl(url)
+  }
   const handleInvitation = async (value: string): Promise<void> => {
     try {
       setLoading(true)
+      const response = handleInvitationUrls(value)
+      if (response?.success) {
+        const invitationData = response.result
+        if (invitationData.type === 'openid-credential-offer') {
+          const uri = invitationData.format === 'url' ? (invitationData.data as string) : undefined
+          const data =
+            invitationData.format === 'parsed' ? encodeURIComponent(JSON.stringify(invitationData.data)) : undefined
+          setLoading(false)
+          navigation.getParent()?.navigate(Stacks.NotificationStack, {
+            screen: Screens.OpenIdCredentialOffer,
+            params: { uri, data },
+          })
+        }
+        if (invitationData.type === 'openid-authorization-request') {
+          const uri = invitationData.data as string
+          resolveOpenIDPresentationRequest(uri).then(value => {
+            setLoading(false)
+            navigation.getParent()?.navigate(Stacks.NotificationStack, {
+              screen: Screens.OpenIDProofPresentation,
+              params: { credential: value },
+            })
+          })
+        }
+        return
+      }
 
       const isAlreadyConnected = await checkIfAlreadyConnected(agent, value)
 
