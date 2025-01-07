@@ -8,6 +8,7 @@ import { useTheme } from '../contexts/theme'
 import CredentialDetails from '../screens/CredentialDetails'
 import CredentialDetailsW3C from '../screens/CredentialDetailsW3C'
 import ListCredentials from '../screens/ListCredentials'
+import OpenIDCredentialDetails from '../screens/OpenIDCredentialDetails'
 import RenderCertificate from '../screens/RenderCertificate'
 import Scan from '../screens/Scan'
 import { CredentialStackParams, Screens } from '../types/navigators'
@@ -40,6 +41,11 @@ const CredentialStack: React.FC = () => {
       <Stack.Screen
         name={Screens.CredentialDetailsW3C}
         component={CredentialDetailsW3C}
+        options={{ title: t('Screens.CredentialDetails') }}
+      />
+      <Stack.Screen
+        name={Screens.OpenIDCredentialDetails}
+        component={OpenIDCredentialDetails}
         options={{ title: t('Screens.CredentialDetails') }}
       />
       <Stack.Screen

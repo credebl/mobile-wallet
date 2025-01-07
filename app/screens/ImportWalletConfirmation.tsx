@@ -1,17 +1,4 @@
-import {
-  importWalletWithAgent,
-  ConsoleLogger,
-  LogLevel,
-  InitConfig,
-  getAgentModules,
-  DidsModule,
-  IndyVdrIndyDidResolver,
-  SingleContextStorageLruCache,
-  CacheModule,
-  MediatorPickupStrategy,
-  WebDidResolver,
-} from '@adeya/ssi'
-import { PolygonDidResolver, PolygonModule } from '@ayanworks/credo-polygon-w3c-module'
+import { importWalletWithAgent, ConsoleLogger, LogLevel, InitConfig } from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import {
@@ -26,14 +13,12 @@ import {
   ScrollView,
 } from 'react-native'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import { Config } from 'react-native-config'
 import { isCancel, pickSingle, types } from 'react-native-document-picker'
 import * as RNFS from 'react-native-fs'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { unzip } from 'react-native-zip-archive'
 
-import indyLedgers from '../../configs/ledgers/indy'
 import ButtonLoading from '../components/animated/ButtonLoading'
 import Button, { ButtonType } from '../components/buttons/Button'
 import { ToastType } from '../components/toast/BaseToast'
@@ -41,7 +26,7 @@ import { useAuth } from '../contexts/auth'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { AuthenticateStackParams, Screens } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
+import { adeyaAgentModules, useAppAgent } from '../utils/agent'
 
 type ImportWalletVerifyProps = StackScreenProps<AuthenticateStackParams, Screens.ImportWalletVerify>
 
@@ -153,20 +138,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
         agentConfig,
         importConfig,
         modules: {
-          ...getAgentModules({
-            indyNetworks: indyLedgers,
-            mediatorInvitationUrl: Config.MEDIATOR_URL!,
-            mediatorPickupStrategy: MediatorPickupStrategy.PickUpV2LiveMode,
-          }),
-          polygon: new PolygonModule({}),
-          dids: new DidsModule({
-            resolvers: [new PolygonDidResolver(), new IndyVdrIndyDidResolver(), new WebDidResolver()],
-          }),
-          cache: new CacheModule({
-            cache: new SingleContextStorageLruCache({
-              limit: 50,
-            }),
-          }),
+          ...adeyaAgentModules(),
         },
       })
 

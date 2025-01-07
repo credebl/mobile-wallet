@@ -6,6 +6,7 @@ import HeaderButton, { ButtonLocation } from '../components/buttons/HeaderButton
 import HeaderRightHome from '../components/buttons/HeaderHome'
 import { useTheme } from '../contexts/theme'
 import ListProofRequests from '../screens/ListProofRequests'
+import OpenID4VCProofChangeCredential from '../screens/OpenID4VCProofChangeCredential'
 import ProofChangeCredential from '../screens/ProofChangeCredential'
 import ProofChangeCredentialW3C from '../screens/ProofChangeCredentialW3C'
 import ProofDetails from '../screens/ProofDetails'
@@ -45,6 +46,11 @@ const ProofRequestStack: React.FC = () => {
       <Stack.Screen
         name={Screens.ProofChangeCredentialW3C}
         component={ProofChangeCredentialW3C}
+        options={{ title: t('Screens.ProofChangeCredentialW3C') }}
+      />
+      <Stack.Screen
+        name={Screens.ProofChangeCredentialOpenId4VP}
+        component={OpenID4VCProofChangeCredential}
         options={{ title: t('Screens.ProofChangeCredentialW3C') }}
       />
       <Stack.Screen

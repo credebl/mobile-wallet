@@ -1,21 +1,26 @@
-import { CredentialExchangeRecord, W3cCredentialRecord } from '@adeya/ssi'
+import {
+  CredentialExchangeRecord,
+  GenericCredentialExchangeRecord,
+  openId4VcCredentialMetadataKey,
+  W3cCredentialRecord,
+} from '@adeya/ssi'
 import { Attribute, BrandingOverlayType, Predicate } from '@hyperledger/aries-oca/build/legacy'
 import React from 'react'
 import { ViewStyle } from 'react-native'
 
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
-import { GenericFn } from '../../types/fn'
+import OpenIdCredentialCard from '../OpenId/OpenIDCredentialCard'
 
 import CredentialCard10 from './CredentialCard10'
 import CredentialCard11 from './CredentialCard11'
 
 interface CredentialCardProps {
-  credential?: CredentialExchangeRecord | W3cCredentialRecord
+  credential?: GenericCredentialExchangeRecord
   credDefId?: string
   schemaId?: string
   credName?: string
-  onPress?: GenericFn
+  onPress?: () => void
   style?: ViewStyle
   proof?: boolean
   displayItems?: (Attribute | Predicate)[]
@@ -67,15 +72,21 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
 
     if (credential instanceof W3cCredentialRecord || credential?.credentialAttributes?.length === 0) {
       return (
-        <CredentialCard11
-          connectionLabel={connectionLabel}
-          credDefId={credDefId}
-          schemaId={schemaId}
-          credName={credName}
-          displayItems={displayItems}
-          style={style}
-          onPress={onPress}
-        />
+        <>
+          {Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey) ? (
+            <OpenIdCredentialCard credentialRecord={credential} onPress={onPress} />
+          ) : (
+            <CredentialCard11
+              connectionLabel={connectionLabel}
+              credDefId={credDefId}
+              schemaId={schemaId}
+              credName={credName}
+              displayItems={displayItems}
+              style={style}
+              onPress={onPress}
+            />
+          )}
+        </>
       )
     } else if (credential instanceof CredentialExchangeRecord) {
       if (type === BrandingOverlayType.Branding01) {
