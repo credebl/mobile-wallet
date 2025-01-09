@@ -45,7 +45,7 @@
     "bip39": "^3.1.0",
     "crypto-js": "^4.2.0",
     "events": "^1.1.1",
-    "expo-modules-core": "^1.2.7",
+    "expo-modules-core": "^1.12.26",
     "i18next": "^23.4.1",
     "lodash.flatten": "^4.4.0",
     "lodash.shuffle": "^4.2.0",
