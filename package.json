@@ -79,7 +79,7 @@
     "react-native-permissions": "^3.9.0",
     "react-native-qrcode-svg": "^6.2.0",
     "react-native-randombytes": "^3.0.0",
-    "react-native-reanimated": "^3.4.1",
+    "react-native-reanimated": "^3.16.5",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-safe-area-context": "^4.7.1",
     "react-native-scalable-image": "^1.1.0",
