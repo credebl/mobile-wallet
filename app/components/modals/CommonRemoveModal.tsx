@@ -1,7 +1,17 @@
 import * as React from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import {
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+} from 'react-native'
 import Collapsible from 'react-native-collapsible'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -139,6 +149,8 @@ const CommonRemoveModal: React.FC<CommonRemoveModalProps> = ({ usage, visible, d
       borderBottomWidth: 1,
       fontWeight: 'bold',
       fontSize: 15,
+      paddingVertical: 10,
+      marginBottom: Platform.OS === 'ios' ? 10 : 0,
     },
   })
 
@@ -319,8 +331,9 @@ const CommonRemoveModal: React.FC<CommonRemoveModalProps> = ({ usage, visible, d
               keyboardType="default"
               style={styles.input}
               placeholder={t('ProofRequest.EnterReasonPlaceholder')}
+              maxLength={250}
               onChangeText={value => {
-                setInputReason(value)
+                setInputReason(value.trim())
               }}>
               {inputReason}
             </TextInput>
@@ -365,42 +378,44 @@ const CommonRemoveModal: React.FC<CommonRemoveModalProps> = ({ usage, visible, d
             backgroundColor: ColorPallet.brand.modalPrimaryBackground,
           },
         ]}>
-        <ScrollView style={[styles.container]}>
-          <>
-            {headerImageForType()}
-            {contentForType()}
-          </>
-        </ScrollView>
-        <View style={[styles.controlsContainer]}>
-          <ContentGradient backgroundColor={ColorPallet.brand.modalPrimaryBackground} height={30} />
-          <View style={[{ paddingTop: 10 }]}>
-            <Button
-              title={titleForConfirmButton()}
-              accessibilityLabel={labelForConfirmButton()}
-              testID={testIdForConfirmButton()}
-              onPress={toggleDeclineReasonView}
-              disabled={disabled}
-              buttonType={
-                usage === ModalUsage.ContactRemoveWithCredentials
-                  ? ButtonType.ModalPrimary
-                  : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithCredentialsOffer
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView keyboardShouldPersistTaps={'handled'} style={[styles.container]}>
+            <>
+              {headerImageForType()}
+              {contentForType()}
+            </>
+          </ScrollView>
+          <View style={[styles.controlsContainer]}>
+            <ContentGradient backgroundColor={ColorPallet.brand.modalPrimaryBackground} height={30} />
+            <View style={[{ paddingTop: 10 }]}>
+              <Button
+                title={titleForConfirmButton()}
+                accessibilityLabel={labelForConfirmButton()}
+                testID={testIdForConfirmButton()}
+                onPress={toggleDeclineReasonView}
+                disabled={disabled}
+                buttonType={
+                  usage === ModalUsage.ContactRemoveWithCredentials
                     ? ButtonType.ModalPrimary
-                    : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithProofRequest
+                    : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithCredentialsOffer
                       ? ButtonType.ModalPrimary
-                      : ButtonType.ModalCritical
-              }
-            />
+                      : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithProofRequest
+                        ? ButtonType.ModalPrimary
+                        : ButtonType.ModalCritical
+                }
+              />
+            </View>
+            <View style={styles.buttonsContainer}>
+              <Button
+                title={t('Global.Cancel')}
+                accessibilityLabel={t('Global.Cancel')}
+                testID={testIdForCancelButton()}
+                onPress={onCancel}
+                buttonType={ButtonType.ModalSecondary}
+              />
+            </View>
           </View>
-          <View style={styles.buttonsContainer}>
-            <Button
-              title={t('Global.Cancel')}
-              accessibilityLabel={t('Global.Cancel')}
-              testID={testIdForCancelButton()}
-              onPress={onCancel}
-              buttonType={ButtonType.ModalSecondary}
-            />
-          </View>
-        </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </Modal>
   )
