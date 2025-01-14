@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { hitSlop } from '../../constants'
@@ -19,6 +19,8 @@ interface HeaderButtonProps {
   onPress: () => void
   icon: string
   text?: string
+  badgeShow?: boolean
+  notificationCount?: number
 }
 
 const HeaderButton: React.FC<HeaderButtonProps> = ({
@@ -28,6 +30,8 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({
   accessibilityLabel,
   testID,
   onPress,
+  badgeShow,
+  notificationCount,
 }) => {
   const { ColorPallet, TextTheme } = useTheme()
   const style = StyleSheet.create({
@@ -43,6 +47,22 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({
       ...TextTheme.label,
       color: ColorPallet.brand.headerText,
       marginRight: 4,
+    },
+    badge: {
+      position: 'absolute',
+      right: -5, // Adjust to position the badge on the top-right corner
+      top: -5, // Adjust to position the badge on the top-right corner
+      backgroundColor: 'red',
+      borderRadius: 10, // Makes the badge circular
+      width: 18, // Adjust size based on the badge
+      height: 18, // Adjust size based on the badge
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    badgeText: {
+      color: 'white',
+      fontSize: 12,
+      fontWeight: 'bold',
     },
   })
 
@@ -60,6 +80,11 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({
           <>
             {text && <Text style={[style.title]}>{text}</Text>}
             <Icon name={icon} size={defaultIconSize} color={ColorPallet.brand.headerIcon} />
+            {badgeShow && notificationCount > 0 && (
+              <View style={style.badge}>
+                <Text style={style.badgeText}>{notificationCount}</Text>
+              </View>
+            )}
           </>
         )
     }

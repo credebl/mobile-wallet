@@ -1,7 +1,7 @@
 import moment from 'moment'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 import { useTheme } from '../../contexts/theme'
 
@@ -20,20 +20,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   card: {
-    padding: 10,
-    flexDirection: 'row',
-    alignContent: 'center',
+    height: 40,
+    width: 40,
     alignSelf: 'center',
-    // backgroundColor:'green'
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   cardContent: {
     flexDirection: 'column',
-    marginHorizontal: 10,
+    marginLeft: 20,
     width: '80%',
-  },
-  cardDescriptionContent: {
-    // marginTop: 5,
-    // marginBottom: 10,
   },
   cardDate: {
     color: '#666666',
@@ -136,10 +133,29 @@ const HistoryListItem: React.FC<Props> = ({ item }) => {
     }
   }
 
+  const formatDate = (dateString: Date) => {
+    const now = moment() // Current date and time
+    const date = moment(dateString) // Message date and time
+    const diffDays = now.diff(date, 'days')
+
+    if (diffDays === 0) {
+      // If it's today, show "x minutes/hours ago"
+      return moment(dateString).fromNow()
+    } else if (diffDays === 1) {
+      // If it's yesterday, show "Yesterday"
+      return 'Yesterday'
+    } else if (diffDays <= 2) {
+      // For messages up to 2 days old, show the full date (e.g., "Oct 10, 2024")
+      return moment(date).format('MMM D, YYYY')
+    } else {
+      // For older messages, show the full date
+      return moment(date).fromNow()
+    }
+  }
   const renderCardDate = (date?: Date) => {
     if (!date) return null
-    const dateFormate = moment(date).format('DD/MM/YYYY HH:mm:ss')
-    return <Text style={[TextTheme.caption, styles.cardDate]}>{dateFormate}</Text>
+
+    return <Text style={[TextTheme.caption, styles.cardDate]}>{formatDate(date)}</Text>
   }
 
   const renderCard = (item: CustomRecord) => {
@@ -158,14 +174,7 @@ const HistoryListItem: React.FC<Props> = ({ item }) => {
     )
   }
 
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        //TODO: navigate to history details
-      }}>
-      {renderCard(item)}
-    </TouchableOpacity>
-  )
+  return <View>{renderCard(item)}</View>
 }
 
 export default HistoryListItem
