@@ -89,7 +89,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     updateHomeScreenCredentials().then(updatedCredential => {
       setCredentialList(updatedCredential?.slice(-3, 3))
     })
-  }, [credentials])
+  }, [credentialList])
   useEffect(() => {
     if (!agent) return
 

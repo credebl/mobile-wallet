@@ -84,7 +84,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
     updateCredentials().then(updatedCredentials => {
       setCredentialList(updatedCredentials)
     })
-  }, [credentials])
+  }, [credentialList])
 
   const styles = StyleSheet.create({
     container: { flex: 1, marginHorizontal: 10 },
