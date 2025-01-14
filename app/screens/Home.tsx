@@ -110,7 +110,11 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
 
   const getHistory = async () => {
     const allRecords = await getGenericRecordsByQuery(agent, { type: RecordType.HistoryRecord })
-    allRecords.sort((objA, objB) => Number(objB.content.createdAt) - Number(objA.content.createdAt))
+    allRecords.sort((objA, objB) => {
+      const dateA = objA.content.createdAt ? new Date(objA.content.createdAt).getTime() : 0
+      const dateB = objB.content.createdAt ? new Date(objB.content.createdAt).getTime() : 0
+      return dateB - dateA // Sort in descending order
+    })
 
     const hasAllRecords = !!allRecords?.length
     if (hasAllRecords) {

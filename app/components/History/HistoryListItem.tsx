@@ -138,18 +138,19 @@ const HistoryListItem: React.FC<Props> = ({ item }) => {
     const date = moment(dateString) // Message date and time
     const diffDays = now.diff(date, 'days')
 
-    if (diffDays === 0) {
-      // If it's today, show "x minutes/hours ago"
-      return moment(dateString).fromNow()
-    } else if (diffDays === 1) {
-      // If it's yesterday, show "Yesterday"
-      return 'Yesterday'
-    } else if (diffDays <= 2) {
-      // For messages up to 2 days old, show the full date (e.g., "Oct 10, 2024")
-      return moment(date).format('MMM D, YYYY')
-    } else {
-      // For older messages, show the full date
-      return moment(date).fromNow()
+    switch (diffDays) {
+      case 0:
+        // If it's today, show "x minutes/hours ago"
+        return moment(dateString).fromNow()
+      case 1:
+        // If it's yesterday, show "Yesterday"
+        return 'Yesterday'
+      case 2:
+        // For messages up to 2 days old, show the full date (e.g., "Oct 10, 2024")
+        return moment(date).format('MMM D, YYYY')
+      default:
+        // For older messages, show the full date
+        return moment(date).fromNow()
     }
   }
   const renderCardDate = (date?: Date) => {
