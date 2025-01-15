@@ -141,7 +141,6 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
       <View style={styles.messageContainer}>
         <Image source={require('../assets/img/homeimage.png')} resizeMode="contain" style={styles.homeImage} />
       </View>
-      {/* <Button title="Create did" onPress={createDid} /> */}
       <View style={styles.fabContainer}>
         <ScanButton />
       </View>
