@@ -39,6 +39,7 @@ const translation = {
     "No": "No",
     "History": "History",
     "SaveSettings": "Save Settings",
+    "Credentials":"Credentials"
   },
   "Date": {
     "ShortFormat": "MMM D",
@@ -341,7 +342,12 @@ const translation = {
     "YouHave": "You have",
     "Credential": "credential",
     "Credentials": "credentials",
-    "InYourWallet": "in your wallet"
+    "InYourWallet": "in your wallet",
+    "ConnectionsCount" : "Connections",
+    "CredentialsCount" : "Credentials",
+    "SharedCredentialsCount": "Shared credentials",
+    "ViewAll" : "View All",
+    "DontHaveCredentials":"You don’t have any recent credentials at the moment"
   },
   "Scan": {
     "SuccessfullyAcceptedConnection": "Successfully Accepted Connection",
@@ -719,6 +725,7 @@ const translation = {
   },
   "DIDs":{
     "Dids": "My DID",
+    "Did" :"DID"
   },
   "GoogleDrive": {
     "Backup": "Backup to Google Drive",

@@ -1,6 +1,6 @@
 import type { BarCodeReadEvent } from 'react-native-camera'
 
-import { getOID4VCCredentialsForProofRequest, parseInvitationUrl } from '@adeya/ssi'
+import { ConnectionRecord, getOID4VCCredentialsForProofRequest, parseInvitationUrl } from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,6 +8,8 @@ import { DeviceEventEmitter, Platform } from 'react-native'
 import { check, Permission, PERMISSIONS, request, RESULTS } from 'react-native-permissions'
 import Toast from 'react-native-toast-message'
 
+import { saveHistory } from '../components/History/HistoryManager'
+import { HistoryCardType, HistoryRecord } from '../components/History/types'
 import NewQRView from '../components/misc/NewQRView'
 import QRScanner from '../components/misc/QRScanner'
 import CameraDisclosureModal from '../components/modals/CameraDisclosureModal'
@@ -23,6 +25,7 @@ import {
   checkIfAlreadyConnected,
   connectFromInvitation,
   fetchUrlData,
+  getConnectionName,
   getJson,
   getUrl,
   isValidUrl,
@@ -66,6 +69,37 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
     [agent, t],
   )
 
+  const logHistoryRecord = async (connectionRecord: ConnectionRecord | undefined) => {
+    const contactLabel: string | void = await getConnectionName(connectionRecord)
+
+    try {
+      if (!(agent && store.preferences.useHistoryCapability)) {
+        return
+      }
+      const type = HistoryCardType.Connection
+      if (!connectionRecord) {
+        return
+      }
+
+      try {
+        // Prepare the history record object
+        const recordData: HistoryRecord = {
+          type: type,
+          message: type,
+          createdAt: connectionRecord?.createdAt, // Assuming `data` has `createdAt` field
+          correspondenceId: connectionRecord?.id,
+          connection: contactLabel,
+        }
+        // Save the history record asynchronously
+        await saveHistory(recordData, agent)
+      } catch (error) {
+        // error when save history
+      }
+    } catch (err: unknown) {
+      // error when agent and preferences not getting
+    }
+  }
+
   const handleInvitationUrls = (url: string) => {
     return parseInvitationUrl(url)
   }
@@ -80,6 +114,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
           const data =
             invitationData.format === 'parsed' ? encodeURIComponent(JSON.stringify(invitationData.data)) : undefined
           setLoading(false)
+
           navigation.getParent()?.navigate(Stacks.NotificationStack, {
             screen: Screens.OpenIdCredentialOffer,
             params: { uri, data },
@@ -113,6 +148,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
 
       const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, value)
       setLoading(false)
+      logHistoryRecord(connectionRecord)
       navigation.getParent()?.navigate(Stacks.ConnectionStack, {
         screen: Screens.Connection,
         params: { connectionId: connectionRecord?.id, outOfBandId: outOfBandRecord.id },
@@ -149,8 +185,8 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
           }
 
           const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, urlData)
-
           setLoading(false)
+          logHistoryRecord(connectionRecord)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,
             params: { connectionId: connectionRecord?.id, outOfBandId: outOfBandRecord.id },
