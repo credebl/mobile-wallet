@@ -3,11 +3,14 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { RootStackParams, Screens, Stacks } from '../../types/navigators'
+import { RootStackParams, Screens } from '../../types/navigators'
 import { testIdWithKey } from '../../utils/testable'
 import HeaderButton, { ButtonLocation } from '../buttons/HeaderButton'
 
-const HistoryMenu: React.FC = () => {
+const HistoryMenu: React.FC<{ type?: boolean; notificationCount?: number }> = ({
+  type = false,
+  notificationCount = 0,
+}) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>()
   const { t } = useTranslation()
 
@@ -16,8 +19,10 @@ const HistoryMenu: React.FC = () => {
       buttonLocation={ButtonLocation.Right}
       accessibilityLabel={t('Screens.Settings')}
       testID={testIdWithKey('Settings')}
-      onPress={() => navigation.navigate(Stacks.HistoryStack, { screen: Screens.HistoryPage })}
-      icon="history"
+      onPress={() => navigation.navigate(Screens.Notifications)}
+      icon={'bell'}
+      badgeShow={type}
+      notificationCount={notificationCount}
     />
   )
 }

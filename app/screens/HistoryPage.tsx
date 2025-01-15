@@ -2,7 +2,7 @@ import { useAdeyaAgent } from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native'
 
 import HistoryListItem from '../components/History/HistoryListItem'
 import { getGenericRecordsByQuery } from '../components/History/HistoryManager'
@@ -18,12 +18,14 @@ const HistoryPage: React.FC<HistoryPageProps> = () => {
   const { t } = useTranslation()
   const { agent } = useAdeyaAgent()
   const { ColorPallet, TextTheme } = useTheme()
+  const [loading, setLoading] = useState<boolean>(true)
 
   const style = StyleSheet.create({
     screenContainer: {
       height: '100%',
       backgroundColor: ColorPallet.brand.primaryBackground,
-      padding: 20,
+      paddingHorizontal: 20,
+      paddingVertical: 5,
       justifyContent: 'space-between',
     },
     title: {
@@ -43,13 +45,17 @@ const HistoryPage: React.FC<HistoryPageProps> = () => {
     // below used as helpful labels for views, no properties needed atp
     contentContainer: {},
     controlsContainer: {},
+    loader: {
+      justifyContent: 'center',
+      flex: 1,
+    },
   })
 
   //UI
   const renderEmptyListComponent = () => {
     return (
       <View style={{ alignContent: 'center', justifyContent: 'center', alignSelf: 'center' }}>
-        <Text style={[style.title, TextTheme.normal]}>{t('ActivityHistory.NoHistory')}</Text>
+        <Text style={[style.title, TextTheme.normal]}>{!loading ? t('ActivityHistory.NoHistory') : ''}</Text>
       </View>
     )
   }
@@ -59,9 +65,14 @@ const HistoryPage: React.FC<HistoryPageProps> = () => {
   }
   const getHistory = async () => {
     const allRecords = await getGenericRecordsByQuery(agent, { type: RecordType.HistoryRecord })
-    allRecords.sort((objA, objB) => Number(objB.content.createdAt) - Number(objA.content.createdAt))
+    allRecords.sort((objA, objB) => {
+      const dateA = objA.content.createdAt ? new Date(objA.content.createdAt).getTime() : 0
+      const dateB = objB.content.createdAt ? new Date(objB.content.createdAt).getTime() : 0
+      return dateB - dateA // Sort in descending order
+    })
 
     if (allRecords) {
+      setLoading(false)
       setHistoryItems(allRecords)
     }
   }
@@ -72,6 +83,7 @@ const HistoryPage: React.FC<HistoryPageProps> = () => {
   return (
     <KeyboardView>
       <View style={style.screenContainer}>
+        {loading ? <ActivityIndicator style={style.loader} size={'large'} /> : null}
         <View style={style.contentContainer}>
           <View>
             <FlatList
