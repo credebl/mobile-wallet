@@ -14,7 +14,7 @@ const EmptyList: React.FC<EmptyListProps> = ({ message }) => {
   const { ListItems, Assets, ColorPallet } = useTheme()
 
   return (
-    <View style={{ paddingTop: 100, height: '100%', backgroundColor: ColorPallet.brand.primaryBackground }}>
+    <View style={{ height: '100%', backgroundColor: ColorPallet.brand.primaryBackground }}>
       <Assets.svg.emptyWallet fill={ListItems.emptyList.color} height={100} />
       <Text style={[ListItems.emptyList, { textAlign: 'center' }]} testID={testIdWithKey('NoneYet')}>
         {message || t('Global.NoneYet!')}
