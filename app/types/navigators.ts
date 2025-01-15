@@ -183,6 +183,14 @@ export type OrganizationStackParams = {
 export type HomeStackParams = {
   [Screens.Home]: undefined
   [Screens.Notifications]: undefined
+  [Screens.CredentialDetails]: { credential: CredentialExchangeRecord }
+  [Screens.CredentialDetailsW3C]: { credential: W3cCredentialRecord }
+  [Screens.HistoryPage]: undefined
+  [Screens.Credentials]: undefined
+  [Screens.OpenIDCredentialDetails]: {
+    credential: SdJwtVcRecord | W3cCredentialRecord
+    screenMode: OpenIDCredScreenMode
+  }
 }
 
 export type ConnectStackParams = {
