@@ -4191,7 +4191,7 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.4.0, axios@^1.6.3, axios@^1.7.8:
+axios@^1.4.0, axios@^1.6.0, axios@^1.6.3:
   version "1.7.9"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.9.tgz#d7d071380c132a24accda1b2cfc1535b79ec650a"
   integrity sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==
@@ -6342,11 +6342,6 @@ flow-parser@0.*:
   version "0.259.1"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.259.1.tgz#2ab828be197bb87f47af299e5b734eab139bd269"
   integrity sha512-xiXLmMH2Z7OmdE9Q+MjljUMr/rbemFqZIRxaeZieVScG4HzQrKKhNcCYZbWTGpoN7ZPi7z8ClQbeVPq6t5AszQ==
-
-flow-parser@^0.206.0:
-  version "0.206.0"
-  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
-  integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
 
 follow-redirects@^1.15.6:
   version "1.15.9"
