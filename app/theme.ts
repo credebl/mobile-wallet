@@ -571,7 +571,7 @@ export const ListItems = StyleSheet.create({
 
 export const TabTheme = {
   tabBarStyle: {
-    height: 60,
+    height: 65,
     backgroundColor: '#D3E4FA',
     shadowOffset: { width: 0, height: -3 },
     shadowRadius: 6,
@@ -584,6 +584,7 @@ export const TabTheme = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: 100,
   },
   tabBarActiveTintColor: ColorPallet.brand.primary,
   tabBarInactiveTintColor: ColorPallet.notification.infoText,
