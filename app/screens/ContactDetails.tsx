@@ -9,20 +9,17 @@ import {
 } from '@adeya/ssi'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
 
-import { saveHistory } from '../components/History/HistoryManager'
-import { HistoryCardType, HistoryRecord } from '../components/History/types'
 import Button, { ButtonType } from '../components/buttons/Button'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
-import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { ListItems } from '../theme'
 import { BifoldError } from '../types/error'
@@ -44,7 +41,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   const [isCredentialsOfferRemoveModalDisplayed, setIsCredentialsOfferRemoveModalDisplayed] = useState<boolean>(false)
   const [isProofRequestRemoveModalDisplayed, setIsProofRequestRemoveModalDisplayed] = useState<boolean>(false)
   const connection = useConnectionById(connectionId)
-  const [store] = useStore()
   const contactLabel = useMemo(() => getConnectionName(connection) ?? '', [connection])
   const contactDid = useMemo(() => connection?.theirDid ?? '', [connection])
   const contactLabelAbbr = useMemo(() => contactLabel?.charAt(0).toUpperCase(), [connection])
@@ -167,40 +163,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   const callCancelUnableToRemove = useCallback(() => handleCancelUnableRemove(), [])
   const callCancelUnableToRemoveOffer = useCallback(() => handleOfferCancelUnableRemove(), [])
   const callCancelUnableToRemoveProofRequest = useCallback(() => handleProofRequestCancelUnableRemove(), [])
-
-  const logHistoryRecord = useCallback(async () => {
-    try {
-      if (!(agent && store.preferences.useHistoryCapability)) {
-        return
-      }
-      const type = HistoryCardType.Connection
-      if (!connection) {
-        return
-      }
-
-      try {
-        // Prepare the history record object
-        const recordData: HistoryRecord = {
-          type: type,
-          message: type,
-          createdAt: connection?.createdAt, // Assuming `data` has `createdAt` field
-          correspondenceId: connectionId,
-          connection: contactLabel,
-        }
-
-        // Save the history record asynchronously
-        await saveHistory(recordData, agent)
-      } catch (error) {
-        // error when save history
-      }
-    } catch (err: unknown) {
-      // error when agent and preferences not getting
-    }
-  }, [agent, store.preferences.useHistoryCapability, connection, connectionId])
-
-  useEffect(() => {
-    logHistoryRecord()
-  }, [])
 
   const onDismissModalTouched = () => {
     navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
