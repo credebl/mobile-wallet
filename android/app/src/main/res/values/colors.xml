@@ -1,3 +1,4 @@
 <resources>
 <color name="statusbar_bg">#FFFFFF</color>
+    <color name="splash_text">#1F4EAD</color>
 </resources>

@@ -1,13 +1,9 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="SplashScreenTheme" parent="SplashScreen_SplashTheme">
+        <item name="colorPrimaryDark">@color/statusbar_bg</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowIsTranslucent">true</item>
-    </style>
-    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="colorPrimaryDark">@color/statusbar_bg</item>
     </style>
 
 </resources>

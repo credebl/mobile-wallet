@@ -511,12 +511,12 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AdeyaWallet/AdeyaWallet.entitlements;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 60;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = Z5W7KRPGHZ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AdeyaWallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "ADEYA Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "CREDEBL Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -528,7 +528,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = id.credebl.adeya;
+				PRODUCT_BUNDLE_IDENTIFIER = id.credebl;
 				PRODUCT_NAME = AdeyaWallet;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -550,11 +550,11 @@
 				CODE_SIGN_ENTITLEMENTS = AdeyaWallet/AdeyaWallet.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 60;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = Z5W7KRPGHZ;
 				INFOPLIST_FILE = AdeyaWallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "ADEYA Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "CREDEBL Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -566,7 +566,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = id.credebl.adeya;
+				PRODUCT_BUNDLE_IDENTIFIER = id.credebl;
 				PRODUCT_NAME = AdeyaWallet;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
