@@ -25,7 +25,6 @@ import {
   Tours as ToursState,
 } from '../types/state'
 import { AdeyaAgent, useAppAgent, adeyaAgentModules } from '../utils/agent'
-import { getDefaultHolderDidDocument } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 enum InitErrorTypes {
@@ -284,7 +283,6 @@ const Splash: React.FC = () => {
         })) as unknown as AdeyaAgent
 
         setStep(6)
-        await getDefaultHolderDidDocument(newAgent)
         setAgent(newAgent)
 
         setStep(7)
