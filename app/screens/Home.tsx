@@ -106,7 +106,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     }
 
     setupDefaultDid()
-  }, [agent])
+  }, [agent, connectionRecords])
 
   const getHistory = async () => {
     const allRecords = await getGenericRecordsByQuery(agent, { type: RecordType.HistoryRecord })
@@ -124,7 +124,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   }
   useEffect(() => {
     getHistory()
-  }, [])
+  }, [connectionRecords])
 
   const styles = StyleSheet.create({
     container: {
