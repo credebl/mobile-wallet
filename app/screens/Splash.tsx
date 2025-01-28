@@ -267,7 +267,7 @@ const Splash: React.FC = () => {
         }
 
         const agentConfig: InitConfig = {
-          label: store.preferences.walletName || 'ADEYA Wallet',
+          label: store.preferences.walletName || 'CREDEBL Wallet',
           walletConfig: {
             id: credentials.id,
             key: credentials.key,

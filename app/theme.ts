@@ -864,14 +864,14 @@ export const Assets = {
   },
   img: {
     logoPrimary: {
-      src: require('./assets/img/adeyaWhiteLogo.png'),
+      src: require('./assets/img/credeblLogo.png'),
       aspectRatio: 1,
       height: hp('7%'),
       width: wp('36%'),
       resizeMode: 'contain',
     },
     logoSecondary: {
-      src: require('./assets/img/adeya-logo-secondary.png'),
+      src: require('./assets/img/credebl_logo.png'),
       aspectRatio: 1,
       height: hp('7%'),
       width: wp('36%'),
