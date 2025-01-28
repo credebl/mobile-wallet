@@ -147,14 +147,14 @@ function ExportWalletConfirmation() {
 
       const backupTimeStamp = moment().format('YYYY-MM-DD-HH-mm-ss')
       // const backupDirectory = `${documentDirectory}/Wallet_Backup`
-      const zipUpDirectory = `${downloadDirectory}/ADEYA-Wallet-${backupTimeStamp}`
+      const zipUpDirectory = `${downloadDirectory}/CREDEBL-Wallet-${backupTimeStamp}`
 
       const destFileExists = await RNFS.exists(zipUpDirectory)
       if (destFileExists) {
         await RNFS.unlink(zipUpDirectory)
       }
 
-      const WALLET_FILE_NAME = 'ADEYA_WALLET'
+      const WALLET_FILE_NAME = 'CREDEBL_WALLET'
 
       const zipFileName = `${WALLET_FILE_NAME}-${backupTimeStamp}.zip`
       await RNFS.mkdir(zipUpDirectory)
@@ -185,14 +185,14 @@ function ExportWalletConfirmation() {
           const { result } = await gdrive.files.createIfNotExists(
             {
               q: new ListQueryBuilder()
-                .e('name', 'ADEYA Wallet Backups')
+                .e('name', 'CREDEBL Wallet Backups')
                 .and()
                 .e('mimeType', MimeTypes.FOLDER)
                 .and()
                 .in('root', 'parents'),
             },
             gdrive.files.newMetadataOnlyUploader().setRequestBody({
-              name: 'ADEYA Wallet Backups',
+              name: 'CREDEBL Wallet Backups',
               mimeType: MimeTypes.FOLDER,
               parents: ['root'],
             }),
