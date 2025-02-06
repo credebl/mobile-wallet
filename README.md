@@ -1,12 +1,6 @@
 <div align="center">
-  <h1><img align="center" src="./assets/adeya.png" height="120" /> CREDEBL SSI Wallet</h1>
-
-<a align="center" href="https://play.google.com/store/apps/details?id=id.credebl.adeya"><img align="center" src="./assets/store_badge_android.png" height="50" /></a>
-<a align="center" href="https://apps.apple.com/in/app/adeya-ssi-wallet/id6463845498"><img align="center" src="./assets/store_badge_apple.png" height="52" /></a>
-
+  <h1>CREDEBL Mobile SSI Wallet</h1>
 </div>
-
----
 
 ## Prerequisites
 
@@ -107,9 +101,8 @@ We welcome contributions from the community to improve CREDEBL SSI Wallet. If yo
 
 ---
 
-## Join the community
+## Get help
 
-* Connect and get the latest updates: <a href="https://discord.gg/w4hnQT7NJG">Discord</a> | <a href="https://twitter.com/credebl" target="_blank">Twitter</a>
 * Get help, request features and report bugs: <a href="https://github.com/orgs/credebl/discussions" target="_blank">GitHub Discussions</a> | <a href="https://docs.credebl.id" target="_blank">docs.credebl.id</a>
 
 
