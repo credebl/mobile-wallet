@@ -2821,6 +2821,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-12.1.0.tgz#9111dc068d1ec40b1b24d73ca5c0b171ba08e543"
   integrity sha512-Vn2zXCAz0Vh43xEtFebqd0wGvQWXGPkTZvfff/3V7+5BQKR7nL52mlry10llCLNRiVDDz0oWoBGETifpBz7W8A==
 
+"@react-native-google-signin/google-signin@12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-12.1.0.tgz#9111dc068d1ec40b1b24d73ca5c0b171ba08e543"
+  integrity sha512-Vn2zXCAz0Vh43xEtFebqd0wGvQWXGPkTZvfff/3V7+5BQKR7nL52mlry10llCLNRiVDDz0oWoBGETifpBz7W8A==
+
 "@react-native/assets-registry@^0.72.0":
   version "0.72.0"
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.72.0.tgz#c82a76a1d86ec0c3907be76f7faf97a32bbed05d"
@@ -3546,6 +3551,18 @@
   version "15.7.14"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.14.tgz#1433419d73b2a7ebfc6918dcefd2ec0d5cd698f2"
   integrity sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==
+
+"@types/qrcode@^1.5.5":
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/@types/qrcode/-/qrcode-1.5.5.tgz#993ff7c6b584277eee7aac0a20861eab682f9dac"
+  integrity sha512-CdfBi/e3Qk+3Z/fXYShipBT13OJ2fDO2Q2w5CIP5anLTLIndQG9z6P1cnm+8zCWSpm5dnxMFd/uREtb0EXuQzg==
+  dependencies:
+    "@types/node" "*"
+
+"@types/react-native-html-to-pdf@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@types/react-native-html-to-pdf/-/react-native-html-to-pdf-0.8.3.tgz#0e41b666c711b114957e42f7a7c665fb2fea8045"
+  integrity sha512-KjyR1F9KhcmX8p9y/8WYMiaK4DV/cYBUO1XHEzD9dDVZBkY9ujbdMLYO7ZvmAffNT2Q484Qvg+t6szgVcnN22g==
 
 "@types/qrcode@^1.5.5":
   version "1.5.5"
@@ -8302,6 +8319,14 @@ metro-minify-terser@0.76.9:
   resolved "https://registry.yarnpkg.com/metro-minify-terser/-/metro-minify-terser-0.76.9.tgz#3f6271da74dd57179852118443b62cc8dc578aab"
   integrity sha512-ju2nUXTKvh96vHPoGZH/INhSvRRKM14CbGAJXQ98+g8K5z1v3luYJ/7+dFQB202eVzJdTB2QMtBjI1jUUpooCg==
   dependencies:
+    lodash.throttle "^4.1.1"
+    metro-resolver "0.76.9"
+
+metro-minify-uglify@0.76.9:
+  version "0.76.9"
+  resolved "https://registry.yarnpkg.com/metro-minify-uglify/-/metro-minify-uglify-0.76.9.tgz#e88c30c27911c053e1ee20e12077f0f4cbb154f8"
+  integrity sha512-MXRrM3lFo62FPISlPfTqC6n9HTEI3RJjDU5SvpE7sJFfJKLx02xXQEltsL/wzvEqK+DhRQ5DEYACTwf5W4Z3yA==
+  dependencies:
     anymatch "^3.0.3"
     debug "^2.2.0"
     fb-watchman "^2.0.0"
@@ -8317,23 +8342,16 @@ metro-minify-terser@0.76.9:
   optionalDependencies:
     fsevents "^2.3.2"
 
-metro-minify-uglify@0.76.9:
+metro-react-native-babel-preset@0.76.9, metro-react-native-babel-preset@^0.76.9:
   version "0.76.9"
-  resolved "https://registry.yarnpkg.com/metro-minify-uglify/-/metro-minify-uglify-0.76.9.tgz#e88c30c27911c053e1ee20e12077f0f4cbb154f8"
-  integrity sha512-MXRrM3lFo62FPISlPfTqC6n9HTEI3RJjDU5SvpE7sJFfJKLx02xXQEltsL/wzvEqK+DhRQ5DEYACTwf5W4Z3yA==
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.76.9.tgz#15868142122af14313429d7572c15cf01c16f077"
+  integrity sha512-eCBtW/UkJPDr6HlMgFEGF+964DZsUEF9RGeJdZLKWE7d/0nY3ABZ9ZAGxzu9efQ35EWRox5bDMXUGaOwUe5ikQ==
   dependencies:
     connect "^3.6.5"
     debug "^2.2.0"
     node-fetch "^2.2.0"
     ws "^7.5.1"
     yargs "^17.6.2"
-
-metro-react-native-babel-preset@0.76.9, metro-react-native-babel-preset@^0.76.9:
-  version "0.76.9"
-  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.76.9.tgz#15868142122af14313429d7572c15cf01c16f077"
-  integrity sha512-eCBtW/UkJPDr6HlMgFEGF+964DZsUEF9RGeJdZLKWE7d/0nY3ABZ9ZAGxzu9efQ35EWRox5bDMXUGaOwUe5ikQ==
-  dependencies:
-    terser "^5.15.0"
 
 metro-react-native-babel-transformer@^0.76.9:
   version "0.76.9"
@@ -8552,6 +8570,13 @@ minimatch@^8.0.2:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-8.0.4.tgz#847c1b25c014d4e9a7f68aaf63dedd668a626229"
   integrity sha512-W0Wvr9HyFXZRGIDgCicunpQ299OKXs9RgZfaukz4qAW/pJhcpUfupc9c+OObPOFueNy8VSrZgEmDtk6Kh4WzDA==
+  dependencies:
+    brace-expansion "^2.0.1"
+
+minimatch@^9.0.4:
+  version "9.0.5"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.5.tgz#d74f9dd6b57d83d8e98cfb82133b03978bc929e5"
+  integrity sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -8813,6 +8838,11 @@ nullthrows@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/nullthrows/-/nullthrows-1.1.1.tgz#7818258843856ae971eae4208ad7d7eb19a431b1"
   integrity sha512-2vPPEi+Z7WqML2jZYddDIfy5Dqb0r2fze2zTxNNknZaFpVHU3mFB3R+DWeJWGVx0ecvttSGlJTI+WG+8Z4cDWw==
+
+ob1@0.76.9:
+  version "0.76.9"
+  resolved "https://registry.yarnpkg.com/ob1/-/ob1-0.76.9.tgz#a493e4b83a0fb39200de639804b5d06eed5599dc"
+  integrity sha512-g0I/OLnSxf6OrN3QjSew3bTDJCdbZoWxnh8adh1z36alwCuGF1dgDeRA25bTYSakrG5WULSaWJPOdgnf1O/oQw==
 
 ob1@0.76.9:
   version "0.76.9"
