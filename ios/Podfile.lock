@@ -477,9 +477,9 @@ PODS:
     - React-Core
   - react-native-camera/RN (4.2.1):
     - React-Core
-  - react-native-config (1.5.3):
-    - react-native-config/App (= 1.5.3)
-  - react-native-config/App (1.5.3):
+  - react-native-config (1.5.5):
+    - react-native-config/App (= 1.5.5)
+  - react-native-config/App (1.5.5):
     - React-Core
   - react-native-document-picker (9.0.1):
     - React-Core
@@ -489,7 +489,7 @@ PODS:
     - React-Core
   - react-native-netinfo (9.5.0):
     - React-Core
-  - react-native-pdf (6.7.6):
+  - react-native-pdf (6.7.7):
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
@@ -500,7 +500,7 @@ PODS:
   - react-native-tcp-socket (6.2.0):
     - CocoaAsyncSocket
     - React-Core
-  - react-native-webview (13.13.1):
+  - react-native-webview (13.13.4):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - React-NativeModulesApple (0.72.17):
@@ -650,7 +650,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
-  - RNScreens (3.35.0):
+  - RNScreens (3.37.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTImage
@@ -981,17 +981,17 @@ SPEC CHECKSUMS:
   React-logger: afa402da502a35728c9073804b1802861783a996
   react-native-blob-util: f7234c91ad0e3faeee51b3edee80b61553f74993
   react-native-camera: 079d80421f0572d6b4e836908114d614d0adb553
-  react-native-config: ea75335a7cca1d3326de1da384227e580a7c082e
+  react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-document-picker: 10fce9a283ba4b74533d8378e76b3c38a66347d6
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-html-to-pdf: 7a49e6c58ac5221bcc093027b195f4b214f27a9d
   react-native-netinfo: 26560022f28c06d8ef00a9ff1e03beefbbb60c2d
-  react-native-pdf: 5ad328deec86764b0684cfe3d64f2a81b1b9aacb
+  react-native-pdf: 6a51a22ccefb23eb93298771e4bf090913e86d70
   react-native-randombytes: 3c8f3e89d12487fd03a2f966c288d495415fc116
   react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   react-native-tcp-socket: 61379457d7e702e83e28c213b6e085ac079e480f
-  react-native-webview: 4630f9d53fdd5ecc7ffdabc0b61a9a753f157172
+  react-native-webview: 48c7d5d054d24f17defdb0a2036b047957a664e6
   React-NativeModulesApple: a3b3019ffee56cf78bbf09c48e056072f3bb4ea4
   React-perflogger: 785b0063af5178298a61b54bb46aae9a19c7bbb5
   React-RCTActionSheet: 84f37b34bd77249263ace75471d6664393c29972
@@ -1023,7 +1023,7 @@ SPEC CHECKSUMS:
   RNLocalize: 15463c4d79c7da45230064b4adcf5e9bb984667e
   RNPermissions: 45e45c255aac782dbcd94abefe7987f87c407bdc
   RNReanimated: 4ca3b381554cdd6daf18f9431effc373a2b1eb18
-  RNScreens: c09986e2086f03fb9fcaefbff7126fd3a2bb1cf5
+  RNScreens: 79a536c7aaabe1fd2314a53238ee5af366d70868
   RNSecureRandom: b64d263529492a6897e236a22a2c4249aa1b53dc
   RNShare: 694e19d7f74ac4c04de3a8af0649e9ccc03bd8b1
   RNSVG: 0e7deccab0678200815104223aadd5ca734dd41d
