@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -86,6 +87,19 @@ android {
 
         missingDimensionStrategy 'react-native-camera', 'general'
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -116,7 +130,7 @@ android {
     }
 
     packagingOptions {
-        exclude("META-INF/MANIFEST.MF")
+        exclude "META-INF/MANIFEST.MF"
         exclude 'META-INF/ASL2.0'
         pickFirst 'lib/x86/libc++_shared.so'
         pickFirst 'lib/x86_64/libjsc.so'
@@ -126,6 +140,7 @@ android {
         pickFirst 'lib/armeabi-v7a/libc++_shared.so'
     }
 }
+
 
 configurations.all {
     c -> c.resolutionStrategy.eachDependency {
@@ -139,6 +154,7 @@ configurations.all {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation("com.facebook.react:react-native")
       implementation platform('com.google.firebase:firebase-bom:32.2.3')
 
     implementation 'net.java.dev.jna:jna:5.2.0'
