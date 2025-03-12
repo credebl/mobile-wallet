@@ -127,14 +127,14 @@ android {
     }
 }
 
-     configurations.all {
-        c -> c.resolutionStrategy.eachDependency {
-            DependencyResolveDetails dependency ->
-                if (dependency.requested.group == 'org.bouncycastle') {
-                    dependency.useTarget 'org.bouncycastle:bcprov-jdk15to18:1.70'
-                    }
-        }
+configurations.all {
+    c -> c.resolutionStrategy.eachDependency {
+        DependencyResolveDetails dependency ->
+            if (dependency.requested.group == 'org.bouncycastle') {
+                dependency.useTarget 'org.bouncycastle:bcprov-jdk15to18:1.70'
+            }
     }
+}
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
