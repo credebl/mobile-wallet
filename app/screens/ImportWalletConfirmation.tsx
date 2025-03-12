@@ -54,6 +54,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
       borderRadius: 10,
       borderWidth: 2,
       borderColor: ColorPallet.brand.primary,
+      color: ColorPallet.brand.primary,
       width: width - 40,
       paddingLeft: width / 20,
       textAlignVertical: 'top',
@@ -118,9 +119,9 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
 
       const { fs } = ReactNativeBlobUtil
       const restoreDirectoryPath = `${fs.dirs.DocumentDir}`
-      const walletFilePath = `${restoreDirectoryPath}/ADEYA_WALLET_RESTORE/ADEYA_WALLET.wallet`
+      const walletFilePath = `${restoreDirectoryPath}/CREDEBL_WALLET_RESTORE/CREDEBL_WALLET.wallet`
 
-      await unzip(selectedFilePath, restoreDirectoryPath + '/ADEYA_WALLET_RESTORE')
+      await unzip(selectedFilePath, restoreDirectoryPath + '/CREDEBL_WALLET_RESTORE')
 
       const importConfig = {
         key: encodeHash,
@@ -142,7 +143,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
         },
       })
 
-      await RNFS.unlink(restoreDirectoryPath + '/ADEYA_WALLET_RESTORE')
+      await RNFS.unlink(restoreDirectoryPath + '/CREDEBL_WALLET_RESTORE')
 
       setAgent(agent!)
       setVerify(true)

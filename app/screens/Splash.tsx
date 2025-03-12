@@ -25,6 +25,7 @@ import {
   Tours as ToursState,
 } from '../types/state'
 import { AdeyaAgent, useAppAgent, adeyaAgentModules } from '../utils/agent'
+import { getDefaultHolderDidDocument } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 enum InitErrorTypes {
@@ -266,7 +267,7 @@ const Splash: React.FC = () => {
         }
 
         const agentConfig: InitConfig = {
-          label: store.preferences.walletName || 'ADEYA Wallet',
+          label: store.preferences.walletName || 'CREDEBL Wallet',
           walletConfig: {
             id: credentials.id,
             key: credentials.key,
@@ -283,6 +284,7 @@ const Splash: React.FC = () => {
         })) as unknown as AdeyaAgent
 
         setStep(6)
+        await getDefaultHolderDidDocument(newAgent)
         setAgent(newAgent)
 
         setStep(7)

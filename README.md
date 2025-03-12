@@ -5,7 +5,7 @@
 ## Prerequisites
 
 - Set-up requires [Node.js](https://nodejs.org/en/download/) to be installed on your computer.
-  - The `ADEYA SSI Wallet` requires `Node.js v18` to build the project. You can either manually install Node version 18, or you can use a version manager like [nvm](https://github.com/nvm-sh/nvm)
+  - The `CREDEBL SSI Wallet` requires `Node.js v18` to build the project. You can either manually install Node version 18, or you can use a version manager like [nvm](https://github.com/nvm-sh/nvm)
 - We use [Yarn](https://yarnpkg.com) as our package manager.
 - We use [CocoaPods](https://cocoapods.org/) for `iOS` dependency management.
 
@@ -91,7 +91,7 @@ yarn android
 
 ## Contributing
 
-We welcome contributions from the community to improve ADEYA SSI Wallet. If you'd like to contribute, please follow these guidelines:
+We welcome contributions from the community to improve CREDEBL SSI Wallet. If you'd like to contribute, please follow these guidelines:
 
 1. Fork the repository and create a new branch for your feature or bug fix.
 2. Raise an issue for the feature or bug fix.

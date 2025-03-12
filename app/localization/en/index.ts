@@ -126,8 +126,8 @@ const translation = {
     "InitAgent": "Initializing agent .."
   },
   "Tour": {
-    "GuideTitle": "Welcome to ADEYA Wallet",
-    "WouldYouLike": "Would you like some guidance on how to use ADEYA Wallet?",
+    "GuideTitle": "Welcome to CREDEBL Wallet",
+    "WouldYouLike": "Would you like some guidance on how to use CREDEBL Wallet?",
     "UseAppGuides": "Use app guides",
     "DoNotUseAppGuides": "Don't use app guides",
     "AddAndShare": "Add and share credentials",
@@ -151,7 +151,7 @@ const translation = {
   "CameraDisclosure": {
     "AllowCameraUse": "Allow camera use",
     "CameraDisclosure": "The camera is used to scan QR codes that initiate a credential offer or credential request. No information about the images is stored, used for analytics, or shared.",
-    "ToContinueUsing": "To continue using the ADEYA Wallet scan feature, please allow camera permissions in the settings.",
+    "ToContinueUsing": "To continue using the CREDEBL Wallet scan feature, please allow camera permissions in the settings.",
     "Continue": "Continue",
     "OpenSettings": "Open settings",
   },
@@ -236,9 +236,9 @@ const translation = {
   "Biometry": {
     "Toggle": "Toggle Biometrics",
     "EnabledText1": "Use your phone's biometrics to log in rather than your wallet's PIN.",
-    "EnabledText1Bold": "you will need to use biometrics to open your ADEYA Wallet.",
-    "EnabledText2": "Because of this, your ADEYA wallet may be accessed using any fingerprint or face data you upload to this phone. Make sure you are the only one who can access your wallet.",
-    "EnabledText3": "Anyone who can access your phone with biometrics can access your ADEYA Wallet.",
+    "EnabledText1Bold": "you will need to use biometrics to open your CREDEBL Wallet.",
+    "EnabledText2": "Because of this, your CREDEBL wallet may be accessed using any fingerprint or face data you upload to this phone. Make sure you are the only one who can access your wallet.",
+    "EnabledText3": "Anyone who can access your phone with biometrics can access your CREDEBL Wallet.",
     "EnabledText3Bold": "Ensure only you have access to your wallet.",
     "Warning": "Ensure only you have access to your wallet.",
     "UseToUnlock": "Use biometrics to unlock wallet?",
@@ -477,7 +477,7 @@ const translation = {
   "Settings": {
     "Help": "Help",
     "MoreInformation": "More Information",
-    "HelpUsingBCWallet": "Help using ADEYA Wallet",
+    "HelpUsingBCWallet": "Help using CREDEBL Wallet",
     "ReportAProblem": "Report A Problem",
     "TermsOfUse": "Terms of use",
     "PrivacyStatement": "Privacy statement",
@@ -594,7 +594,7 @@ const translation = {
   "Tips": {
     "Header": "Tips",
     "GettingReady": "Getting your wallet ready...",
-    "Tip1": "For extra security, ADEYA Wallet locks the app after 5 minutes of inactivity",
+    "Tip1": "For extra security, CREDEBL Wallet locks the app after 5 minutes of inactivity",
     "Tip2": "Unlike showing physical cards, you share only what is necessary from your credentials",
     "Tip3": "Your credentials are stored only on this phone, nowhere else",
     "Tip4": "Information is sent and received over an untraceable encrypted connection",
@@ -632,12 +632,12 @@ const translation = {
   },
   "NetInfo": {
     "NoInternetConnectionTitle": "No internet connection",
-    "NoInternetConnectionMessage": "You're unable to access services using ADEYA or receive credentials until you're back online.\n\nPlease check your internet connection.",
+    "NoInternetConnectionMessage": "You're unable to access services using CREDEBL or receive credentials until you're back online.\n\nPlease check your internet connection.",
     "LedgerConnectivityIssueTitle": "Wallet Services",
     "LedgerConnectivityIssueMessage": "A firewall may be preventing you from connecting to wallet related services.",
   },
   "Onboarding": {
-    "SkipA11y": "Skip introduction to ADEYA",
+    "SkipA11y": "Skip introduction to CREDEBL",
   },
   "Chat": {
     "OpenPresentation": "Open Presentation",

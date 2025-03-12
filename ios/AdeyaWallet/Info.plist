@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>ADEYA Wallet</string>
+	<string>CREDEBL Wallet</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,7 +26,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>id.credebl.adeya</string>
+			<string>id.credebl</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>didcomm</string>
@@ -36,7 +36,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>id.credebl.adeya</string>
+			<string>id.credebl</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>link.credebl.id</string>
