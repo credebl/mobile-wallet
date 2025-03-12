@@ -1,17 +1,4 @@
-import {
-  initializeAgent,
-  ConsoleLogger,
-  LogLevel,
-  InitConfig,
-  getAgentModules,
-  DidsModule,
-  IndyVdrIndyDidResolver,
-  CacheModule,
-  SingleContextStorageLruCache,
-  MediatorPickupStrategy,
-  WebDidResolver,
-} from '@adeya/ssi'
-import { PolygonDidResolver, PolygonModule } from '@ayanworks/credo-polygon-w3c-module'
+import { initializeAgent, ConsoleLogger, LogLevel, InitConfig } from '@adeya/ssi'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/core'
 import { CommonActions } from '@react-navigation/native'
@@ -21,7 +8,6 @@ import { ScrollView, StyleSheet, Text, View, useWindowDimensions, Image } from '
 import { Config } from 'react-native-config'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-import indyLedgers from '../../configs/ledgers/indy'
 import InfoBox, { InfoBoxType } from '../components/misc/InfoBox'
 import ProgressBar from '../components/tour/ProgressBar'
 import TipCarousel from '../components/tour/TipCarousel'
@@ -38,7 +24,8 @@ import {
   Onboarding as StoreOnboardingState,
   Tours as ToursState,
 } from '../types/state'
-import { AdeyaAgent, useAppAgent } from '../utils/agent'
+import { AdeyaAgent, useAppAgent, adeyaAgentModules } from '../utils/agent'
+import { getDefaultHolderDidDocument } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 enum InitErrorTypes {
@@ -280,7 +267,7 @@ const Splash: React.FC = () => {
         }
 
         const agentConfig: InitConfig = {
-          label: store.preferences.walletName || 'ADEYA Wallet',
+          label: store.preferences.walletName || 'CREDEBL Wallet',
           walletConfig: {
             id: credentials.id,
             key: credentials.key,
@@ -292,24 +279,12 @@ const Splash: React.FC = () => {
         const newAgent = (await initializeAgent({
           agentConfig,
           modules: {
-            ...getAgentModules({
-              indyNetworks: indyLedgers,
-              mediatorInvitationUrl: Config.MEDIATOR_URL,
-              mediatorPickupStrategy: MediatorPickupStrategy.PickUpV2LiveMode,
-            }),
-            polygon: new PolygonModule({}),
-            dids: new DidsModule({
-              resolvers: [new PolygonDidResolver(), new IndyVdrIndyDidResolver(), new WebDidResolver()],
-            }),
-            cache: new CacheModule({
-              cache: new SingleContextStorageLruCache({
-                limit: 50,
-              }),
-            }),
+            ...adeyaAgentModules(),
           },
         })) as unknown as AdeyaAgent
 
         setStep(6)
+        await getDefaultHolderDidDocument(newAgent)
         setAgent(newAgent)
 
         setStep(7)

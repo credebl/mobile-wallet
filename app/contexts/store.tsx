@@ -39,6 +39,7 @@ export const defaultState: State = {
     useDevVerifierTemplates: false,
     walletName: generateRandomWalletName(),
     useDataRetention: true,
+    useHistoryCapability: true,
   },
   tours: {
     seenToursPrompt: false,

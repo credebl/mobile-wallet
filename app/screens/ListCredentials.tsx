@@ -1,51 +1,53 @@
-import type { W3cCredentialRecord } from '@adeya/ssi'
-
 import {
-  useCredentialByState,
+  AnonCredsCredentialMetadataKey,
   CredentialExchangeRecord,
   CredentialState,
-  useConnections,
+  GenericCredentialExchangeRecord,
   getAllW3cCredentialRecords,
+  openId4VcCredentialMetadataKey,
+  useConnections,
+  useCredentialByState,
+  W3cCredentialRecord,
 } from '@adeya/ssi'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, StyleSheet, View } from 'react-native'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 
+import { useOpenIDCredentials } from '../components/Provider/OpenIDCredentialRecordProvider'
 import ScanButton from '../components/common/ScanButton'
 import CredentialCard from '../components/misc/CredentialCard'
+import { OpenIDCredScreenMode } from '../constants'
 import { useConfiguration } from '../contexts/configuration'
-import { useTheme } from '../contexts/theme'
 import { CredentialStackParams, Screens } from '../types/navigators'
 import { useAppAgent } from '../utils/agent'
-import { isW3CCredential } from '../utils/credential'
 
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string
 }
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scanContainer: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-  },
-})
 
-const ListCredentials: React.FC = () => {
+interface Props {
+  isHorizontal?: boolean
+}
+
+const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
   const { t } = useTranslation()
   const { agent } = useAppAgent()
-  const { credentialListOptions: CredentialListOptions, credentialEmptyList: CredentialEmptyList } = useConfiguration()
-  const credentials = [
+  const { credentialEmptyList: CredentialEmptyList } = useConfiguration()
+  const {
+    openIdState: { w3cCredentialRecords },
+  } = useOpenIDCredentials()
+  const credentials: GenericCredentialExchangeRecord[] = [
     ...useCredentialByState(CredentialState.CredentialReceived),
     ...useCredentialByState(CredentialState.Done),
+    ...w3cCredentialRecords,
   ]
   const [credentialList, setCredentialList] = useState<(CredentialExchangeRecord | EnhancedW3CRecord)[] | undefined>([])
   const { records: connectionRecords } = useConnections()
 
   const navigation = useNavigation<StackNavigationProp<CredentialStackParams>>()
-  const { ColorPallet } = useTheme()
 
   useEffect(() => {
     const updateCredentials = async () => {
@@ -56,8 +58,11 @@ const ListCredentials: React.FC = () => {
       const w3cCredentialRecords = await getAllW3cCredentialRecords(agent)
 
       const updatedCredentials = credentials.map(credential => {
-        if (isW3CCredential(credential)) {
-          const credentialRecordId = credential.credentials[0].credentialRecordId
+        if (
+          !Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey) &&
+          !Object.keys(credential.metadata.data).includes(AnonCredsCredentialMetadataKey)
+        ) {
+          const credentialRecordId = credential?.credentials[0].credentialRecordId
           try {
             const record = w3cCredentialRecords.find(record => record.id === credentialRecordId)
             if (!credential?.connectionId) {
@@ -79,22 +84,35 @@ const ListCredentials: React.FC = () => {
     updateCredentials().then(updatedCredentials => {
       setCredentialList(updatedCredentials)
     })
-  }, [credentials])
+  }, [credentialList])
+
+  const styles = StyleSheet.create({
+    container: { flex: 1, marginHorizontal: 10 },
+    credentialList: { width: wp('100%'), height: wp('40%') },
+    credentialsCardList: {},
+    renderView: {
+      marginRight: isHorizontal ? 20 : 0,
+      marginTop: 15,
+      width: isHorizontal ? wp('85%') : 'auto',
+    },
+    fabContainer: {
+      position: 'absolute',
+      bottom: 10,
+      right: 10,
+    },
+  })
 
   return (
     <View style={styles.container}>
       <FlatList
-        style={{ backgroundColor: ColorPallet.brand.primaryBackground }}
+        horizontal={isHorizontal}
+        showsHorizontalScrollIndicator={false}
+        style={isHorizontal ? styles.credentialList : styles.credentialsCardList}
         data={credentialList?.sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf())}
         keyExtractor={credential => credential.id}
-        renderItem={({ item: credential, index }) => {
+        renderItem={({ item: credential }) => {
           return (
-            <View
-              style={{
-                marginHorizontal: 15,
-                marginTop: 15,
-                marginBottom: index === credentials.length - 1 ? 45 : 0,
-              }}>
+            <View style={styles.renderView}>
               {credential instanceof CredentialExchangeRecord ? (
                 <CredentialCard
                   credential={credential}
@@ -109,18 +127,32 @@ const ListCredentials: React.FC = () => {
                   schemaId={credential.credential.type[1]}
                   connectionLabel={credential.connectionLabel}
                   credential={credential}
-                  onPress={() => navigation.navigate(Screens.CredentialDetailsW3C, { credential: credential })}
+                  onPress={() => {
+                    if (!Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey)) {
+                      navigation.navigate(Screens.CredentialDetailsW3C, { credential: credential })
+                    } else {
+                      navigation.navigate(Screens.OpenIDCredentialDetails, {
+                        credential: credential,
+                        screenMode: OpenIDCredScreenMode.details,
+                      })
+                    }
+                  }}
                 />
               )}
             </View>
           )
         }}
-        ListEmptyComponent={() => <CredentialEmptyList message={t('Credentials.EmptyCredentailsList')} />}
+        ListEmptyComponent={
+          <View style={isHorizontal ? styles.credentialList : styles.credentialsCardList}>
+            <CredentialEmptyList message={t('Credentials.EmptyCredentailsList')} />
+          </View>
+        }
       />
-      <CredentialListOptions />
-      <View style={styles.scanContainer}>
-        <ScanButton />
-      </View>
+      {!isHorizontal && (
+        <View style={styles.fabContainer}>
+          <ScanButton />
+        </View>
+      )}
     </View>
   )
 }

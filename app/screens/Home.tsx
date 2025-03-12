@@ -1,8 +1,7 @@
-import { useAdeyaAgent } from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
-import React, { ReactNode, useEffect } from 'react'
+import React, { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, StyleSheet, View, Text, Dimensions, TouchableOpacity, Image } from 'react-native'
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import ScanButton from '../components/common/ScanButton'
 import NotificationListItem, { NotificationType } from '../components/listItems/NotificationListItem'
@@ -11,8 +10,6 @@ import { AttachTourStep } from '../components/tour/AttachTourStep'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { HomeStackParams, Screens } from '../types/navigators'
-import { AdeyaAgentModules } from '../utils/agent'
-import { getDefaultHolderDidDocument } from '../utils/helpers'
 
 const { width } = Dimensions.get('window')
 const offset = 25
@@ -21,21 +18,10 @@ const offsetPadding = 5
 type HomeProps = StackScreenProps<HomeStackParams, Screens.Home>
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
-  const { agent } = useAdeyaAgent<AdeyaAgentModules>()
   const { useCustomNotifications } = useConfiguration()
   const { notifications } = useCustomNotifications()
   const { t } = useTranslation()
   const { HomeTheme } = useTheme()
-
-  useEffect(() => {
-    if (!agent) return
-
-    const setupDefaultDid = async () => {
-      await getDefaultHolderDidDocument(agent)
-    }
-
-    setupDefaultDid()
-  }, [agent])
 
   const styles = StyleSheet.create({
     container: {
@@ -155,7 +141,6 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
       <View style={styles.messageContainer}>
         <Image source={require('../assets/img/homeimage.png')} resizeMode="contain" style={styles.homeImage} />
       </View>
-      {/* <Button title="Create did" onPress={createDid} /> */}
       <View style={styles.fabContainer}>
         <ScanButton />
       </View>

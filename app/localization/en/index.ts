@@ -37,6 +37,9 @@ const translation = {
     "Remove": "Remove",
     "Yes": "Yes",
     "No": "No",
+    "History": "History",
+    "SaveSettings": "Save Settings",
+    "Credentials":"Credentials"
   },
   "Date": {
     "ShortFormat": "MMM D",
@@ -123,8 +126,8 @@ const translation = {
     "InitAgent": "Initializing agent .."
   },
   "Tour": {
-    "GuideTitle": "Welcome to ADEYA Wallet",
-    "WouldYouLike": "Would you like some guidance on how to use ADEYA Wallet?",
+    "GuideTitle": "Welcome to CREDEBL Wallet",
+    "WouldYouLike": "Would you like some guidance on how to use CREDEBL Wallet?",
     "UseAppGuides": "Use app guides",
     "DoNotUseAppGuides": "Don't use app guides",
     "AddAndShare": "Add and share credentials",
@@ -148,7 +151,7 @@ const translation = {
   "CameraDisclosure": {
     "AllowCameraUse": "Allow camera use",
     "CameraDisclosure": "The camera is used to scan QR codes that initiate a credential offer or credential request. No information about the images is stored, used for analytics, or shared.",
-    "ToContinueUsing": "To continue using the ADEYA Wallet scan feature, please allow camera permissions in the settings.",
+    "ToContinueUsing": "To continue using the CREDEBL Wallet scan feature, please allow camera permissions in the settings.",
     "Continue": "Continue",
     "OpenSettings": "Open settings",
   },
@@ -233,9 +236,9 @@ const translation = {
   "Biometry": {
     "Toggle": "Toggle Biometrics",
     "EnabledText1": "Use your phone's biometrics to log in rather than your wallet's PIN.",
-    "EnabledText1Bold": "you will need to use biometrics to open your ADEYA Wallet.",
-    "EnabledText2": "Because of this, your ADEYA wallet may be accessed using any fingerprint or face data you upload to this phone. Make sure you are the only one who can access your wallet.",
-    "EnabledText3": "Anyone who can access your phone with biometrics can access your ADEYA Wallet.",
+    "EnabledText1Bold": "you will need to use biometrics to open your CREDEBL Wallet.",
+    "EnabledText2": "Because of this, your CREDEBL wallet may be accessed using any fingerprint or face data you upload to this phone. Make sure you are the only one who can access your wallet.",
+    "EnabledText3": "Anyone who can access your phone with biometrics can access your CREDEBL Wallet.",
     "EnabledText3Bold": "Ensure only you have access to your wallet.",
     "Warning": "Ensure only you have access to your wallet.",
     "UseToUnlock": "Use biometrics to unlock wallet?",
@@ -339,7 +342,12 @@ const translation = {
     "YouHave": "You have",
     "Credential": "credential",
     "Credentials": "credentials",
-    "InYourWallet": "in your wallet"
+    "InYourWallet": "in your wallet",
+    "ConnectionsCount" : "Connections",
+    "CredentialsCount" : "Credentials",
+    "SharedCredentialsCount": "Shared credentials",
+    "ViewAll" : "View All",
+    "DontHaveCredentials":"You don’t have any recent credentials at the moment"
   },
   "Scan": {
     "SuccessfullyAcceptedConnection": "Successfully Accepted Connection",
@@ -463,11 +471,13 @@ const translation = {
     "DeclineBulletPoint1": "Organizations and services require that you prove you're eligible to continue with their service or access.",
     "DeclineBulletPoint2": "In order to receive the proof request again, you will need to restart the process with the service.",
     "DeclineBulletPoint3": "Are you sure you want to decline this proof request?",
+    "DeclinedReasonInputTitle":"Reason for declined proof request",
+    "EnterReasonPlaceholder":"Please enter your reason"
   },
   "Settings": {
     "Help": "Help",
     "MoreInformation": "More Information",
-    "HelpUsingBCWallet": "Help using ADEYA Wallet",
+    "HelpUsingBCWallet": "Help using CREDEBL Wallet",
     "ReportAProblem": "Report A Problem",
     "TermsOfUse": "Terms of use",
     "PrivacyStatement": "Privacy statement",
@@ -574,6 +584,8 @@ const translation = {
     "OrganizationConnection": "Connection",
     "RenderCertificate": "Certificate",
     "GoogleDriveSignIn": "Google Drive Sign In",
+    "HistorySettings": "History Settings",
+    "History": "History",
   },
   "Loading": {
     "TakingTooLong": "This is taking longer than usual. You can return to home or continue waiting.",
@@ -582,7 +594,7 @@ const translation = {
   "Tips": {
     "Header": "Tips",
     "GettingReady": "Getting your wallet ready...",
-    "Tip1": "For extra security, ADEYA Wallet locks the app after 5 minutes of inactivity",
+    "Tip1": "For extra security, CREDEBL Wallet locks the app after 5 minutes of inactivity",
     "Tip2": "Unlike showing physical cards, you share only what is necessary from your credentials",
     "Tip3": "Your credentials are stored only on this phone, nowhere else",
     "Tip4": "Information is sent and received over an untraceable encrypted connection",
@@ -620,12 +632,12 @@ const translation = {
   },
   "NetInfo": {
     "NoInternetConnectionTitle": "No internet connection",
-    "NoInternetConnectionMessage": "You're unable to access services using ADEYA or receive credentials until you're back online.\n\nPlease check your internet connection.",
+    "NoInternetConnectionMessage": "You're unable to access services using CREDEBL or receive credentials until you're back online.\n\nPlease check your internet connection.",
     "LedgerConnectivityIssueTitle": "Wallet Services",
     "LedgerConnectivityIssueMessage": "A firewall may be preventing you from connecting to wallet related services.",
   },
   "Onboarding": {
-    "SkipA11y": "Skip introduction to ADEYA",
+    "SkipA11y": "Skip introduction to CREDEBL",
   },
   "Chat": {
     "OpenPresentation": "Open Presentation",
@@ -713,6 +725,7 @@ const translation = {
   },
   "DIDs":{
     "Dids": "My DID",
+    "Did" :"DID"
   },
   "GoogleDrive": {
     "Backup": "Backup to Google Drive",
@@ -731,6 +744,30 @@ const translation = {
     "RestoreInstructions": "Note: To restore your wallet, you can use a backup from your cloud storage or local device. Please ensure that the Google Drive app is installed on your device and you are signed in.",
     "RestoreInstructionsIOS": "If you can't see Google Drive in the file picker, open the Files app --> tap on the three dots at the top --> select 'Edit' --> enable Google Drive.",
   },
+  "History" : {
+    "SortFilterButton":"Sort/Filter",
+    "CardTitle":{
+      "CardAccepted": "You have successfully added a new credential {{Credential}}.",
+      "CardDeclined": "You have declined the card.",
+      "CardExpired": "The card has expired.",
+      "CardRevoked": "The card has been revoked.",
+      "InformationSent": "Information has been sent to the recipient.",
+      "WalletPinUpdated": "Your wallet PIN has been successfully updated.",
+      "ProofRequest": "You have successfully shared your credentials with {{Credential}}.",
+      "Connection": "You have successfully added a new connection with {{Credential}}.",
+    },
+    "CardDescription":{
+      "CardExpired": "{{cardName}} expired",
+      "CardRevoked": "{{cardName}} revoked",
+      "WalletPinUpdated": "New PIN set",
+      "ProofRequested": "Proof request",
+      "Connection": "Connection",
+    },
+    "Today": "Today",
+  },
+  "ActivityHistory": {
+    "NoHistory": "No History",
+  }
 }
 
 export default translation

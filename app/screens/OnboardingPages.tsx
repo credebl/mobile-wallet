@@ -138,12 +138,12 @@ const OnboardingPages = (onTutorialCompleted: GenericFn): Array<Element> => {
     {
       image: onBoardingDataSafe,
       title: 'Keep your data safe',
-      body: 'Safeguard your digital Credentials with ADEYA, ensuring that your data remains protected and shared with your consent only.',
+      body: 'Safeguard your digital Credentials with CREDEBL, ensuring that your data remains protected and shared with your consent only.',
     },
     {
       image: onBoardingOrganizeEase,
       title: 'Organize with ease',
-      body: 'Organize and manage your digital credentials effortlessly within ADEYA. Say goodbye to paper documents and embrace the convenience of an identity wallet in your hand.',
+      body: 'Organize and manage your digital credentials effortlessly within CREDEBL. Say goodbye to paper documents and embrace the convenience of an identity wallet in your hand.',
     },
   ]
 

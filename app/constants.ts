@@ -19,6 +19,7 @@ export enum LocalStorageKeys {
   RevokedCredentialsMessageDismissed = 'RevokedCredentialsMessageDismissed',
   Preferences = 'PreferencesState',
   Tours = 'ToursState',
+  HistorySettingsOption = 'historySettingsOption',
 }
 
 export enum KeychainServices {
@@ -81,3 +82,10 @@ export const tourMargin = 25
 export const hitSlop = { top: 44, bottom: 44, left: 44, right: 44 }
 
 export const CREDENTIAL = 'Credential'
+
+export const CREDENTIAL_W3C = 'Credential_W3C'
+
+export enum OpenIDCredScreenMode {
+  offer,
+  details,
+}

@@ -11,7 +11,8 @@ import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DeviceEventEmitter, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { DeviceEventEmitter, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
 
@@ -20,6 +21,7 @@ import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
 import { useTheme } from '../contexts/theme'
+import { ListItems } from '../theme'
 import { BifoldError } from '../types/error'
 import { ContactStackParams, Screens, TabStacks } from '../types/navigators'
 import { ModalUsage } from '../types/remove'
@@ -39,6 +41,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   const [isCredentialsOfferRemoveModalDisplayed, setIsCredentialsOfferRemoveModalDisplayed] = useState<boolean>(false)
   const [isProofRequestRemoveModalDisplayed, setIsProofRequestRemoveModalDisplayed] = useState<boolean>(false)
   const connection = useConnectionById(connectionId)
+  const contactLabel = useMemo(() => getConnectionName(connection) ?? '', [connection])
+  const contactDid = useMemo(() => connection?.theirDid ?? '', [connection])
+  const contactLabelAbbr = useMemo(() => contactLabel?.charAt(0).toUpperCase(), [connection])
   // FIXME: This should be exposed via a react hook that allows to filter credentials by connection id
   const connectionCredentials = [
     ...useCredentialByState(CredentialState.CredentialReceived),
@@ -62,8 +67,28 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
       margin: 20,
       justifyContent: 'center',
     },
+    avatarImage: {
+      width: 50,
+      height: 50,
+    },
+    avatarPlaceholder: {
+      ...TextTheme.headingFour,
+      textAlign: 'center',
+    },
+    avatarContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'center',
+      width: wp('25%'),
+      height: wp('25%'),
+      borderRadius: wp('12.5%'),
+      borderColor: ListItems.avatarCircle.borderColor,
+      borderWidth: 1,
+      marginRight: 16,
+    },
+    labelText: { ...TextTheme.headingThree, marginTop: 20 },
+    labelValueText: { ...TextTheme.normal, marginTop: 10 },
   })
-
   const handleOnRemove = () => {
     switch (true) {
       case Boolean(connectionCredentialsOffer?.length):
@@ -139,7 +164,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   const callCancelUnableToRemoveOffer = useCallback(() => handleOfferCancelUnableRemove(), [])
   const callCancelUnableToRemoveProofRequest = useCallback(() => handleProofRequestCancelUnableRemove(), [])
 
-  const contactLabel = useMemo(() => getConnectionName(connection) ?? '', [connection])
   const onDismissModalTouched = () => {
     navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
   }
@@ -148,12 +172,24 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
       {connection && (
         <View>
           <View style={styles.contentContainer}>
-            <Text style={{ ...TextTheme.headingThree }}>{contactLabel}</Text>
-            <Text style={{ ...TextTheme.normal, marginTop: 20 }}>
+            <View style={styles.avatarContainer}>
+              {connection.imageUrl ? (
+                <View>
+                  <Image style={styles.avatarImage} source={{ uri: connection.imageUrl }} />
+                </View>
+              ) : (
+                <Text style={styles.avatarPlaceholder}>{contactLabelAbbr}</Text>
+              )}
+            </View>
+            <Text style={styles.labelText}>{contactLabel}</Text>
+            <Text style={styles.labelValueText}>
               {t('ContactDetails.DateOfConnection', {
                 date: connection?.createdAt ? formatTime(connection.createdAt, { includeHour: true }) : '',
               })}
             </Text>
+
+            <Text style={styles.labelText}>{t('DIDs.Did')}</Text>
+            <Text style={styles.labelValueText}>{contactDid}</Text>
           </View>
           <TouchableOpacity
             onPress={callOnRemove}

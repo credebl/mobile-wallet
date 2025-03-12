@@ -3,6 +3,10 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { SvgProps } from 'react-native-svg'
 
 import Arrow from './assets/icons/large-arrow.svg'
+import HistoryCardAcceptedIcon from './assets/img/HistoryCardAcceptedIcon.svg'
+import HistoryNewConnectionIcon from './assets/img/HistoryNewConnectionIcon.svg'
+import HistoryProofRequestIcon from './assets/img/HistoryProofRequestIcon.svg'
+import IconChevronRight from './assets/img/IconChevronRight.svg'
 import ExploreIconActive from './assets/img/active-explore-icon.svg'
 import AppLockout from './assets/img/app-lockout.svg'
 import BackupSuccess from './assets/img/backup-success.svg'
@@ -32,6 +36,10 @@ export interface ISVGAssets {
   IconInfoSentDark: React.FC<SvgProps>
   ExploreIcon: React.FC<SvgProps>
   ExploreIconActive: React.FC<SvgProps>
+  historyCardAcceptedIcon: React.FC<SvgProps>
+  historyProofRequestIcon: React.FC<SvgProps>
+  historyNewConnectionIcon: React.FC<SvgProps>
+  iconChevronRight: React.FC<SvgProps>
 }
 
 export interface IFontAttributes {
@@ -563,7 +571,7 @@ export const ListItems = StyleSheet.create({
 
 export const TabTheme = {
   tabBarStyle: {
-    height: 60,
+    height: 65,
     backgroundColor: '#D3E4FA',
     shadowOffset: { width: 0, height: -3 },
     shadowRadius: 6,
@@ -576,6 +584,7 @@ export const TabTheme = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: 100,
   },
   tabBarActiveTintColor: ColorPallet.brand.primary,
   tabBarInactiveTintColor: ColorPallet.notification.infoText,
@@ -848,17 +857,21 @@ export const Assets = {
     IconInfoSentDark: IconInfoSentDark,
     ExploreIcon: ExploreIcon,
     ExploreIconActive: ExploreIconActive,
+    historyCardAcceptedIcon: HistoryCardAcceptedIcon,
+    historyProofRequestIcon: HistoryProofRequestIcon,
+    historyNewConnectionIcon: HistoryNewConnectionIcon,
+    iconChevronRight: IconChevronRight,
   },
   img: {
     logoPrimary: {
-      src: require('./assets/img/adeyaWhiteLogo.png'),
+      src: require('./assets/img/credeblLogo.png'),
       aspectRatio: 1,
       height: hp('7%'),
       width: wp('36%'),
       resizeMode: 'contain',
     },
     logoSecondary: {
-      src: require('./assets/img/adeya-logo-secondary.png'),
+      src: require('./assets/img/credebl_logo.png'),
       aspectRatio: 1,
       height: hp('7%'),
       width: wp('36%'),
