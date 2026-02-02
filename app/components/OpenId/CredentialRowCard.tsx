@@ -1,6 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
-
-import { useTheme } from '../../contexts/theme'
+import React from 'react'
+import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface CredentialRowCardProps {
   name: string
@@ -9,52 +8,82 @@ interface CredentialRowCardProps {
   bgColor?: string
   bgImage?: string
   txtColor?: string
-  hideBorder?: boolean
-  showFullText?: boolean
+  issuerLogo?: string
 }
 
-export function OpenIDCredentialRowCard({ name, issuer, bgColor, bgImage, txtColor, onPress }: CredentialRowCardProps) {
-  const { TextTheme } = useTheme()
-  const { width } = useWindowDimensions()
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 16,
+  },
+  background: {
+    width: '100%',
+    height: 140,
+  },
+  backgroundImage: {
+    borderRadius: 12,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  content: {
+    padding: 16,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  header: {},
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  footer: { padding: 16 },
+  issuerLabel: {
+    fontSize: 11,
+    opacity: 0.8,
+  },
+  issuerName: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+})
 
-  const badgeWidth = 0.4 * width
-  const badgeHeight = 0.6 * badgeWidth
-
-  const style = StyleSheet.create({
-    container: {},
-    rowContainer: {
-      flexDirection: 'row',
-      borderRadius: 8,
-      // backgroundColor: '#202020',
-      padding: 5,
-      minHeight: 0.2 * width,
-    },
-    issuerBadge: {
-      borderRadius: 8,
-      width: badgeHeight,
-      height: badgeHeight,
-      backgroundColor: 'red',
-      marginRight: 10,
-      overflow: 'hidden',
-    },
-    infoContainer: {
-      flex: 1,
-      justifyContent: 'space-between',
-    },
-    imageStyle: { width: badgeWidth, height: badgeHeight, borderRadius: 8 },
-  })
-  //
+export function OpenIDCredentialRowCard({
+  name,
+  bgColor = '#202020',
+  bgImage,
+  txtColor = '#fff',
+  onPress,
+  issuerLogo,
+}: CredentialRowCardProps) {
   return (
-    <View style={style.container}>
-      <TouchableOpacity onPress={onPress} style={style.rowContainer}>
-        <View style={[style.issuerBadge, bgColor ? { backgroundColor: bgColor } : {}]}>
-          {bgImage ? <Image style={style.imageStyle} source={{ uri: bgImage }} resizeMode="cover" /> : null}
+    <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={[styles.container, { backgroundColor: bgColor }]}>
+      <ImageBackground
+        source={bgImage ? { uri: bgImage } : undefined}
+        style={styles.background}
+        imageStyle={styles.backgroundImage}
+        resizeMode="cover">
+        <View style={styles.overlay} />
+
+        <View style={styles.content}>
+          {issuerLogo ? (
+            <Image
+              source={{
+                uri: issuerLogo,
+              }}
+              resizeMode="contain"
+              width={64}
+              height={48}
+            />
+          ) : null}
+          <View style={styles.header}>
+            <Text style={[styles.title, { color: txtColor }]} numberOfLines={2}>
+              {name}
+            </Text>
+          </View>
         </View>
-        <View style={[style.infoContainer, issuer ? { justifyContent: 'center' } : {}]}>
-          <Text style={[TextTheme.title, txtColor ? { color: txtColor } : {}]}>{name}</Text>
-          {issuer && <Text style={[TextTheme.labelSubtitle, txtColor ? { color: txtColor } : {}]}>{issuer}</Text>}
-        </View>
-      </TouchableOpacity>
-    </View>
+      </ImageBackground>
+    </TouchableOpacity>
   )
 }

@@ -1,4 +1,10 @@
-import { CredentialExchangeRecord, OpenId4VPRequestRecord, SdJwtVcRecord, W3cCredentialRecord } from '@adeya/ssi'
+import {
+  CredentialExchangeRecord,
+  MdocRecord,
+  OpenId4VPRequestRecord,
+  SdJwtVcRecord,
+  W3cCredentialRecord,
+} from '@adeya/ssi'
 import { NavigatorScreenParams } from '@react-navigation/core'
 import { StackNavigationOptions } from '@react-navigation/stack'
 
@@ -61,6 +67,9 @@ export enum Screens {
   RenderCertificate = 'Render Certificate',
   GoogleDriveSignIn = 'Google Drive Sign In',
   HistoryPage = 'History',
+  CaptureDocument = 'Capture Document',
+  CaptureFace = 'Capture Face',
+  FirstCredentialProcessing = 'First Credential Processing',
 }
 
 export enum Stacks {
@@ -130,7 +139,11 @@ export type ContactStackParams = {
   [Screens.ProofRequest]: { proofId: string }
   [Screens.ProofRequestW3C]: { proofId: string }
   [Screens.Home]: undefined
-  [Screens.RenderCertificate]: { filePath: string }
+  [Screens.RenderCertificate]: {
+    content: HTMLDataElement
+    certificateAttributes: object
+    w3cCredential: W3cCredentialRecord | undefined
+  }
 }
 
 export type ProofRequestsStackParams = {
@@ -163,10 +176,14 @@ export type CredentialStackParams = {
   [Screens.Credentials]: undefined
   [Screens.CredentialDetails]: { credential: CredentialExchangeRecord }
   [Screens.CredentialDetailsW3C]: { credential: W3cCredentialRecord }
-  [Screens.RenderCertificate]: { filePath: string }
+  [Screens.RenderCertificate]: {
+    content: HTMLDataElement
+    certificateAttributes: object
+    w3cCredential: W3cCredentialRecord | undefined
+  }
   [Screens.Scan]: undefined
   [Screens.OpenIDCredentialDetails]: {
-    credential: SdJwtVcRecord | W3cCredentialRecord
+    credential: SdJwtVcRecord | W3cCredentialRecord | MdocRecord
     screenMode: OpenIDCredScreenMode
   }
 }
@@ -190,6 +207,12 @@ export type HomeStackParams = {
   [Screens.OpenIDCredentialDetails]: {
     credential: SdJwtVcRecord | W3cCredentialRecord
     screenMode: OpenIDCredScreenMode
+  }
+  [Screens.CaptureDocument]: undefined
+  [Screens.CaptureFace]: { documentImagePath: string }
+  [Screens.FirstCredentialProcessing]: {
+    documentImagePath: string
+    faceImagePath: string
   }
 }
 
@@ -241,7 +264,7 @@ export type DeliveryStackParams = {
   [Screens.Chat]: { connectionId: string }
   [Screens.ContactDetails]: { connectionId: string }
   [Screens.OpenIDCredentialDetails]: {
-    credential: SdJwtVcRecord | W3cCredentialRecord
+    credential: SdJwtVcRecord | W3cCredentialRecord | MdocRecord
     screenMode: OpenIDCredScreenMode
   }
   [Screens.ProofRequestW3C]: { proofId: string }

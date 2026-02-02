@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, forwardRef, useState } from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableOpacity, View, ViewStyle } from 'react-native'
 
 import { useTheme } from '../../contexts/theme'
 
@@ -10,6 +10,7 @@ export enum ButtonType {
   ModalCritical,
   ModalPrimary,
   ModalSecondary,
+  style,
 }
 
 export interface ButtonProps {
@@ -19,11 +20,12 @@ export interface ButtonProps {
   testID?: string
   onPress?: () => void
   disabled?: boolean
+  style?: ViewStyle
 }
 
 const Button: React.FC<PropsWithChildren<ButtonProps & React.RefAttributes<TouchableOpacity>>> = forwardRef(
   (
-    { title, buttonType, accessibilityLabel, testID, onPress, disabled = false, children },
+    { title, buttonType, accessibilityLabel, testID, onPress, disabled = false, children, style },
     ref: React.LegacyRef<TouchableOpacity>,
   ) => {
     const accessible = accessibilityLabel && accessibilityLabel !== '' ? true : false
@@ -52,6 +54,7 @@ const Button: React.FC<PropsWithChildren<ButtonProps & React.RefAttributes<Touch
           disabled && (buttonType === ButtonType.Primary ? Buttons.primaryDisabled : Buttons.secondaryDisabled),
           isActive && buttonType === ButtonType.Secondary && { backgroundColor: Buttons.primary.backgroundColor },
           accessibilityLabel === 'Yes' ? { width: 100 } : null,
+          style,
         ]}
         disabled={disabled}
         activeOpacity={heavyOpacity}

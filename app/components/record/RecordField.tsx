@@ -4,9 +4,11 @@ import startCase from 'lodash.startcase'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Icon from 'react-native-vector-icons/Ionicons'
 
 import { hiddenFieldValue } from '../../constants'
 import { useTheme } from '../../contexts/theme'
+import { ColorPallet } from '../../theme'
 import { isDataUrl } from '../../utils/helpers'
 import { testIdWithKey } from '../../utils/testable'
 
@@ -128,8 +130,13 @@ const RecordField: React.FC<RecordFieldProps> = ({
             testID={testIdWithKey('ShowHide')}
             activeOpacity={1}
             onPress={onToggleViewPressed}
-            style={styles.link}>
-            <Text style={ListItems.recordLink}>{shown ? t('Record.Hide') : t('Record.Show')}</Text>
+            style={styles.link}
+            hitSlop={{ bottom: 10, top: 10, left: 10, right: 10 }}>
+            {shown ? (
+              <Icon name="eye" color={ColorPallet.brand.primary} size={25} />
+            ) : (
+              <Icon name="eye-off" color={ColorPallet.brand.primary} size={25} />
+            )}
           </TouchableOpacity>
         ) : null}
       </View>

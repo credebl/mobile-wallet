@@ -8,8 +8,6 @@ import {
   declineCredentialOffer,
   getFormattedCredentialData,
   sendCredentialProblemReport,
-  useConnections,
-  useCredentialById,
 } from '@adeya/ssi'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
@@ -28,6 +26,7 @@ import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import Record from '../components/record/Record'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
 import { CREDENTIAL_W3C, EventTypes } from '../constants'
+import { useConnections, useCredentialById } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
 import { useStore } from '../contexts/store'
@@ -200,7 +199,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
         credentialFormatData?.offer?.jsonld
       ) {
         const holderDid = await getDefaultHolderDidDocument(agent)
-        await agent.credentials.negotiateOffer({
+        await agent.modules.credentials.negotiateOffer({
           credentialFormats: {
             jsonld: {
               credential: {

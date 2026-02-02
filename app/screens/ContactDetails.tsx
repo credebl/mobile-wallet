@@ -1,12 +1,4 @@
-import {
-  CredentialState,
-  ProofState,
-  deleteConnectionRecordById,
-  deleteOobRecordById,
-  useConnectionById,
-  useCredentialByState,
-  useProofByState,
-} from '@adeya/ssi'
+import { CredentialState, ProofState, deleteConnectionRecordById, deleteOobRecordById } from '@adeya/ssi'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useMemo, useState } from 'react'
@@ -20,6 +12,7 @@ import Button, { ButtonType } from '../components/buttons/Button'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
+import { useConnectionById, useCredentialByState, useProofByState } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { ListItems } from '../theme'
 import { BifoldError } from '../types/error'

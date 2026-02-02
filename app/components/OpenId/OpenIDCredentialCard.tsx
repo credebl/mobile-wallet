@@ -11,6 +11,7 @@ import {
 import React from 'react'
 import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
+import { useTheme } from '../../contexts/theme'
 import { ColorPallet } from '../../theme'
 
 type OpenIdCredentialCardProps = {
@@ -18,13 +19,19 @@ type OpenIdCredentialCardProps = {
   onPress?(): void
   textColor?: string
   shadow?: boolean
+  credentialFormat?: string
 }
 
 export function getTextColorBasedOnBg(bgColor: string) {
   return Number.parseInt(bgColor.replace('#', ''), 16) > 0xffffff / 2 ? '#212529' : '#f6f9fc'
 }
 
-const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({ credentialRecord, textColor, onPress }) => {
+const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({
+  credentialRecord,
+  textColor,
+  onPress,
+  credentialFormat,
+}) => {
   const credential = JsonTransformer.toJSON(
     (credentialRecord as W3cCredentialRecord).credential.claimFormat === ClaimFormat.JwtVc
       ? credentialRecord?.credential?.credential
@@ -33,6 +40,7 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({ credentialR
   const openId4VcMetadata = getOpenId4VcCredentialMetadata(credentialRecord as W3cCredentialRecord)
   const issuerShow = getW3cIssuerDisplay(credential, openId4VcMetadata)
   const credentialShow = getW3cCredentialDisplay(credential, openId4VcMetadata)
+  const { TextTheme } = useTheme()
 
   const styles = StyleSheet.create({
     container: {
@@ -83,7 +91,8 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({ credentialR
       opacity: 0.8,
     },
     issuerName: {
-      fontSize: 12,
+      fontSize: 15,
+      fontWeight: 'normal',
     },
     cardBackground: {
       position: 'absolute',
@@ -107,9 +116,26 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({ credentialR
       padding: 16,
       justifyContent: 'space-between',
     },
+    formatBadge: {
+      position: 'absolute',
+      bottom: 8,
+      right: 8,
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+    },
+    formatText: {
+      color: 'white',
+      fontSize: 10,
+      fontWeight: '600',
+      textTransform: 'uppercase',
+    },
   })
 
-  textColor = textColor ? textColor : getTextColorBasedOnBg(ColorPallet.brand.primary ?? '#000')
+  textColor = credentialShow.textColor
+    ? credentialShow.textColor
+    : getTextColorBasedOnBg(ColorPallet.brand.primary ?? '#000')
 
   return (
     <View style={[styles.container, { backgroundColor: ColorPallet.brand.primary }]}>
@@ -119,9 +145,14 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({ credentialR
         activeOpacity={0.7}>
         <ImageBackground
           source={{ uri: credentialShow?.backgroundImage?.url }}
-          style={styles.backgroundView}
+          style={[styles.backgroundView, { backgroundColor: credentialShow.backgroundColor }]}
           imageStyle={styles.backgroundImage}
           resizeMode="cover">
+          {credentialFormat && (
+            <View style={styles.formatBadge}>
+              <Text style={styles.formatText}>{credentialFormat}</Text>
+            </View>
+          )}
           <View style={styles.cardContainer}>
             <View style={styles.cardHeader}>
               <View style={styles.iconContainer}>
@@ -138,19 +169,22 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({ credentialR
                 ) : null}
               </View>
               <View style={styles.textContainer}>
-                <Text style={[styles.heading, { color: textColor }]} numberOfLines={2}>
+                <Text
+                  style={[
+                    TextTheme.normal,
+                    styles.textContainer,
+                    {
+                      fontWeight: 'bold',
+                      lineHeight: 24,
+                      flexWrap: 'wrap',
+                      color: textColor,
+                    },
+                  ]}
+                  numberOfLines={2}>
                   {credentialShow.name}
                 </Text>
                 <Text style={[styles.subtitle, { color: textColor }]} numberOfLines={1}>
                   {credentialShow.description}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.cardFooter}>
-              <View style={styles.footerTextContainer}>
-                <Text style={[styles.issuerLabel, { color: textColor }]}>Issuer</Text>
-                <Text style={[styles.issuerName, { color: textColor }]} numberOfLines={2}>
-                  {issuerShow.name}
                 </Text>
               </View>
             </View>

@@ -1,15 +1,10 @@
-import {
-  BasicMessageRecord,
-  ConnectionRecord,
-  CredentialExchangeRecord,
-  ProofExchangeRecord,
-  useBasicMessagesByConnectionId,
-} from '@adeya/ssi'
+import { BasicMessageRecord, ConnectionRecord, CredentialExchangeRecord, ProofExchangeRecord } from '@adeya/ssi'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native'
 
+import { useBasicMessagesByConnectionId } from '../../contexts/agent'
 import { useTheme } from '../../contexts/theme'
 import { useCredentialsByConnectionId } from '../../hooks/credentials'
 import { useProofsByConnectionId } from '../../hooks/proofs'

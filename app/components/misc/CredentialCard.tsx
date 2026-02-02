@@ -2,6 +2,7 @@ import {
   CredentialExchangeRecord,
   GenericCredentialExchangeRecord,
   openId4VcCredentialMetadataKey,
+  SdJwtVcRecord,
   W3cCredentialRecord,
 } from '@adeya/ssi'
 import { Attribute, BrandingOverlayType, Predicate } from '@hyperledger/aries-oca/build/legacy'
@@ -29,6 +30,7 @@ interface CredentialCardProps {
   satisfiedPredicates?: boolean
   hasAltCredentials?: boolean
   handleAltCredChange?: () => void
+  credentialFormat?: string
 }
 
 const CredentialCard: React.FC<CredentialCardProps> = ({
@@ -45,6 +47,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
   style = {},
   onPress = undefined,
   connectionLabel = '',
+  credentialFormat,
 }) => {
   // add ability to reference credential by ID, allows us to get past react hook restrictions
   const { OCABundleResolver } = useConfiguration()
@@ -70,11 +73,16 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
       )
     }
 
-    if (credential instanceof W3cCredentialRecord || credential?.credentialAttributes?.length === 0) {
+    if (
+      credential instanceof W3cCredentialRecord ||
+      credential instanceof SdJwtVcRecord ||
+      credential ||
+      credential?.credentialAttributes?.length === 0
+    ) {
       return (
         <>
           {Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey) ? (
-            <OpenIdCredentialCard credentialRecord={credential} onPress={onPress} />
+            <OpenIdCredentialCard credentialRecord={credential} onPress={onPress} credentialFormat={credentialFormat} />
           ) : (
             <CredentialCard11
               connectionLabel={connectionLabel}
@@ -84,6 +92,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
               displayItems={displayItems}
               style={style}
               onPress={onPress}
+              credentialFormat={credentialFormat}
             />
           )}
         </>

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 global.Buffer = require('buffer').Buffer
 
-import { AdeyaAgentProvider } from '@adeya/ssi'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import * as React from 'react'
 import { useEffect, useMemo } from 'react'
@@ -17,6 +16,7 @@ import ErrorModal from './app/components/modals/ErrorModal'
 import NetInfo from './app/components/network/NetInfo'
 import toastConfig from './app/components/toast/ToastConfig'
 import { homeTourSteps } from './app/components/tour/HomeTourSteps'
+import AgentProvider from './app/contexts/agent'
 import { AnimatedComponentsProvider } from './app/contexts/animated-components'
 import { AuthProvider } from './app/contexts/auth'
 import { CommonUtilProvider } from './app/contexts/commons'
@@ -41,7 +41,6 @@ const App = () => {
     // Hide the native splash / loading screen so that our
     // RN version can be displayed
     SplashScreen.hide()
-
     if (Config.GOOGLE_WEB_CLIENT_ID && Config.GOOGLE_IOS_CLIENT_ID) {
       GoogleSignin.configure({
         webClientId: Config.GOOGLE_WEB_CLIENT_ID,
@@ -54,9 +53,9 @@ const App = () => {
 
   return (
     <StoreProvider>
-      <AdeyaAgentProvider>
-        <OpenIDCredentialRecordProvider>
-          <ThemeProvider value={theme}>
+      <AgentProvider>
+        <ThemeProvider value={theme}>
+          <OpenIDCredentialRecordProvider>
             <AnimatedComponentsProvider value={animatedComponents}>
               <ConfigurationProvider value={defaultConfiguration}>
                 <CommonUtilProvider>
@@ -80,9 +79,9 @@ const App = () => {
                 </CommonUtilProvider>
               </ConfigurationProvider>
             </AnimatedComponentsProvider>
-          </ThemeProvider>
-        </OpenIDCredentialRecordProvider>
-      </AdeyaAgentProvider>
+          </OpenIDCredentialRecordProvider>
+        </ThemeProvider>
+      </AgentProvider>
     </StoreProvider>
   )
 }

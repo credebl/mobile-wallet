@@ -1,4 +1,4 @@
-import { addWalletRecord, findWalletRecordsByQuery, useAdeyaAgent, utils } from '@adeya/ssi'
+import { addWalletRecord, findWalletRecordsByQuery, utils } from '@adeya/ssi'
 import { useNavigation, useRoute } from '@react-navigation/core'
 import { generateMnemonic } from 'bip39'
 import React, { useEffect, useState } from 'react'
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, PixelRatio, Dimensions } from 'react-native'
 
 import Button, { ButtonType } from '../components/buttons/Button'
+import { useAdeyaAgent } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
 

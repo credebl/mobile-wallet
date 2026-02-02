@@ -1,10 +1,11 @@
-import type { BarCodeReadEvent } from 'react-native-camera'
-
 import { ConnectionRecord, getOID4VCCredentialsForProofRequest, parseInvitationUrl } from '@adeya/ssi'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { MessageReceiver } from '@credo-ts/didcomm'
 import { StackScreenProps } from '@react-navigation/stack'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, Platform } from 'react-native'
+import { BarCodeReadEvent } from 'react-native-camera'
 import { check, Permission, PERMISSIONS, request, RESULTS } from 'react-native-permissions'
 import Toast from 'react-native-toast-message'
 
@@ -111,14 +112,17 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         const invitationData = response.result
         if (invitationData.type === 'openid-credential-offer') {
           const uri = invitationData.format === 'url' ? (invitationData.data as string) : undefined
-          const data =
-            invitationData.format === 'parsed' ? encodeURIComponent(JSON.stringify(invitationData.data)) : undefined
-          setLoading(false)
-
-          navigation.getParent()?.navigate(Stacks.NotificationStack, {
-            screen: Screens.OpenIdCredentialOffer,
-            params: { uri, data },
-          })
+          // const data =
+          //   invitationData.format === 'parsed' ? encodeURIComponent(JSON.stringify(invitationData.data)) : undefined
+          if (typeof uri === 'string') {
+            setLoading(false)
+            navigation.getParent()?.navigate(Stacks.NotificationStack, {
+              screen: Screens.OpenIdCredentialOffer,
+              params: { uri },
+            })
+          } else {
+            setLoading(false)
+          }
         }
         if (invitationData.type === 'openid-authorization-request') {
           const uri = invitationData.data as string
@@ -158,7 +162,8 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         // if scanned value is json -> pass into AFJ as is
         const json = getJson(value)
         if (json) {
-          await agent?.receiveMessage(json)
+          const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
+          await messageReceiver.receiveMessage(json)
           setLoading(false)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,

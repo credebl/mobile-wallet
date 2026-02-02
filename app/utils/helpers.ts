@@ -1,5 +1,4 @@
 import {
-  useConnectionById,
   AnonCredsCredentialsForProofRequest,
   AnonCredsProofFormat,
   AnonCredsProofFormatService,
@@ -16,8 +15,6 @@ import {
   ProofState,
   Buffer,
   BasicMessageRole,
-  GetCredentialsForRequestReturn,
-  ProofFormatDataMessagePayload,
   acceptInvitationFromUrl,
   createInvitation,
   AnonCredsRequestedPredicate,
@@ -31,9 +28,14 @@ import {
   KeyType,
   DifPresentationExchangeProofFormatService,
   W3cCredentialRecord,
+  GetCredentialsForProofRequestReturn,
 } from '@adeya/ssi'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { DifPresentationExchangeProofFormat, DifPresentationExchangeDefinitionV1 } from '@credo-ts/core'
+import { DifPresentationExchangeDefinitionV1, MdocRecord, SdJwtVcRecord } from '@credo-ts/core'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { DifPresentationExchangeProofFormat, MessageReceiver } from '@credo-ts/didcomm'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ProofFormatDataMessagePayload } from '@credo-ts/didcomm/build/modules/proofs/protocol/ProofProtocolOptions'
 import { CaptureBaseAttributeType } from '@hyperledger/aries-oca'
 import { TFunction } from 'i18next'
 import moment from 'moment'
@@ -43,6 +45,7 @@ import { DeviceEventEmitter } from 'react-native'
 import { uniqueNamesGenerator, Config, names } from 'unique-names-generator'
 
 import { EventTypes, domain } from '../constants'
+import { useConnectionById } from '../contexts/agent'
 import { i18n } from '../localization/index'
 import { Role } from '../types/chat'
 import { BifoldError } from '../types/error'
@@ -354,12 +357,13 @@ export function firstValidCredential(
   return first
 }
 
-export const getOobDeepLink = async (url: string, agent: AdeyaAgent | undefined): Promise<any> => {
+export const getOobDeepLink = async (url: string, agent: AdeyaAgent): Promise<any> => {
   const queryParams = queryString.parseUrl(url).query
   const b64Message = queryParams['d_m'] ?? queryParams['c_i']
   const rawmessage = Buffer.from(b64Message as string, 'base64').toString()
   const message = JSON.parse(rawmessage)
-  await agent?.receiveMessage(message)
+  const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
+  await messageReceiver.receiveMessage(message)
   return message
 }
 
@@ -551,7 +555,7 @@ const addW3CMissingDisplayAttributes = (attrReq: DifPresentationExchangeDefiniti
 
 export const processW3CProofAttributes = (
   request?: ProofFormatDataMessagePayload<[DifPresentationExchangeProofFormat], 'request'> | undefined,
-  credentials?: GetCredentialsForRequestReturn<[DifPresentationExchangeProofFormatService]>,
+  credentials?: GetCredentialsForProofRequestReturn<[DifPresentationExchangeProofFormatService]>,
 ): { [key: string]: ProofCredentialAttributes } => {
   const processedAttributes = {} as { [key: string]: ProofCredentialAttributes }
 
@@ -631,7 +635,7 @@ export const processW3CProofAttributes = (
 
 export const processProofAttributes = (
   request?: ProofFormatDataMessagePayload<[LegacyIndyProofFormat, AnonCredsProofFormat], 'request'> | undefined,
-  credentials?: GetCredentialsForRequestReturn<[LegacyIndyProofFormatService, AnonCredsProofFormatService]>,
+  credentials?: GetCredentialsForProofRequestReturn<[LegacyIndyProofFormatService, AnonCredsProofFormatService]>,
   credentialRecords?: CredentialExchangeRecord[],
 ): { [key: string]: ProofCredentialAttributes } => {
   const processedAttributes = {} as { [key: string]: ProofCredentialAttributes }
@@ -766,7 +770,7 @@ const addMissingDisplayPredicates = (predReq: AnonCredsRequestedPredicate) => {
 
 export const processProofPredicates = (
   request?: ProofFormatDataMessagePayload<[LegacyIndyProofFormat, AnonCredsProofFormat], 'request'> | undefined,
-  credentials?: GetCredentialsForRequestReturn<[LegacyIndyProofFormatService, AnonCredsProofFormatService]>,
+  credentials?: GetCredentialsForProofRequestReturn<[LegacyIndyProofFormatService, AnonCredsProofFormatService]>,
   credentialRecords?: CredentialExchangeRecord[],
 ): { [key: string]: ProofCredentialPredicates } => {
   const processedPredicates = {} as { [key: string]: ProofCredentialPredicates }
@@ -855,7 +859,7 @@ export const retrieveCredentialsForProof = async (
   t: TFunction<'translation', undefined>,
 ) => {
   try {
-    const format = await agent.proofs.getFormatData(proof.id)
+    const format = await agent.modules.proofs.getFormatData(proof.id)
     const hasPresentationExchange = format.request?.presentationExchange !== undefined
     const hasAnonCreds = format.request?.anoncreds !== undefined
     const hasIndy = format.request?.indy !== undefined
@@ -998,13 +1002,14 @@ export const isValidUrl = (url: string) => {
  * @param agent an Agent instance
  * @returns payload from following the redirection
  */
-export const receiveMessageFromUrlRedirect = async (url: string, agent: AdeyaAgent | undefined) => {
+export const receiveMessageFromUrlRedirect = async (url: string, agent: AdeyaAgent) => {
   const res = await fetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
   })
   const message = await res.json()
-  await agent?.receiveMessage(message)
+  const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
+  await messageReceiver.receiveMessage(message)
   return message
 }
 
@@ -1014,13 +1019,14 @@ export const receiveMessageFromUrlRedirect = async (url: string, agent: AdeyaAge
  * @param agent an Agent instance
  * @returns payload from following the redirection
  */
-export const receiveMessageFromDeepLink = async (url: string, agent: AdeyaAgent | undefined) => {
+export const receiveMessageFromDeepLink = async (url: string, agent: AdeyaAgent) => {
   const res = await fetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
   })
   const message = await res.json()
-  await agent?.receiveMessage(message)
+  const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
+  await messageReceiver.receiveMessage(message)
   return message
 }
 
@@ -1263,4 +1269,17 @@ export const getDefaultHolderDidDocument = async (agent: AdeyaAgent) => {
     // eslint-disable-next-line no-console
     console.log('Error did create', error)
   }
+}
+
+export const getCredentialFormat = (credential: any): string => {
+  if (credential instanceof SdJwtVcRecord) {
+    return 'SD-JWT'
+  } else if (credential instanceof MdocRecord) {
+    return 'mDoc'
+  } else if (credential instanceof W3cCredentialRecord) {
+    return 'JSON-LD'
+  } else if (credential instanceof CredentialExchangeRecord) {
+    return 'AnonCreds'
+  }
+  return ''
 }

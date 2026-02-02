@@ -1,4 +1,5 @@
 import type { StackScreenProps } from '@react-navigation/stack'
+import 'text-encoding'
 
 import {
   CredentialExchangeRecord,
@@ -6,26 +7,26 @@ import {
   W3cCredentialRecord,
   deleteCredentialExchangeRecordById,
   getW3cCredentialRecordById,
-  useConnections,
-  useCredentialByState,
 } from '@adeya/ssi'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
+import Clipboard from '@react-native-clipboard/clipboard'
 import * as CryptoJS from 'crypto-js'
 import { toString as toQRCodeString } from 'qrcode'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DeviceEventEmitter, Image, ImageBackground, Platform, StyleSheet, Text, View } from 'react-native'
+import { DeviceEventEmitter, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Config } from 'react-native-config'
-import RNHTMLtoPDF from 'react-native-html-to-pdf'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import RecordRemove from '../components/record/RecordRemove'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
+import { useConnections, useCredentialByState } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'
@@ -37,6 +38,7 @@ import {
   buildFieldsFromJSONLDCredential,
   credentialTextColor,
   formatCredentialSubject,
+  getCredentialSubject,
   toImageSource,
 } from '../utils/credential'
 import { testIdWithKey } from '../utils/testable'
@@ -46,33 +48,6 @@ type CredentialDetailsProps = StackScreenProps<CredentialStackParams | ContactSt
 const paddingHorizontal = 24
 const paddingVertical = 16
 const logoHeight = 80
-
-const getPageSize = (prettyVc: { orientation: 'landscape' | 'portrait'; height?: number; width?: number }) => {
-  if (prettyVc?.height && prettyVc?.width) {
-    if (Platform.OS === 'android') {
-      const height = prettyVc.height * 0.75
-      const width = prettyVc.width * 0.75
-
-      return {
-        width,
-        height,
-      }
-    }
-
-    const height = prettyVc.height * 0.81
-    const width = prettyVc.width * 0.81
-
-    return {
-      width,
-      height,
-    }
-  }
-
-  return {
-    width: prettyVc.orientation === 'landscape' ? 595 : 842,
-    height: prettyVc.orientation === 'landscape' ? 420 : 595,
-  }
-}
 
 const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, route }) => {
   if (!route?.params) {
@@ -168,7 +143,7 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
       updateCredential().then(cred => setW3cCredential(cred))
     }
 
-    if (!(w3cCredential instanceof W3cCredentialRecord)) {
+    if (!w3cCredential) {
       return
     }
 
@@ -186,7 +161,7 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
       language: i18n.language,
     }
 
-    const jsonLdValues = formatCredentialSubject(w3cCredential.credential.credentialSubject)
+    const jsonLdValues = formatCredentialSubject(getCredentialSubject(w3cCredential))
     setTables(jsonLdValues)
 
     OCABundleResolver.resolveAllBundles(params).then(bundle => {
@@ -340,7 +315,36 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
       </View>
     )
   }
+  const handleCopyCredential = () => {
+    try {
+      const credentialPayload = JSON.stringify(credential, null, 2)
+      Clipboard.setString(credentialPayload)
+      Toast.show({
+        type: ToastType.Success,
+        text1: 'CredentialCopied',
+        text2: 'Credential Copied',
+      })
+    } catch (error) {
+      Toast.show({
+        type: ToastType.Error,
+        text1: 'Failed',
+        text2: 'Failed To Copy Credential',
+      })
+    }
+  }
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={handleCopyCredential}
+          style={{ marginRight: 15 }}
+          testID={testIdWithKey('CopyCredentialButton')}>
+          <Icon name="content-copy" size={24} color={'#FFF'} />
+        </TouchableOpacity>
+      ),
+    })
+  }, [navigation, credential])
   const generateQRCodeString = async (text: string) => {
     return toQRCodeString(text, {
       width: 95,
@@ -381,30 +385,24 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
         // Escaping the placeholder to avoid regex issues
         const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
         // Replacing the placeholder with the actual value
-        content = content.replace(new RegExp(escapedPlaceholder, 'g'), certificateAttributes[key])
+        let value = certificateAttributes[key]
+        if (Array.isArray(value)) {
+          value = JSON.stringify(value, null, 2)
+        }
+        if (typeof value === 'object' && value !== null) {
+          value = JSON.stringify(value, null, 2)
+        }
+        content = content.replace(new RegExp(escapedPlaceholder, 'g'), value)
       })
 
-      const options: RNHTMLtoPDF.Options = {
-        html: content,
-        fileName: w3cCredential?.credential.type[1],
-        padding: 0,
-        directory: 'Documents',
-        ...getPageSize(prettyVc),
-      }
-
-      const file = await RNHTMLtoPDF.convert(options)
-
-      let filePath = file.filePath as string
-
-      if (Platform.OS === 'android') {
-        filePath = 'file://' + filePath
-      }
-
-      navigation.navigate(Screens.RenderCertificate, {
-        filePath,
-      })
-
-      setIsGeneratingPdf(false)
+      setTimeout(() => {
+        navigation.navigate(Screens.RenderCertificate, {
+          content,
+          certificateAttributes,
+          w3cCredential,
+        })
+        setIsGeneratingPdf(false)
+      }, 100)
     } catch (error) {
       setIsGeneratingPdf(false)
       // eslint-disable-next-line no-console

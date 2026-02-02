@@ -1,4 +1,3 @@
-import { useAdeyaAgent } from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,6 +7,7 @@ import HistoryListItem from '../components/History/HistoryListItem'
 import { getGenericRecordsByQuery } from '../components/History/HistoryManager'
 import { CustomRecord, RecordType } from '../components/History/types'
 import KeyboardView from '../components/views/KeyboardView'
+import { useAdeyaAgent } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { HistoryStackParams } from '../types/navigators'
 

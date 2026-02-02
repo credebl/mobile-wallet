@@ -4,7 +4,6 @@ import {
   CredentialExchangeRecord,
   updateCredentialExchangeRecord,
   deleteCredentialExchangeRecordById,
-  useConnections,
 } from '@adeya/ssi'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { BrandingOverlayType, CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
@@ -31,6 +30,7 @@ import Record from '../components/record/Record'
 import RecordRemove from '../components/record/RecordRemove'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
+import { useConnections } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'

@@ -8,7 +8,7 @@ import {
   getProofRequestAgentMessage,
 } from '@adeya/ssi'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { V2RequestPresentationMessage } from '@credo-ts/core'
+import { V2RequestPresentationMessage } from '@credo-ts/didcomm'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useState, useEffect } from 'react'

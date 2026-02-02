@@ -1,6 +1,7 @@
-import { useProofs, ProofExchangeRecord } from '@adeya/ssi'
+import { ProofExchangeRecord } from '@adeya/ssi'
 import { useMemo } from 'react'
 
+import { useProofs } from '../../app/contexts/agent'
 import { ProofMetadata, ProofCustomMetadata } from '../types/metadata'
 
 export const useProofsByTemplateId = (templateId: string): ProofExchangeRecord[] => {

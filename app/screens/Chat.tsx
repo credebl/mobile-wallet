@@ -1,6 +1,4 @@
 import {
-  useBasicMessagesByConnectionId,
-  useConnectionById,
   BasicMessageRecord,
   CredentialExchangeRecord,
   CredentialState,
@@ -23,6 +21,7 @@ import ActionSlider from '../components/chat/ActionSlider'
 import { renderActions } from '../components/chat/ChatActions'
 import { ChatEvent } from '../components/chat/ChatEvent'
 import { ChatMessage, ExtendedChatMessage, CallbackType } from '../components/chat/ChatMessage'
+import { useBasicMessagesByConnectionId, useConnectionById } from '../contexts/agent'
 import { useNetwork } from '../contexts/network'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
@@ -223,7 +222,7 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
               [ProofState.PresentationSent]: toProofDetails,
               [ProofState.PresentationReceived]: toProofDetails,
               [ProofState.RequestReceived]: () => {
-                agent.proofs.getFormatData(record.id).then(value => {
+                agent.modules.proofs.getFormatData(record.id).then(value => {
                   if (value?.request?.indy) {
                     navigation.navigate(Stacks.ContactStack as any, {
                       screen: Screens.ProofRequest,

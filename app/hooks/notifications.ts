@@ -1,6 +1,4 @@
 import {
-  useCredentialByState,
-  useProofByState,
   CredentialExchangeRecord as CredentialRecord,
   CredentialState,
   ProofExchangeRecord,
@@ -8,6 +6,7 @@ import {
 } from '@adeya/ssi'
 
 import { ProofCustomMetadata, ProofMetadata } from '../../verifier'
+import { useCredentialByState, useProofByState } from '../contexts/agent'
 import { CredentialMetadata, customMetadata } from '../types/metadata'
 
 interface Notifications {

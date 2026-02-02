@@ -98,7 +98,7 @@ const isMediatorCapable = async (agent: AdeyaAgent): Promise<boolean | undefined
   const mediator = await _getMediatorConnection(agent)
   if (!mediator) return
 
-  const response = await agent.discovery.queryFeatures({
+  const response = await agent.modules.discovery.queryFeatures({
     awaitDisclosures: true,
     connectionId: mediator.id,
     protocolVersion: 'v1',

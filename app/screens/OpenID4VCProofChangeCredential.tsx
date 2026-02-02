@@ -15,7 +15,7 @@ const OpenID4VCProofChangeCredential: React.FC<ProofChangeProps> = ({ route, nav
   if (!route?.params) {
     throw new Error('Change credential route params were not set properly')
   }
-  const { selectedCred, onCredChange } = route.params
+  const { selectedCred, altCredentials, onCredChange } = route.params
 
   const { ColorPallet, TextTheme } = useTheme()
   const { t } = useTranslation()
@@ -58,9 +58,9 @@ const OpenID4VCProofChangeCredential: React.FC<ProofChangeProps> = ({ route, nav
     const displayItems = [
       { label: 'Issuer', value: item?.issuerName },
       ...Object.entries(item?.disclosedPayload || {})
-        .filter(([key]) => key.toLowerCase() !== 'id') // Exclude the "Id" field
+        .filter(([key]) => key.toLowerCase() !== 'id')
         .map(([key, value]) => ({
-          label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the key
+          label: key.charAt(0).toUpperCase() + key.slice(1),
           value: value?.toString() ?? '',
         })),
     ]
@@ -90,7 +90,7 @@ const OpenID4VCProofChangeCredential: React.FC<ProofChangeProps> = ({ route, nav
   return (
     <SafeAreaView style={styles.pageContainer} edges={['bottom', 'left', 'right']}>
       <FlatList
-        data={selectedCred}
+        data={altCredentials || []}
         ListHeaderComponent={listHeader}
         renderItem={renderCredential}
         keyExtractor={item => item?.id ?? ''}

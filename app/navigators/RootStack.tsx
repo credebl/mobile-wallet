@@ -1,4 +1,6 @@
-import { deleteConnectionRecordById, ProofState, useProofByState } from '@adeya/ssi'
+import { deleteConnectionRecordById, ProofState } from '@adeya/ssi'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { MessageReceiver } from '@credo-ts/didcomm'
 import { useNavigation } from '@react-navigation/core'
 import { createStackNavigator, StackCardStyleInterpolator, StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useRef, useState } from 'react'
@@ -9,6 +11,7 @@ import Toast from 'react-native-toast-message'
 import { ProofCustomMetadata, ProofMetadata } from '../../verifier'
 import { ToastType } from '../components/toast/BaseToast'
 import { walletTimeout } from '../constants'
+import { useProofByState } from '../contexts/agent'
 import { useAuth } from '../contexts/auth'
 import { useConfiguration } from '../contexts/configuration'
 import { DispatchAction } from '../contexts/reducers/store'
@@ -124,7 +127,8 @@ const RootStack: React.FC = () => {
         try {
           const json = getJson(invitationUrl)
           if (json) {
-            await agent?.receiveMessage(json)
+            const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
+            await messageReceiver.receiveMessage(json)
             navigation.getParent()?.navigate(Stacks.ConnectionStack, {
               screen: Screens.Connection,
               params: { threadId: json['@id'] },

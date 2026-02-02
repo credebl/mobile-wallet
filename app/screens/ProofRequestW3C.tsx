@@ -7,8 +7,6 @@ import {
   DifPresentationExchangeProofFormatService,
   GetCredentialsForRequestReturn,
   sendProofProblemReport,
-  useConnectionById,
-  useProofById,
   utils,
 } from '@adeya/ssi'
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -24,6 +22,7 @@ import { CredentialCard } from '../components/misc'
 import ConnectionImage from '../components/misc/ConnectionImage'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { CREDENTIAL, EventTypes } from '../constants'
+import { useProofById, useConnectionById } from '../contexts/agent'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
@@ -252,7 +251,8 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
       const proofCreds = { ...retrievedCredentials?.attributes }
 
       Object.keys(proofCreds).forEach(key => {
-        proofCreds[key] = [proofCreds[key][0].credentialRecord]
+        // proofCreds[key] = [proofCreds[key][0].credentialRecord]
+        proofCreds[key] = [proofCreds[key][0]]
       })
 
       const proofFormats = {

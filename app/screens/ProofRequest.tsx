@@ -10,8 +10,6 @@ import {
   deleteConnectionRecordById,
   getProofFormatData,
   sendProofProblemReport,
-  useConnectionById,
-  useProofById,
 } from '@adeya/ssi'
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -28,6 +26,7 @@ import { CredentialCard } from '../components/misc'
 import ConnectionImage from '../components/misc/ConnectionImage'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { EventTypes } from '../constants'
+import { useConnectionById, useProofById } from '../contexts/agent'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'

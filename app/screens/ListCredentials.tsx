@@ -5,10 +5,11 @@ import {
   GenericCredentialExchangeRecord,
   getAllW3cCredentialRecords,
   openId4VcCredentialMetadataKey,
-  useConnections,
-  useCredentialByState,
   W3cCredentialRecord,
+  SdJwtVcRecord,
 } from '@adeya/ssi'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { MdocRecord } from '@credo-ts/core'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
@@ -20,9 +21,11 @@ import { useOpenIDCredentials } from '../components/Provider/OpenIDCredentialRec
 import ScanButton from '../components/common/ScanButton'
 import CredentialCard from '../components/misc/CredentialCard'
 import { OpenIDCredScreenMode } from '../constants'
+import { useConnections, useCredentialByState } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { CredentialStackParams, Screens } from '../types/navigators'
 import { useAppAgent } from '../utils/agent'
+import { getCredentialFormat } from '../utils/helpers'
 
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string
@@ -37,17 +40,35 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
   const { agent } = useAppAgent()
   const { credentialEmptyList: CredentialEmptyList } = useConfiguration()
   const {
-    openIdState: { w3cCredentialRecords },
+    openIdState: { w3cCredentialRecords, sdJwtVcRecords, mdocRecords },
   } = useOpenIDCredentials()
-  const credentials: GenericCredentialExchangeRecord[] = [
+  const credentials: (GenericCredentialExchangeRecord | W3cCredentialRecord | SdJwtVcRecord | MdocRecord)[] = [
     ...useCredentialByState(CredentialState.CredentialReceived),
     ...useCredentialByState(CredentialState.Done),
     ...w3cCredentialRecords,
+    ...(sdJwtVcRecords ?? []),
+    ...(mdocRecords ?? []),
   ]
-  const [credentialList, setCredentialList] = useState<(CredentialExchangeRecord | EnhancedW3CRecord)[] | undefined>([])
+  const [credentialList, setCredentialList] = useState<
+    (CredentialExchangeRecord | EnhancedW3CRecord | SdJwtVcRecord | MdocRecord)[]
+  >([])
   const { records: connectionRecords } = useConnections()
 
   const navigation = useNavigation<StackNavigationProp<CredentialStackParams>>()
+
+  const getSchemaId = (credential: any): string => {
+    if (credential instanceof W3cCredentialRecord) {
+      try {
+        const credentialData = credential.credential?.credential || credential.credential
+        if (credentialData?.type && Array.isArray(credentialData.type)) {
+          return credentialData.type[1] || credentialData.type[0] || ''
+        }
+      } catch (e) {
+        // Fallback
+      }
+    }
+    return ''
+  }
 
   useEffect(() => {
     const updateCredentials = async () => {
@@ -62,16 +83,15 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
           !Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey) &&
           !Object.keys(credential.metadata.data).includes(AnonCredsCredentialMetadataKey)
         ) {
-          const credentialRecordId = credential?.credentials[0].credentialRecordId
+          const credentialRecordId = credential?.credentials[0]?.credentialRecordId
           try {
             const record = w3cCredentialRecords.find(record => record.id === credentialRecordId)
-            if (!credential?.connectionId) {
-              throw new Error('Connection Id notfound')
+            if (credential?.connectionId) {
+              const connection = connectionRecords.find(connection => connection.id === credential?.connectionId)
+              const enhancedRecord = record as EnhancedW3CRecord
+              enhancedRecord.connectionLabel = connection?.theirLabel
+              return enhancedRecord
             }
-            const connection = connectionRecords.find(connection => connection.id === credential?.connectionId)
-            const enhancedRecord = record as EnhancedW3CRecord
-            enhancedRecord.connectionLabel = connection?.theirLabel
-            return enhancedRecord
           } catch (e: unknown) {
             throw new Error(`${e}`)
           }
@@ -84,7 +104,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
     updateCredentials().then(updatedCredentials => {
       setCredentialList(updatedCredentials)
     })
-  }, [credentialList])
+  }, [agent, w3cCredentialRecords, sdJwtVcRecords, mdocRecords, connectionRecords])
 
   const styles = StyleSheet.create({
     container: { flex: 1, marginHorizontal: 10 },
@@ -107,15 +127,21 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
       <FlatList
         horizontal={isHorizontal}
         showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         style={isHorizontal ? styles.credentialList : styles.credentialsCardList}
         data={credentialList?.sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf())}
         keyExtractor={credential => credential.id}
         renderItem={({ item: credential }) => {
+          const format = getCredentialFormat(credential)
+          const schemaId = getSchemaId(credential)
+          const connectionLabel = (credential as any)?.connectionLabel || ''
+
           return (
             <View style={styles.renderView}>
               {credential instanceof CredentialExchangeRecord ? (
                 <CredentialCard
                   credential={credential}
+                  credentialFormat={format}
                   onPress={() =>
                     navigation.navigate(Screens.CredentialDetails, {
                       credential: credential as CredentialExchangeRecord,
@@ -124,16 +150,19 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
                 />
               ) : (
                 <CredentialCard
-                  schemaId={credential.credential.type[1]}
-                  connectionLabel={credential.connectionLabel}
                   credential={credential}
+                  credentialFormat={format}
+                  schemaId={schemaId}
+                  connectionLabel={connectionLabel}
                   onPress={() => {
-                    if (!Object.keys(credential.metadata.data).includes(openId4VcCredentialMetadataKey)) {
-                      navigation.navigate(Screens.CredentialDetailsW3C, { credential: credential })
-                    } else {
+                    if (credential instanceof SdJwtVcRecord || credential instanceof MdocRecord) {
                       navigation.navigate(Screens.OpenIDCredentialDetails, {
                         credential: credential,
                         screenMode: OpenIDCredScreenMode.details,
+                      })
+                    } else if (credential instanceof W3cCredentialRecord) {
+                      navigation.navigate(Screens.CredentialDetailsW3C, {
+                        credential: credential,
                       })
                     }
                   }}

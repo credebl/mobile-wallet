@@ -2,28 +2,30 @@ import {
   ClaimFormat,
   CredentialMetadata,
   DisplayImage,
-  formatDifPexCredentialsForRequest,
-  sanitizeString,
+  FormattedSubmissionEntrySatisfied,
   shareProof,
-  useAdeyaAgent,
 } from '@adeya/ssi'
 import { StackScreenProps } from '@react-navigation/stack'
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { EventTypes } from '../../constants'
+import { useAdeyaAgent } from '../../contexts/agent/AgentProvider'
 import { useTheme } from '../../contexts/theme'
 import ProofRequestAccept from '../../screens/ProofRequestAccept'
-import { ListItems, TextTheme } from '../../theme'
+import { ListItems } from '../../theme'
 import { BifoldError } from '../../types/error'
 import { NotificationStackParams, Screens, Stacks, TabStacks } from '../../types/navigators'
+import { W3CCredentialAttributeField } from '../../types/record'
 import { ModalUsage } from '../../types/remove'
+import { formatCredentialSubject } from '../../utils/credential'
 import { testIdWithKey } from '../../utils/testable'
 import Button, { ButtonType } from '../buttons/Button'
 import CommonRemoveModal from '../modals/CommonRemoveModal'
+import W3CCredentialRecord from '../record/W3CCredentialRecord'
 
 import { OpenIDCredentialRowCard } from './CredentialRowCard'
 
@@ -65,53 +67,54 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
   const [declineModalVisible, setDeclineModalVisible] = useState(false)
   const [buttonsVisible, setButtonsVisible] = useState(true)
   const [acceptModalVisible, setAcceptModalVisible] = useState(false)
-  const [selectedCredId, setSelectedCredId] = useState<string | null>(null)
+  const [selectedCredentials, setSelectedCredentials] = useState<{ [inputDescriptorId: string]: string }>({})
 
-  const { ColorPallet } = useTheme()
+  const { ColorPallet, TextTheme } = useTheme()
   const { t } = useTranslation()
   const { agent } = useAdeyaAgent()
 
+  const satisfiedEntries = credential?.formattedSubmission.entries.filter(
+    (e): e is FormattedSubmissionEntrySatisfied => e.isSatisfied,
+  )
   const toggleDeclineModalVisible = () => setDeclineModalVisible(!declineModalVisible)
 
-  const submission = useMemo(
-    () =>
-      credential && credential.credentialsForRequest
-        ? formatDifPexCredentialsForRequest(credential.credentialsForRequest)
-        : undefined,
-    [credential],
-  )
+  const submission = useMemo(() => {
+    const submission = credential?.formattedSubmission
+    return submission
+  }, [credential])
 
-  const selectedCredentials = useMemo(() => {
-    return submission?.entries.reduce((acc, entry) => {
-      // Check if the entry is satisfied and has credentials
-      if (entry.isSatisfied) {
-        // Iterate through the credentials for the entry
-        const selectedCredential = entry.credentials.find(item => item.id === selectedCredId)
-        if (selectedCredential) {
-          // If found, add it to the accumulator with the appropriate inputDescriptorId
-          return { ...acc, [entry.inputDescriptorId]: selectedCredential.id }
+  useEffect(() => {
+    if (submission?.areAllSatisfied) {
+      const preSelected: { [inputDescriptorId: string]: string } = {}
+
+      submission.entries?.forEach((entry: any) => {
+        if (entry.inputDescriptorId && entry.credentials && entry.credentials.length > 0) {
+          const firstCredential = entry.credentials[0]?.credential
+          if (firstCredential?.id) {
+            const cleanCredentialId = firstCredential.id.replace(/^(w3c-credential-|sd-jwt-vc-|mdoc-)/, '')
+            preSelected[entry.inputDescriptorId] = cleanCredentialId
+          }
         }
-      }
+      })
+      setSelectedCredentials(preSelected)
+    }
+  }, [submission])
 
-      return acc
-    }, {}) // Default empty object for accumulator
-  }, [submission, selectedCredId])
-
-  useEffect(() => {}, [selectedCredentials])
-
-  const { verifierName } = useMemo(() => {
-    return { verifierName: credential?.verifierHostName }
+  const verifierName = useMemo(() => {
+    return credential?.verifier?.name || credential?.verifier?.hostName || 'Unknown Verifier'
   }, [credential])
 
   const handleAcceptTouched = async () => {
     try {
-      if (!agent || !credential.credentialsForRequest || !selectedCredentials) {
+      if (!agent) {
         return
       }
+
+      setButtonsVisible(false)
+
       await shareProof({
         agent,
-        authorizationRequest: credential.authorizationRequest,
-        credentialsForRequest: credential.credentialsForRequest,
+        resolvedRequest: credential,
         selectedCredentials,
       })
 
@@ -128,24 +131,8 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
     navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
   }
 
-  const renderHeader = () => {
-    return (
-      <View style={styles.headerTextContainer}>
-        <Text style={styles.headerText} testID={testIdWithKey('HeaderText')}>
-          <Text style={TextTheme.title}>
-            You have received an information request
-            {verifierName ? ` from ${verifierName}` : ''}.
-          </Text>
-        </Text>
-      </View>
-    )
-  }
-
-  const onCredChange = (credId: string) => {
-    setSelectedCredId(credId)
-  }
   const handleAltCredChange = (
-    selectedCred: {
+    credentials: {
       id: string
       credentialName: string
       issuerName?: string
@@ -156,61 +143,127 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
       backgroundImage?: DisplayImage
       claimFormat: ClaimFormat | undefined | 'AnonCreds'
     }[],
-    proofId: string,
+    inputDescriptorId: string,
   ) => {
+    const onCredChange = (credId: string) => {
+      const cleanCredentialId = credId.replace(/^(w3c-credential-|sd-jwt-vc-|mdoc-)/, '')
+      setSelectedCredentials(prev => ({
+        ...prev,
+        [inputDescriptorId]: cleanCredentialId,
+      }))
+    }
+
+    const currentSelectedId =
+      selectedCredentials[inputDescriptorId] || credentials[0]?.id?.replace(/^(w3c-credential-|sd-jwt-vc-|mdoc-)/, '')
+
     navigation.getParent()?.navigate(Stacks.ProofRequestsStack, {
       screen: Screens.ProofChangeCredentialOpenId4VP,
       params: {
-        selectedCred,
-        proofId,
+        selectedCred: currentSelectedId,
+        altCredentials: credentials,
         onCredChange,
       },
     })
   }
+
+  const renderHeader = () => {
+    return (
+      <View style={styles.headerTextContainer}>
+        <Text style={styles.headerText} testID={testIdWithKey('HeaderText')}>
+          <Text style={TextTheme.title}>You have received an information request from {verifierName}.</Text>
+        </Text>
+      </View>
+    )
+  }
+
   const renderBody = () => {
-    if (!submission) return null
+    if (!satisfiedEntries) return null
 
     return (
       <View style={styles.credentialsList}>
-        {submission.entries.map((credential, index) => {
-          //TODO: Support multiple credentials
-          const selectedCredential = credential.credentials[0]
-          return (
-            <View key={index}>
-              <OpenIDCredentialRowCard
-                name={credential.name}
-                bgImage={selectedCredential.backgroundImage?.url}
-                issuer={verifierName}
-                onPress={() => {}}
-              />
-              {credential.isSatisfied && selectedCredential?.requestedAttributes ? (
-                <View style={{ marginTop: 16, gap: 8 }}>
-                  {credential.description && <Text style={TextTheme.labelSubtitle}>{credential.description}</Text>}
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                    {selectedCredential.requestedAttributes.map(attribute => (
-                      <View key={attribute} style={{ flexBasis: '50%' }}>
-                        <Text style={TextTheme.normal}>• {sanitizeString(attribute)}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              ) : (
+        {submission.entries?.map((entry: any, index: number) => {
+          if (!entry.credentials || entry.credentials.length === 0) {
+            return (
+              <View key={entry.inputDescriptorId || index}>
                 <Text style={TextTheme.title}>This credential is not present in your wallet.</Text>
-              )}
-              {credential.credentials.length > 1 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    handleAltCredChange(credential.credentials, credential.inputDescriptorId)
-                  }}
-                  testID={testIdWithKey('changeCredential')}
-                  style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 40 }}>
-                  <Text style={styles.credActionText}>{t('ProofRequest.ChangeCredential')}</Text>
-                  <Icon
-                    style={{ ...styles.credActionText, fontSize: styles.credActionText.fontSize + 5 }}
-                    name="chevron-right"
-                  />
-                </TouchableOpacity>
-              )}
+              </View>
+            )
+          }
+
+          const selectedCredId = selectedCredentials[entry.inputDescriptorId]
+          const selectedCred =
+            entry.credentials.find((c: any) => {
+              const cleanId = c.credential?.id?.replace(/^(sd-jwt-vc-|mdoc-)/, '')
+              return cleanId === selectedCredId
+            }) || entry.credentials[0]
+
+          const credentialData = selectedCred?.credential
+
+          const disclosedData = selectedCred?.disclosed
+
+          const attributesToDisplay = disclosedData?.attributes || credentialData?.rawAttributes || {}
+
+          const formattedAttributes = formatCredentialSubject(attributesToDisplay)
+
+          const initializeExpandState = (attrs: W3CCredentialAttributeField[]): W3CCredentialAttributeField[] => {
+            return attrs
+              .filter(attr => {
+                const attrKey = attr.key || ''
+                return !(
+                  attrKey?.includes('age_over_18') ||
+                  attrKey?.includes('age_over_60') ||
+                  attrKey?.includes('Age Over 18') ||
+                  attrKey?.includes('Age Over 60')
+                )
+              })
+              .map(attr => {
+                const newAttr = { ...attr, isExpanded: attr.level === 0 }
+                if (newAttr.children && newAttr.children.length > 0) {
+                  newAttr.children = initializeExpandState(newAttr.children)
+                }
+                return newAttr
+              })
+          }
+
+          const tables = initializeExpandState(formattedAttributes)
+
+          const header = () => {
+            return (
+              <View style={{ marginHorizontal: 15 }}>
+                <OpenIDCredentialRowCard
+                  name={credentialData?.display?.name || credentialData?.metadata?.type || 'Credential'}
+                  bgImage={credentialData?.display?.backgroundImage?.url}
+                  onPress={() => {}}
+                  txtColor={credentialData?.display.textColor}
+                  issuerLogo={credentialData?.display?.issuer?.logo?.url}
+                />
+                {entry.credentials.length > 1 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleAltCredChange(entry.credentials, entry.inputDescriptorId)
+                    }}
+                    testID={testIdWithKey('changeCredential')}
+                    style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
+                    <Text style={styles.credActionText}>{t('ProofRequest.ChangeCredential')}</Text>
+                    <Icon
+                      style={{ ...styles.credActionText, fontSize: styles.credActionText.fontSize + 5 }}
+                      name="chevron-right"
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )
+          }
+
+          return (
+            <View key={entry.inputDescriptorId || index}>
+              <W3CCredentialRecord
+                tables={tables}
+                fields={[]}
+                hideFieldValues={false}
+                header={header}
+                footer={() => null}
+              />
             </View>
           )
         })}
@@ -226,7 +279,7 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
     accessibilityLabel: string,
   ) => {
     return (
-      <View style={styles.footerButton}>
+      <View style={{ flex: 1, paddingHorizontal: 5 }}>
         <Button
           title={title}
           accessibilityLabel={accessibilityLabel}
@@ -243,18 +296,14 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
     return (
       <View
         style={{
-          paddingHorizontal: 25,
+          paddingHorizontal: 20,
           paddingVertical: 16,
           paddingBottom: 26,
           backgroundColor: ColorPallet.brand.secondaryBackground,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}>
-        {footerButton(
-          t('Global.Share'),
-          handleAcceptTouched,
-          ButtonType.Primary,
-          testIdWithKey('Share'),
-          t('Global.Share'),
-        )}
         {footerButton(
           t('Global.Decline'),
           toggleDeclineModalVisible,
@@ -262,16 +311,23 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
           testIdWithKey('DeclineCredentialOffer'),
           t('Global.Decline'),
         )}
+        {footerButton(
+          t('Global.Share'),
+          handleAcceptTouched,
+          ButtonType.Primary,
+          testIdWithKey('Share'),
+          t('Global.Share'),
+        )}
       </View>
     )
   }
 
   return (
-    <SafeAreaView style={{ flexGrow: 1 }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={{ flexGrow: 1, flex: 1 }} edges={['bottom', 'left', 'right']}>
       <ScrollView>
         <View style={styles.pageContent}>
           {renderHeader()}
-          {submission?.purpose && <Text style={TextTheme.labelSubtitle}>{submission.purpose}</Text>}
+          {satisfiedEntries?.purpose && <Text style={TextTheme.labelSubtitle}>{satisfiedEntries.purpose}</Text>}
           {renderBody()}
         </View>
       </ScrollView>

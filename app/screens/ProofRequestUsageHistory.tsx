@@ -1,4 +1,4 @@
-import { useConnectionById, ProofExchangeRecord, ProofState } from '@adeya/ssi'
+import { ProofExchangeRecord, ProofState } from '@adeya/ssi'
 import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useProofsByTemplateId, isPresentationReceived } from '../../verifier'
 import EmptyList from '../components/misc/EmptyList'
+import { useConnectionById } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { ProofRequestsStackParams, Screens } from '../types/navigators'
 import { formatTime } from '../utils/helpers'

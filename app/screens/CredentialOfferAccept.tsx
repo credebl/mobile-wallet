@@ -1,4 +1,4 @@
-import { useCredentialById, CredentialState } from '@adeya/ssi'
+import { CredentialState } from '@adeya/ssi'
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -6,6 +6,7 @@ import { Platform, Modal, StatusBar, StyleSheet, Text, View, ScrollView, Accessi
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import Button, { ButtonType } from '../components/buttons/Button'
+import { useCredentialById } from '../contexts/agent'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'

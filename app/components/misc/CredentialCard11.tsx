@@ -1,4 +1,4 @@
-import { CredentialExchangeRecord, useConnections } from '@adeya/ssi'
+import { CredentialExchangeRecord } from '@adeya/ssi'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { Attribute, CredentialOverlay, Predicate } from '@hyperledger/aries-oca/build/legacy'
 import startCase from 'lodash.startcase'
@@ -8,12 +8,13 @@ import { Dimensions, FlatList, Image, ImageBackground, StyleSheet, Text, View, V
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
+import { useConnections } from '../../contexts/agent'
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
 import { CredentialStatus } from '../../types/credential-status'
 import { GenericFn } from '../../types/fn'
 import { credentialTextColor, getCredentialIdentifiers, toImageSource } from '../../utils/credential'
-import { getCredentialConnectionLabel, isDataUrl } from '../../utils/helpers'
+import { getCredentialConnectionLabel } from '../../utils/helpers'
 import { testIdWithKey } from '../../utils/testable'
 
 import CardWatermark from './CardWatermark'
@@ -34,6 +35,7 @@ interface CredentialCard11Props {
   connectionLabel?: string
   hasAltCredentials?: boolean
   handleAltCredChange?: () => void
+  credentialFormat?: string
 }
 
 const { width } = Dimensions.get('screen')
@@ -86,6 +88,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
   connectionLabel = '',
   hasAltCredentials,
   handleAltCredChange,
+  credentialFormat,
 }) => {
   const { i18n, t } = useTranslation()
   const { ColorPallet, TextTheme, ListItems } = useTheme()
@@ -215,6 +218,26 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
       fontWeight: 'bold',
       textDecorationLine: 'underline',
     },
+    keyText: {
+      ...ListItems.recordAttributeLabel,
+      fontWeight: 'bold',
+    },
+    formatBadge: {
+      position: 'absolute',
+      bottom: 8,
+      right: 8,
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+      zIndex: 10,
+    },
+    formatText: {
+      color: '#FFFFFF',
+      fontSize: 10,
+      fontWeight: '600',
+      textTransform: 'uppercase',
+    },
   })
 
   useEffect(() => {
@@ -297,36 +320,47 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
     )
   }
 
-  const AttributeValue: React.FC<{ value: string | number | null }> = ({ value }) => {
-    return (
-      <>
-        {isDataUrl(value) ? (
-          <Image style={styles.imageAttr} source={{ uri: value as string }}></Image>
-        ) : (
-          <Text
-            style={[
-              TextTheme.normal,
-              styles.textContainer,
-              {
-                lineHeight: 24,
-                width: '85%',
-                fontWeight: 'bold',
-              },
-            ]}
-            testID={testIdWithKey('AttributeValue')}>
-            {value}
-          </Text>
-        )}
-      </>
-    )
-  }
-
   const parseAttribute = (item: (Attribute & Predicate) | undefined) => {
     return { label: item?.label ?? item?.name ?? '', value: item?.value || `${item?.pType} ${item?.pValue}` }
   }
 
   const renderCardAttribute = (item: Attribute & Predicate) => {
     const { label, value } = parseAttribute(item)
+
+    const renderValue = (val: any, level: number = 0) => {
+      if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') {
+        return <Text style={[styles.keyText, { paddingLeft: level * 8 }]}>{String(val)}</Text>
+      }
+
+      if (Array.isArray(val)) {
+        return val.map((item, index) => (
+          <View key={index} style={{ marginTop: 5 }}>
+            {renderValue(item, level + 1)}
+          </View>
+        ))
+      }
+
+      if (typeof val === 'object' && val !== null) {
+        return Object.entries(val).map(([key, val], idx) => (
+          <View key={idx} style={{ paddingLeft: level * 8, marginTop: 4, width: '96%' }}>
+            {typeof val === 'object' && val !== null ? (
+              <>
+                <Text style={styles.keyText}>{startCase(key)}:</Text>
+                {renderValue(val, level + 1)}
+              </>
+            ) : (
+              <Text>
+                <Text style={styles.keyText}>{startCase(key)}: </Text>
+                <Text>{String(val)}</Text>
+              </Text>
+            )}
+          </View>
+        ))
+      }
+
+      return null
+    }
+
     return (
       item && (
         <View style={{ marginTop: 15 }}>
@@ -343,7 +377,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
           ) : (
             <AttributeLabel label={label} />
           )}
-          {!(item?.value || item?.pValue) ? null : <AttributeValue value={value} />}
+          {!(item?.value || item?.pValue) ? null : renderValue(value)}
         </View>
       )
     )
@@ -363,8 +397,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
                     styles.textContainer,
                     {
                       lineHeight: 19,
-                      opacity: 0.8,
-                      flex: 1,
+                      width: '85%',
                       flexWrap: 'wrap',
                     },
                   ]}>
@@ -515,6 +548,11 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
             }
           })
         }>
+        {credentialFormat && (
+          <View style={styles.formatBadge}>
+            <Text style={styles.formatText}>{credentialFormat}</Text>
+          </View>
+        )}
         <CredentialCardSecondaryBody />
         <CredentialCardLogo />
         <CredentialCardPrimaryBody />

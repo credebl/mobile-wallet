@@ -1,7 +1,8 @@
-import { CredentialState, useCredentialByState } from '@adeya/ssi'
+import { CredentialState } from '@adeya/ssi'
 import { useNavigation } from '@react-navigation/native'
 import { useEffect } from 'react'
 
+import { useCredentialByState } from '../contexts/agent'
 import { Screens, Stacks } from '../types/navigators'
 
 export const useCredentialOfferTrigger = (workflowConnectionId?: string): void => {

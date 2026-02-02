@@ -10,27 +10,30 @@ import {
   SingleContextStorageLruCache,
   WebDidResolver,
   getAgentModules,
-  useAdeyaAgent,
 } from '@adeya/ssi'
-import { PolygonDidResolver, PolygonModule } from '@ayanworks/credo-polygon-w3c-module'
+// import { PolygonDidResolver, PolygonModule } from '@ayanworks/credo-polygon-w3c-module'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { KeyDidRegistrar, KeyDidResolver } from '@credo-ts/core'
 import { Config } from 'react-native-config'
 
 import indyLedgers from '../../configs/ledgers/indy'
+// eslint-disable-next-line import/no-cycle
+import { useAdeyaAgent } from '../contexts/agent/AgentProvider'
+
 export const adeyaAgentModules = () => {
   return {
     ...getAgentModules({
       mediatorInvitationUrl: Config.MEDIATOR_URL!,
       mediatorPickupStrategy: MediatorPickupStrategy.PickUpV2LiveMode,
       indyNetworks: indyLedgers,
+      trustedCertificates: [],
     }),
-    polygon: new PolygonModule({}),
+    // polygon: new PolygonModule({}),
     dids: new DidsModule({
       resolvers: [
         new WebDidResolver(),
         new KeyDidResolver(),
-        new PolygonDidResolver(),
+        // new PolygonDidResolver(),
         new IndyVdrIndyDidResolver(),
         new JwkDidResolver(),
       ],

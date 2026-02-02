@@ -1,7 +1,8 @@
-import { useProofs, ProofExchangeRecord, useCredentials, useProofById } from '@adeya/ssi'
+import { ProofExchangeRecord } from '@adeya/ssi'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useProofs, useCredentials, useProofById } from '../contexts/agent'
 import { useAppAgent } from '../utils/agent'
 import { retrieveCredentialsForProof } from '../utils/helpers'
 

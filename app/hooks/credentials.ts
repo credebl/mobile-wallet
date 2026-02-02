@@ -1,5 +1,7 @@
-import { useCredentials, CredentialExchangeRecord } from '@adeya/ssi'
+import { CredentialExchangeRecord } from '@adeya/ssi'
 import { useMemo } from 'react'
+
+import { useCredentials } from '../contexts/agent'
 
 export const useCredentialsByConnectionId = (connectionId: string): CredentialExchangeRecord[] => {
   const { records: credentials } = useCredentials()

@@ -1,6 +1,6 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
-import { ProofExchangeRecord, ProofState, useConnectionById, useProofById } from '@adeya/ssi'
+import { ProofExchangeRecord, ProofState } from '@adeya/ssi'
 import { useFocusEffect } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -13,6 +13,7 @@ import { ProofCustomMetadata, ProofMetadata, GroupedSharedProofDataItem, markPro
 import InformationReceived from '../assets/img/information-received.svg'
 import Button, { ButtonType } from '../components/buttons/Button'
 import SharedProofData from '../components/misc/SharedProofData'
+import { useConnectionById, useProofById } from '../contexts/agent'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { ProofRequestsStackParams, Screens } from '../types/navigators'
@@ -274,10 +275,10 @@ const ProofDetails: React.FC<ProofDetailsProps> = ({ route, navigation }) => {
   useEffect(() => {
     return () => {
       if (!store.preferences.useDataRetention) {
-        agent?.proofs.deleteById(recordId)
+        agent?.modules.proofs.deleteById(recordId)
       }
       if ((record?.metadata.get(ProofMetadata.customMetadata) as ProofCustomMetadata).delete_conn_after_seen) {
-        agent?.connections.deleteById(record?.connectionId ?? '')
+        agent?.modules.connections.deleteById(record?.connectionId ?? '')
       }
     }
   }, [])
