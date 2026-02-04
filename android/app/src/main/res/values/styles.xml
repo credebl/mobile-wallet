@@ -1,7 +1,10 @@
 <resources>
 
-    <style name="SplashScreenTheme" parent="SplashScreen_SplashTheme">
-        <item name="colorPrimaryDark">@color/statusbar_bg</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="SplashScreenTheme" parent="AppTheme">
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
