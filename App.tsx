@@ -73,7 +73,7 @@ const App = () => {
                         <RootStack />
                       </TourProvider>
                       <Toast topOffset={15} config={toastConfig} />
-                      <PushNotifications />
+                      {/* <PushNotifications /> */}
                     </NetworkProvider>
                   </AuthProvider>
                 </CommonUtilProvider>

@@ -1,4 +1,5 @@
 import { importWalletWithAgent, ConsoleLogger, LogLevel, InitConfig } from '@adeya/ssi'
+import { pick, types } from '@react-native-documents/picker'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import {
@@ -13,7 +14,6 @@ import {
   ScrollView,
 } from 'react-native'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import { isCancel, pickSingle, types } from 'react-native-document-picker'
 import * as RNFS from 'react-native-fs'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
@@ -180,12 +180,12 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
 
   const handleSelect = async () => {
     try {
-      const res = await pickSingle({
+      const [res] = await pick({
         type: [types.zip],
         copyTo: 'documentDirectory',
       })
 
-      if (!res.fileCopyUri) {
+      if (!res.uri) {
         Toast.show({
           type: ToastType.Error,
         })
@@ -193,7 +193,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
         return
       }
 
-      RNFS.stat(res.fileCopyUri)
+      RNFS.stat(res.uri)
         .then(stats => {
           setSelectedFilePath(stats.path)
         })
@@ -205,11 +205,6 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
         })
     } catch (error) {
       navigation.goBack()
-
-      // If user cancelled the document picker, do nothing
-      if (isCancel(error)) {
-        return
-      }
 
       Toast.show({
         type: ToastType.Error,

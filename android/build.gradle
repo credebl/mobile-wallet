@@ -2,20 +2,21 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "34.0.0"
+        buildToolsVersion = "36.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        ndkVersion = "25.1.8937393"
-        kotlinVersion = "1.9.24"
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.1.20"
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.5.2")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
         classpath("com.google.gms:google-services:4.4.1")
     }
 }
@@ -28,36 +29,38 @@ allprojects {
     }
 }
 
-subprojects { subproject ->
-    subproject.plugins.withId("com.android.application") {
-        subproject.android {
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
-            }
-        }
-    }
+// subprojects { subproject ->
+//     subproject.plugins.withId("com.android.application") {
+//         subproject.android {
+//             compileOptions {
+//                 sourceCompatibility JavaVersion.VERSION_17
+//                 targetCompatibility JavaVersion.VERSION_17
+//             }
+//         }
+//     }
 
-    subproject.plugins.withId("com.android.library") {
-        subproject.android {
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
-            }
-        }
-    }
+//     subproject.plugins.withId("com.android.library") {
+//         subproject.android {
+//             compileOptions {
+//                 sourceCompatibility JavaVersion.VERSION_17
+//                 targetCompatibility JavaVersion.VERSION_17
+//             }
+//         }
+//     }
 
-//    subproject.tasks.withType(KotlinCompile).configureEach {
-//        kotlinOptions {
-//            jvmTarget = "17"
-//        }
-//    }
+// //    subproject.tasks.withType(KotlinCompile).configureEach {
+// //        kotlinOptions {
+// //            jvmTarget = "17"
+// //        }
+// //    }
 
-    configurations.configureEach {
-        resolutionStrategy {
-            force "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-        }
-    }
-}
+//     configurations.configureEach {
+//         resolutionStrategy {
+//             force "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+//             force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+//             force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+//         }
+//     }
+// }
+
+apply plugin: "com.facebook.react.rootproject"
