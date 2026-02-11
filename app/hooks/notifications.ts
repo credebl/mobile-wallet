@@ -1,30 +1,31 @@
 import {
-  CredentialExchangeRecord as CredentialRecord,
-  CredentialState,
-  ProofExchangeRecord,
-  ProofState,
-} from '@adeya/ssi'
+  DidCommCredentialExchangeRecord as CredentialRecord,
+  DidCommCredentialState,
+  DidCommProofExchangeRecord,
+  DidCommProofState,
+  useCredentialByState,
+  useProofByState,
+} from '@credebl/ssi-mobile-didcomm'
 
 import { ProofCustomMetadata, ProofMetadata } from '../../verifier'
-import { useCredentialByState, useProofByState } from '../contexts/agent'
 import { CredentialMetadata, customMetadata } from '../types/metadata'
 
 interface Notifications {
   total: number
-  notifications: Array<CredentialRecord | ProofExchangeRecord>
+  notifications: Array<CredentialRecord | DidCommProofExchangeRecord>
 }
 
 export const useNotifications = (): Notifications => {
-  const offers = useCredentialByState(CredentialState.OfferReceived)
-  const proofsRequested = useProofByState(ProofState.RequestReceived)
-  const proofsDone = useProofByState([ProofState.Done, ProofState.PresentationReceived]).filter(
-    (proof: ProofExchangeRecord) => {
+  const offers = useCredentialByState(DidCommCredentialState.OfferReceived)
+  const proofsRequested = useProofByState(DidCommProofState.RequestReceived)
+  const proofsDone = useProofByState([DidCommProofState.Done, DidCommProofState.PresentationReceived]).filter(
+    (proof: DidCommProofExchangeRecord) => {
       if (proof.isVerified === undefined) return false
       const metadata = proof.metadata.get(ProofMetadata.customMetadata) as ProofCustomMetadata
       return !metadata?.details_seen
     },
   )
-  const revoked = useCredentialByState(CredentialState.Done).filter((cred: CredentialRecord) => {
+  const revoked = useCredentialByState(DidCommCredentialState.Done).filter((cred: CredentialRecord) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const metadata = cred!.metadata.get(CredentialMetadata.customMetadata) as customMetadata
     if (cred?.revocationNotification && metadata?.revoked_seen == undefined) {

@@ -1,4 +1,4 @@
-import { CredentialState } from '@adeya/ssi'
+import { DidCommCredentialState, useCredentialById } from '@credebl/ssi-mobile-didcomm'
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -6,7 +6,6 @@ import { Platform, Modal, StatusBar, StyleSheet, Text, View, ScrollView, Accessi
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import Button, { ButtonType } from '../components/buttons/Button'
-import { useCredentialById } from '../contexts/agent'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
@@ -81,7 +80,10 @@ const CredentialOfferAccept: React.FC<CredentialOfferAcceptProps> = ({ visible, 
     if (!credential) {
       return
     }
-    if (credential.state === CredentialState.CredentialReceived || credential.state === CredentialState.Done) {
+    if (
+      credential.state === DidCommCredentialState.CredentialReceived ||
+      credential.state === DidCommCredentialState.Done
+    ) {
       timer && clearTimeout(timer)
       setCredentialDeliveryStatus(DeliveryStatus.Completed)
     }
@@ -159,17 +161,18 @@ const CredentialOfferAccept: React.FC<CredentialOfferAcceptProps> = ({ visible, 
         </ScrollView>
 
         <View style={[styles.controlsContainer]}>
-          {credentialDeliveryStatus === DeliveryStatus.Pending && credential.state === CredentialState.RequestSent && (
-            <View>
-              <Button
-                title={t('Loading.BackToHome')}
-                accessibilityLabel={t('Loading.BackToHome')}
-                testID={testIdWithKey('BackToHome')}
-                onPress={onBackToHomeTouched}
-                buttonType={ButtonType.ModalSecondary}
-              />
-            </View>
-          )}
+          {credentialDeliveryStatus === DeliveryStatus.Pending &&
+            credential.state === DidCommCredentialState.RequestSent && (
+              <View>
+                <Button
+                  title={t('Loading.BackToHome')}
+                  accessibilityLabel={t('Loading.BackToHome')}
+                  testID={testIdWithKey('BackToHome')}
+                  onPress={onBackToHomeTouched}
+                  buttonType={ButtonType.ModalSecondary}
+                />
+              </View>
+            )}
 
           {credentialDeliveryStatus === DeliveryStatus.Completed && (
             <View>

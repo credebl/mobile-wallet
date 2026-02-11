@@ -1,4 +1,4 @@
-import { getCredentialForDisplay } from '@adeya/ssi'
+import { getCredentialForDisplay } from '@credebl/ssi-mobile-openid4vc'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
@@ -19,8 +19,8 @@ import { useTheme } from '../contexts/theme'
 import { DeliveryStackParams, Screens } from '../types/navigators'
 import { W3CCredentialAttribute } from '../types/record'
 import { ModalUsage } from '../types/remove'
-import { useAppAgent } from '../utils/agent'
 import { buildFieldsFromOpenIDTemplate, sanitizeString } from '../utils/credential'
+import { useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type OpenIDCredentialDetailsProps = StackScreenProps<DeliveryStackParams, Screens.OpenIDCredentialDetails>
@@ -35,11 +35,11 @@ const OpenIDCredentialDetails: React.FC<OpenIDCredentialDetailsProps> = ({ navig
   const fields = buildFieldsFromOpenIDTemplate(
     attributes && typeof attributes === 'object' && Object.keys(attributes as object).length === 0
       ? rawAttributes
-      : (attributes ?? rawAttributes),
+      : attributes ?? rawAttributes,
   )
   const { t } = useTranslation()
   const { ColorPallet, TextTheme } = useTheme()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { removeCredential } = useOpenIDCredentials()
   const [isRemoveModalDisplayed, setIsRemoveModalDisplayed] = useState(false)
 
@@ -129,7 +129,7 @@ const OpenIDCredentialDetails: React.FC<OpenIDCredentialDetailsProps> = ({ navig
 
   const handleRemove = async () => {
     try {
-      await removeCredential(agent, credential)
+      await removeCredential(sdk, credential)
       navigation.pop()
 
       await new Promise(resolve => setTimeout(resolve, 50))

@@ -1,4 +1,6 @@
-import { initializeAgent, ConsoleLogger, LogLevel, InitConfig } from '@adeya/ssi'
+import { ConsoleLogger, LogLevel, MobileSDKOptions, useMobileSDKInitializer } from '@credebl/ssi-mobile-core'
+import { DidCommMediatorPickupStrategy, DidCommSDK } from '@credebl/ssi-mobile-didcomm'
+import { OpenID4VCSDK } from '@credebl/ssi-mobile-openid4vc'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/core'
 import { CommonActions } from '@react-navigation/native'
@@ -24,13 +26,17 @@ import {
   Onboarding as StoreOnboardingState,
   Tours as ToursState,
 } from '../types/state'
-import { AdeyaAgent, useAppAgent, adeyaAgentModules } from '../utils/agent'
-import { getDefaultHolderDidDocument } from '../utils/helpers'
+import { getDefaultHolderDidDocument, useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 enum InitErrorTypes {
   Onboarding,
   Agent,
+}
+
+export type Modules = {
+  openid: OpenID4VCSDK
+  didcomm: DidCommSDK
 }
 const onboardingComplete = (state: StoreOnboardingState): boolean => {
   return state.didCompleteTutorial && state.didAgreeToTerms && state.didCreatePIN && state.didConsiderBiometry
@@ -79,7 +85,7 @@ const Splash: React.FC = () => {
   const [progressPercent, setProgressPercent] = useState(0)
   const [initOnboardingCount, setInitOnboardingCount] = useState(0)
   const [initAgentCount, setInitAgentCount] = useState(0)
-  const { setAgent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t } = useTranslation()
   const [stepText, setStepText] = useState<string>(t('Init.Starting'))
   const [initError, setInitError] = useState<Error | null>(null)
@@ -90,6 +96,7 @@ const Splash: React.FC = () => {
   const navigation = useNavigation()
   const { getWalletCredentials } = useAuth()
   const { ColorPallet } = useTheme()
+  const { initializeSDK, isInitialized } = useMobileSDKInitializer()
   const steps: string[] = [
     t('Init.Starting'),
     t('Init.CheckingAuth'),
@@ -138,6 +145,40 @@ const Splash: React.FC = () => {
     logoContainer: {
       alignSelf: 'center',
       marginBottom: 30,
+    },
+  })
+
+  async function getTrustedCerts() {
+    try {
+      // const response = await fetch('https://raw.githubusercontent.com/RinkalBhojani/x509-test-certs/refs/heads/main/trusted-certs.json');
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
+      // const data = await response.json();
+      // console.log('Success:', data);
+      // return data;
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  }
+
+  const createConfig = (): MobileSDKOptions<Modules> => ({
+    agentConfig: {
+      allowInsecureHttpUrls: true,
+      logger: new ConsoleLogger(LogLevel.debug),
+    },
+    askarConfig: {
+      id: 'CREDEBL-wallet',
+      key: 'CREDEBL-wallet-key',
+    },
+    modules: {
+      didcomm: new DidCommSDK({}),
+      openid: new OpenID4VCSDK({
+        getTrustedCertificatesForVerification: async (agentContext, { certificateChain, verification }) => {
+          const certs: string[] = await getTrustedCerts()
+          return certs
+        },
+      }),
     },
   })
 
@@ -249,43 +290,48 @@ const Splash: React.FC = () => {
   useEffect(() => {
     const initAgent = async (): Promise<void> => {
       try {
-        if (!store.authentication.didAuthenticate || !store.onboarding.didConsiderBiometry) {
-          return
-        }
+        console.log('🚀 ~ Splash.tsx:295 ~ initAgent ~ store:', JSON.stringify(store))
+        // if (!store.authentication.didAuthenticate || !store.onboarding.didConsiderBiometry) {
+        //   return
+        // }
 
         setStep(4)
-        const credentials = await getWalletCredentials()
+        // const credentials = await getWalletCredentials()
+        // console.log("🚀 ~ Splash.tsx:303 ~ initAgent ~ credentials:", credentials)
 
-        if (!credentials?.id || !credentials.key) {
-          // Cannot find wallet id/secret
-          return
-        }
+        // if (!credentials?.id || !credentials.key) {
+        //   // Cannot find wallet id/secret
+        //   return
+        // }
 
+        console.log('🚀 ~ Splash.tsx:11 ~ Config:', Config)
         setStep(5)
-        if (!Config.MEDIATOR_URL) {
-          throw new Error('Missing mediator URL')
-        }
+        // if (!Config.MEDIATOR_URL) {
+        //   throw new Error('Missing mediator URL')
+        // }
 
-        const agentConfig: InitConfig = {
-          label: store.preferences.walletName || 'CREDEBL Wallet',
-          walletConfig: {
-            id: credentials.id,
-            key: credentials.key,
-          },
+        const agentConfig = {
+          // label: store.preferences.walletName || 'CREDEBL Wallet',
+          // walletConfig: {
+          //   id: credentials.id,
+          //   key: credentials.key,
+          // },
           logger: new ConsoleLogger(LogLevel.debug),
           autoUpdateStorageOnStartup: true,
         }
 
-        const newAgent = (await initializeAgent({
-          agentConfig,
-          modules: {
-            ...adeyaAgentModules(),
-          },
-        })) as unknown as AdeyaAgent
+        const newAgent = createConfig()
+        console.log('🚀 ~ Splash.tsx:323 ~ initAgent ~ newAgent:', newAgent)
+        if (!isInitialized) {
+          const sdk = await initializeSDK(newAgent)
+          const mediatorUrl = sdk.modules.didcomm.getAgentModules()
+          console.log('🚀 ~ Splash.tsx:330 ~ initAgent ~ mediatorUrl:', mediatorUrl)
+        }
+        console.log('🚀 ~ Splash.tsx:294 ~ initAgent ~ newAgent:', newAgent)
 
         setStep(6)
         await getDefaultHolderDidDocument(newAgent)
-        setAgent(newAgent)
+        // setAgent(newAgent)
 
         setStep(7)
         navigation.dispatch(
@@ -295,6 +341,7 @@ const Splash: React.FC = () => {
           }),
         )
       } catch (e: unknown) {
+        console.log('🚀 ~ Splash.tsx:341 ~ initAgent ~ e:', e)
         setInitErrorType(InitErrorTypes.Agent)
         setInitError(e as Error)
       }

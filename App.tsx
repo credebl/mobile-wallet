@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 global.Buffer = require('buffer').Buffer
 
+import { MobileSDKProvider } from '@credebl/ssi-mobile-core'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
-import * as React from 'react'
 import { useEffect, useMemo } from 'react'
 import { StatusBar } from 'react-native'
 import { Config } from 'react-native-config'
@@ -11,12 +11,11 @@ import Toast from 'react-native-toast-message'
 
 import { animatedComponents } from './app/animated-components'
 import { OpenIDCredentialRecordProvider } from './app/components/Provider/OpenIDCredentialRecordProvider'
-import PushNotifications from './app/components/PushNotifications'
+// import PushNotifications from './app/components/PushNotifications'
 import ErrorModal from './app/components/modals/ErrorModal'
 import NetInfo from './app/components/network/NetInfo'
 import toastConfig from './app/components/toast/ToastConfig'
 import { homeTourSteps } from './app/components/tour/HomeTourSteps'
-import AgentProvider from './app/contexts/agent'
 import { AnimatedComponentsProvider } from './app/contexts/animated-components'
 import { AuthProvider } from './app/contexts/auth'
 import { CommonUtilProvider } from './app/contexts/commons'
@@ -38,8 +37,6 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    // Hide the native splash / loading screen so that our
-    // RN version can be displayed
     SplashScreen.hide()
     if (Config.GOOGLE_WEB_CLIENT_ID && Config.GOOGLE_IOS_CLIENT_ID) {
       GoogleSignin.configure({
@@ -53,35 +50,37 @@ const App = () => {
 
   return (
     <StoreProvider>
-      <AgentProvider>
+      <MobileSDKProvider>
+        {/* <AgentProvider> */}
         <ThemeProvider value={theme}>
-          <OpenIDCredentialRecordProvider>
-            <AnimatedComponentsProvider value={animatedComponents}>
-              <ConfigurationProvider value={defaultConfiguration}>
-                <CommonUtilProvider>
-                  <AuthProvider>
-                    <NetworkProvider>
-                      <StatusBar
-                        hidden={false}
-                        barStyle="light-content"
-                        backgroundColor={theme.ColorPallet.brand.primary}
-                        translucent={false}
-                      />
-                      <NetInfo />
-                      <ErrorModal />
-                      <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
-                        <RootStack />
-                      </TourProvider>
-                      <Toast topOffset={15} config={toastConfig} />
-                      {/* <PushNotifications /> */}
-                    </NetworkProvider>
-                  </AuthProvider>
-                </CommonUtilProvider>
-              </ConfigurationProvider>
-            </AnimatedComponentsProvider>
-          </OpenIDCredentialRecordProvider>
+          {/* <OpenIDCredentialRecordProvider> */}
+          <AnimatedComponentsProvider value={animatedComponents}>
+            <ConfigurationProvider value={defaultConfiguration}>
+              <CommonUtilProvider>
+                <AuthProvider>
+                  <NetworkProvider>
+                    <StatusBar
+                      hidden={false}
+                      barStyle="light-content"
+                      backgroundColor={theme.ColorPallet.brand.primary}
+                      translucent={false}
+                    />
+                    <NetInfo />
+                    <ErrorModal />
+                    <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
+                      <RootStack />
+                    </TourProvider>
+                    <Toast topOffset={15} config={toastConfig} />
+                    {/* <PushNotifications /> */}
+                  </NetworkProvider>
+                </AuthProvider>
+              </CommonUtilProvider>
+            </ConfigurationProvider>
+          </AnimatedComponentsProvider>
+          {/* </OpenIDCredentialRecordProvider> */}
         </ThemeProvider>
-      </AgentProvider>
+      </MobileSDKProvider>
+      {/* </AgentProvider> */}
     </StoreProvider>
   )
 }

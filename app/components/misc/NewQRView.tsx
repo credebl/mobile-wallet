@@ -1,4 +1,4 @@
-import { DidExchangeState } from '@adeya/ssi'
+import { DidExchangeState } from '@credebl/ssi-mobile-core'
 import { useNavigation } from '@react-navigation/core'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -12,8 +12,7 @@ import { useTheme } from '../../contexts/theme'
 import { useConnectionByOutOfBandId } from '../../hooks/connections'
 import { QrCodeScanError } from '../../types/error'
 import { Screens, Stacks } from '../../types/navigators'
-import { useAppAgent } from '../../utils/agent'
-import { createConnectionInvitation } from '../../utils/helpers'
+import { createConnectionInvitation, useSdk } from '../../utils/helpers'
 import LoadingIndicator from '../animated/LoadingIndicator'
 
 import QRRenderer from './QRRenderer'
@@ -41,7 +40,7 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
   const { t } = useTranslation()
   const invalidQrCodes = new Set<string>()
   const { ColorPallet, TextTheme } = useTheme()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -107,7 +106,7 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
 
   const createInvitation = useCallback(async () => {
     setInvitation(undefined)
-    const result = await createConnectionInvitation(agent)
+    const result = await createConnectionInvitation(sdk)
     if (result) {
       setRecordId(result.record.id)
       setInvitation(result.invitationUrl)

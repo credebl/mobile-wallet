@@ -5,12 +5,12 @@ import {
   AnonCredsCredentialsForProofRequest,
   AnonCredsRequestedAttributeMatch,
   AnonCredsRequestedPredicateMatch,
-  CredentialExchangeRecord,
   declineProofRequest,
   deleteConnectionRecordById,
   getProofFormatData,
   sendProofProblemReport,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-core'
+import { DidCommCredentialExchangeRecord, useProofById, useConnectionById } from '@credebl/ssi-mobile-didcomm'
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +26,6 @@ import { CredentialCard } from '../components/misc'
 import ConnectionImage from '../components/misc/ConnectionImage'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { EventTypes } from '../constants'
-import { useConnectionById, useProofById } from '../contexts/agent'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
@@ -39,8 +38,7 @@ import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/na
 import { ProofCredentialAttributes, ProofCredentialItems, ProofCredentialPredicates } from '../types/proof-items'
 import { Attribute, Predicate } from '../types/record'
 import { ModalUsage } from '../types/remove'
-import { useAppAgent } from '../utils/agent'
-import { evaluatePredicates } from '../utils/helpers'
+import { evaluatePredicates, useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 import ProofRequestAccept from './ProofRequestAccept'
@@ -61,7 +59,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
 
   // eslint-disable-next-line no-unsafe-optional-chaining
   const { proofId } = route?.params
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t } = useTranslation()
   const { assertConnectedNetwork } = useNetwork()
   const proof = useProofById(proofId)
@@ -74,7 +72,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
   const [declineModalVisible, setDeclineModalVisible] = useState(false)
   const { ColorPallet, ListItems, TextTheme } = useTheme()
   const { RecordLoading } = useAnimatedComponents()
-  const goalCode = useOutOfBandByConnectionId(agent, proof?.connectionId ?? '')?.outOfBandInvitation.goalCode
+  const goalCode = useOutOfBandByConnectionId(sdk, proof?.connectionId ?? '')?.outOfBandInvitation.goalCode
   const { OCABundleResolver } = useConfiguration()
   const [containsPI, setContainsPI] = useState(false)
   const [activeCreds, setActiveCreds] = useState<ProofCredentialItems[]>([])
@@ -132,7 +130,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
   })
 
   useEffect(() => {
-    if (!agent && !proof) {
+    if (!sdk && !proof) {
       DeviceEventEmitter.emit(
         EventTypes.ERROR_ADDED,
         new BifoldError(t('Error.Title1034'), t('Error.Message1034'), t('ProofRequest.ProofRequestNotFound'), 1034),
@@ -141,7 +139,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
   }, [])
 
   const containsRevokedCreds = (
-    credExRecords: CredentialExchangeRecord[],
+    credExRecords: DidCommCredentialExchangeRecord[],
     fields: {
       [key: string]: Attribute[] & Predicate[]
     },
@@ -214,16 +212,16 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
 
           const selectRetrievedCredentials: AnonCredsCredentialsForProofRequest | undefined = retrievedCredentials
             ? {
-                ...retrievedCredentials,
-                attributes: formatCredentials(retrievedCredentials.attributes, credList) as Record<
-                  string,
-                  AnonCredsRequestedAttributeMatch[]
-                >,
-                predicates: formatCredentials(retrievedCredentials.predicates, credList) as Record<
-                  string,
-                  AnonCredsRequestedPredicateMatch[]
-                >,
-              }
+              ...retrievedCredentials,
+              attributes: formatCredentials(retrievedCredentials.attributes, credList) as Record<
+                string,
+                AnonCredsRequestedAttributeMatch[]
+              >,
+              predicates: formatCredentials(retrievedCredentials.predicates, credList) as Record<
+                string,
+                AnonCredsRequestedPredicateMatch[]
+              >,
+            }
             : undefined
           setRetrievedCredentials(selectRetrievedCredentials)
 
@@ -308,7 +306,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
 
   const logHistoryRecord = useCallback(async () => {
     try {
-      if (!(agent && store.preferences.useHistoryCapability)) {
+      if (!(sdk && store.preferences.useHistoryCapability)) {
         return
       }
       const type = HistoryCardType.ProofRequest
@@ -317,7 +315,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
       }
       try {
         // Fetch proof data asynchronously
-        const data = await getProofDataForHistory(agent, proofId)
+        const data = await getProofDataForHistory(sdk, proofId)
         // Handle the case when data is not null or undefined
         if (data) {
           const requestName = proofConnectionLabel || data?.request?.indy?.name
@@ -331,7 +329,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
           }
 
           // Save the history record asynchronously
-          await saveHistory(recordData, agent)
+          await saveHistory(recordData, sdk)
         }
       } catch (error) {
         // error when save history
@@ -339,11 +337,11 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
     } catch (err: unknown) {
       // error when agent and preferences not getting
     }
-  }, [agent, store.preferences.useHistoryCapability, proof, proofId])
+  }, [sdk, store.preferences.useHistoryCapability, proof, proofId])
 
   const handleAcceptPress = async () => {
     try {
-      if (!(agent && proof && assertConnectedNetwork())) {
+      if (!(sdk && proof && assertConnectedNetwork())) {
         return
       }
       setPendingModalVisible(true)
@@ -352,7 +350,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
         throw new Error(t('ProofRequest.RequestedCredentialsCouldNotBeFound'))
       }
 
-      const format = await getProofFormatData(agent, proof.id)
+      const format = await getProofFormatData(sdk, proof.id)
 
       const formatToUse = format.request?.anoncreds ? 'anoncreds' : 'indy'
 
@@ -374,13 +372,13 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
         throw new Error(t('ProofRequest.RequestedCredentialsCouldNotBeFound'))
       }
 
-      await acceptProofRequest(agent, {
+      await acceptProofRequest(sdk, {
         proofRecordId: proof.id,
         proofFormats: automaticRequestedCreds.proofFormats,
       })
       await logHistoryRecord()
       if (proof.connectionId && goalCode && goalCode.endsWith('verify.once')) {
-        await deleteConnectionRecordById(agent, proof.connectionId)
+        await deleteConnectionRecordById(sdk, proof.connectionId)
       }
     } catch (err: unknown) {
       setPendingModalVisible(false)
@@ -393,13 +391,13 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
   const handleDeclineTouched = async () => {
     try {
       if (proof) {
-        await declineProofRequest(agent, { proofRecordId: proof.id })
+        await declineProofRequest(sdk, { proofRecordId: proof.id })
 
         // sending a problem report fails if there is neither a connectionId nor a ~service decorator
         if (proof.connectionId) {
-          await sendProofProblemReport(agent, { proofRecordId: proof.id, description: t('ProofRequest.Declined') })
+          await sendProofProblemReport(sdk, { proofRecordId: proof.id, description: t('ProofRequest.Declined') })
           if (goalCode && goalCode.endsWith('verify.once')) {
-            await deleteConnectionRecordById(agent, proof.connectionId)
+            await deleteConnectionRecordById(sdk, proof.connectionId)
           }
         }
       }
@@ -563,8 +561,8 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
                     handleAltCredChange={
                       item.altCredentials && item.altCredentials.length > 1
                         ? () => {
-                            handleAltCredChange(item.credId, item.altCredentials ?? [item.credId])
-                          }
+                          handleAltCredChange(item.credId, item.altCredentials ?? [item.credId])
+                        }
                         : undefined
                     }
                     proof={true}></CredentialCard>

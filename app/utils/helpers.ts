@@ -29,11 +29,12 @@ import {
   DifPresentationExchangeProofFormatService,
   W3cCredentialRecord,
   GetCredentialsForProofRequestReturn,
-} from '@adeya/ssi'
+  SdJwtVcRecord,
+  MdocRecord,
+  useMobileSDK,
+} from '@credebl/ssi-mobile-core'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { DifPresentationExchangeDefinitionV1, MdocRecord, SdJwtVcRecord } from '@credo-ts/core'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { DifPresentationExchangeProofFormat, MessageReceiver } from '@credo-ts/didcomm'
+import { DifPresentationExchangeProofFormat, MessageReceiver, useConnectionById } from '@credebl/ssi-mobile-didcomm'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ProofFormatDataMessagePayload } from '@credo-ts/didcomm/build/modules/proofs/protocol/ProofProtocolOptions'
 import { CaptureBaseAttributeType } from '@hyperledger/aries-oca'
@@ -45,7 +46,6 @@ import { DeviceEventEmitter } from 'react-native'
 import { uniqueNamesGenerator, Config, names } from 'unique-names-generator'
 
 import { EventTypes, domain } from '../constants'
-import { useConnectionById } from '../contexts/agent'
 import { i18n } from '../localization/index'
 import { Role } from '../types/chat'
 import { BifoldError } from '../types/error'
@@ -56,6 +56,7 @@ import { ChildFn } from '../types/tour'
 export { parsedCredDefNameFromCredential } from './cred-def'
 import { AdeyaAgent } from './agent'
 import { parseCredDefFromId } from './cred-def'
+import { Modules } from '../../App'
 
 export { parsedCredDefName } from './cred-def'
 export { parsedSchema } from './schema'
@@ -180,8 +181,8 @@ function getFormattedTimeForDefault(
     trim && sameYear
       ? momentTime.format(formatString)
       : isNonEnglish
-        ? `${momentTime.format(formatString)} ${momentTime.format('YYYY')}`
-        : `${momentTime.format(formatString)}, ${momentTime.format('YYYY')}`
+      ? `${momentTime.format(formatString)} ${momentTime.format('YYYY')}`
+      : `${momentTime.format(formatString)}, ${momentTime.format('YYYY')}`
   if (includeHour) {
     formattedTime = `${formattedTime}, ${momentTime.format(hoursFormat)}`
   }
@@ -1282,4 +1283,9 @@ export const getCredentialFormat = (credential: any): string => {
     return 'AnonCreds'
   }
   return ''
+}
+
+export const useSdk = () => {
+  const { sdk } = useMobileSDK<Modules>()
+  return { sdk }
 }

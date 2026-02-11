@@ -9,9 +9,8 @@ import {
   createProofRequest,
   requestProof,
   createLegacyConnectionlessInvitation,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-didcomm'
 
-import { AdeyaAgent } from '../../app/utils/agent'
 import { ProofRequestTemplate, ProofRequestType } from '../types/proof-reqeust-template'
 
 const protocolVersion = 'v2'

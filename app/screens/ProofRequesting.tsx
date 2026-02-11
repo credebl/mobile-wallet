@@ -1,6 +1,6 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
-import { DidExchangeState, deleteConnectionRecordById } from '@adeya/ssi'
+import { DidCommDidExchangeState, deleteConnectionRecordById, useProofById } from '@credebl/ssi-mobile-didcomm'
 import { useIsFocused } from '@react-navigation/core'
 import { useFocusEffect } from '@react-navigation/native'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -29,14 +29,12 @@ import LoadingIndicator from '../components/animated/LoadingIndicator'
 import Button, { ButtonType } from '../components/buttons/Button'
 import QRRenderer from '../components/misc/QRRenderer'
 import { EventTypes } from '../constants'
-import { useProofById } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { useConnectionByOutOfBandId, useOutOfBandByConnectionId } from '../hooks/connections'
 import { useTemplate } from '../hooks/proof-request-templates'
 import { BifoldError } from '../types/error'
 import { ProofRequestsStackParams, Screens } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
-import { createTempConnectionInvitation } from '../utils/helpers'
+import { createTempConnectionInvitation, useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type ProofRequestingProps = StackScreenProps<ProofRequestsStackParams, Screens.ProofRequesting>
@@ -55,8 +53,8 @@ const ProofRequesting: React.FC<ProofRequestingProps> = ({ route, navigation }) 
   // eslint-disable-next-line no-unsafe-optional-chaining
   const { templateId, predicateValues } = route?.params
 
-  const { agent } = useAppAgent()
-  if (!agent) {
+  const { sdk } = useSdk()
+  if (!sdk) {
     throw new Error('Unable to fetch agent from AFJ')
   }
 
@@ -71,7 +69,7 @@ const ProofRequesting: React.FC<ProofRequestingProps> = ({ route, navigation }) 
   const proofRecord = useProofById(proofRecordId ?? '')
   const template = useTemplate(templateId)
 
-  const goalCode = useOutOfBandByConnectionId(agent, record?.id ?? '')?.outOfBandInvitation.goalCode
+  const goalCode = useOutOfBandByConnectionId(sdk, record?.id ?? '')?.outOfBandInvitation.goalCode
 
   const styles = StyleSheet.create({
     container: {
@@ -128,7 +126,7 @@ const ProofRequesting: React.FC<ProofRequestingProps> = ({ route, navigation }) 
     try {
       setMessage(undefined)
       setGenerating(true)
-      const result = await createTempConnectionInvitation(agent, 'verify')
+      const result = await createTempConnectionInvitation(sdk, 'verify')
       if (result) {
         setConnectionRecordId(result.record.id)
         setMessage(result.invitationUrl)
@@ -167,17 +165,17 @@ const ProofRequesting: React.FC<ProofRequestingProps> = ({ route, navigation }) 
     }
 
     const sendAsyncProof = async () => {
-      if (record && record.state === DidExchangeState.Completed) {
+      if (record && record.state === DidCommDidExchangeState.Completed) {
         //send haptic feedback to verifier that connection is completed
         Vibration.vibrate()
         setGenerating(true)
         // send proof logic
-        const result = await sendProofRequest(agent, template, record.id, predicateValues)
+        const result = await sendProofRequest(sdk, template, record.id, predicateValues)
         if (result?.proofRecord) {
           // verifier side doesn't have access to the goal code so we need to add metadata here
           const metadata = result.proofRecord.metadata.get(ProofMetadata.customMetadata) as ProofCustomMetadata
           result.proofRecord.metadata.set(ProofMetadata.customMetadata, { ...metadata, delete_conn_after_seen: true })
-          linkProofWithTemplate(agent, result.proofRecord, templateId)
+          linkProofWithTemplate(sdk, result.proofRecord, templateId)
         }
         setProofRecordId(result?.proofRecord.id)
       }
@@ -188,7 +186,7 @@ const ProofRequesting: React.FC<ProofRequestingProps> = ({ route, navigation }) 
   useEffect(() => {
     if (proofRecord && (isPresentationReceived(proofRecord) || isPresentationFailed(proofRecord))) {
       if (goalCode?.endsWith('verify.once')) {
-        deleteConnectionRecordById(agent, record?.id ?? '')
+        deleteConnectionRecordById(sdk, record?.id ?? '')
       }
 
       setGenerating(true)

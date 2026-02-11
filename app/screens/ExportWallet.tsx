@@ -1,4 +1,4 @@
-import { addWalletRecord, findWalletRecordsByQuery, utils } from '@adeya/ssi'
+import { addWalletRecord, findWalletRecordsByQuery, utils } from '@credebl/ssi-mobile-core'
 import { useNavigation, useRoute } from '@react-navigation/core'
 import { generateMnemonic } from 'bip39'
 import React, { useEffect, useState } from 'react'
@@ -6,16 +6,16 @@ import { useTranslation } from 'react-i18next'
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, PixelRatio, Dimensions } from 'react-native'
 
 import Button, { ButtonType } from '../components/buttons/Button'
-import { useAdeyaAgent } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
+import { useSdk } from '../utils/helpers'
 
 const ExportWallet: React.FC = () => {
   const { ColorPallet, TextTheme } = useTheme()
   const navigation = useNavigation()
   const { t } = useTranslation()
   const [phraseData, setPhraseData] = useState<string[]>([])
-  const { agent } = useAdeyaAgent()
+  const { sdk } = useSdk()
   const route = useRoute()
   const { backupType }: { backupType?: string } = route.params || {}
 
@@ -92,7 +92,7 @@ const ExportWallet: React.FC = () => {
 
   useEffect(() => {
     const createMnemonic = async () => {
-      const mnemonicRecord = await findWalletRecordsByQuery(agent, { type: 'mnemonic' })
+      const mnemonicRecord = await findWalletRecordsByQuery(sdk, { type: 'mnemonic' })
       if (mnemonicRecord?.length > 0) {
         const mnemonic = mnemonicRecord[0].content.mnemonic as string
         const mnemonicArray = mnemonic.split(' ')
@@ -112,7 +112,7 @@ const ExportWallet: React.FC = () => {
           mnemonicIndividualWordsArray.push(word)
         })
 
-        await addWalletRecord(agent, {
+        await addWalletRecord(sdk, {
           id: utils.uuid(),
           content: {
             mnemonic,

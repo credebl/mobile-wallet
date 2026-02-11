@@ -1,6 +1,11 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
-import { ProofExchangeRecord, ProofState } from '@adeya/ssi'
+import {
+  useConnectionById,
+  useProofById,
+  DidCommProofState,
+  DidCommProofExchangeRecord,
+} from '@credebl/ssi-mobile-didcomm'
 import { useFocusEffect } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -13,25 +18,23 @@ import { ProofCustomMetadata, ProofMetadata, GroupedSharedProofDataItem, markPro
 import InformationReceived from '../assets/img/information-received.svg'
 import Button, { ButtonType } from '../components/buttons/Button'
 import SharedProofData from '../components/misc/SharedProofData'
-import { useConnectionById, useProofById } from '../contexts/agent'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { ProofRequestsStackParams, Screens } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
-import { getConnectionName } from '../utils/helpers'
+import { getConnectionName, useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type ProofDetailsProps = StackScreenProps<ProofRequestsStackParams, Screens.ProofDetails>
 
 interface VerifiedProofProps {
-  record: ProofExchangeRecord
+  record: DidCommProofExchangeRecord
   isHistory?: boolean
   senderReview?: boolean
   navigation: StackNavigationProp<ProofRequestsStackParams, Screens.ProofDetails>
 }
 
 interface UnverifiedProofProps {
-  record: ProofExchangeRecord
+  record: DidCommProofExchangeRecord
   navigation: StackNavigationProp<ProofRequestsStackParams, Screens.ProofDetails>
 }
 
@@ -43,6 +46,7 @@ const VerifiedProof: React.FC<VerifiedProofProps> = ({
 }: VerifiedProofProps) => {
   const { t } = useTranslation()
   const { ColorPallet, TextTheme } = useTheme()
+  const { sdk } = useSdk()
 
   const styles = StyleSheet.create({
     container: {
@@ -100,7 +104,7 @@ const VerifiedProof: React.FC<VerifiedProofProps> = ({
 
   const connection = useConnectionById(record.connectionId || '')
   const connectionLabel = useMemo(
-    () => (connection ? (getConnectionName(connection) ?? 'Connection') : t('Verifier.ConnectionLessLabel')),
+    () => (connection ? getConnectionName(connection) ?? 'Connection' : t('Verifier.ConnectionLessLabel')),
     [connection],
   )
 
@@ -241,7 +245,7 @@ const UnverifiedProof: React.FC<UnverifiedProofProps> = ({ record, navigation })
       <View style={styles.header}>
         <View style={styles.headerTitleContainer}>
           <Icon name="bookmark-remove" size={45} color={'white'} />
-          {record.state === ProofState.Abandoned && (
+          {record.state === DidCommProofState.Abandoned && (
             <Text style={styles.headerTitle}>{t('Verifier.PresentationDeclined')}</Text>
           )}
           {record.isVerified === false && (
@@ -269,23 +273,22 @@ const ProofDetails: React.FC<ProofDetailsProps> = ({ route, navigation }) => {
 
   const { recordId, isHistory, senderReview } = route?.params
   const record = useProofById(recordId)
-  const { agent } = useAppAgent()
   const [store] = useStore()
 
   useEffect(() => {
     return () => {
       if (!store.preferences.useDataRetention) {
-        agent?.modules.proofs.deleteById(recordId)
+        sdk?.modules.proofs.deleteById(recordId)
       }
       if ((record?.metadata.get(ProofMetadata.customMetadata) as ProofCustomMetadata).delete_conn_after_seen) {
-        agent?.modules.connections.deleteById(record?.connectionId ?? '')
+        sdk?.modules.connections.deleteById(record?.connectionId ?? '')
       }
     }
   }, [])
 
   useEffect(() => {
-    if (agent && record && !record.metadata?.data?.customMetadata?.details_seen) {
-      markProofAsViewed(agent, record)
+    if (sdk && record && !record.metadata?.data?.customMetadata?.details_seen) {
+      markProofAsViewed(sdk, record)
     }
   }, [record])
 

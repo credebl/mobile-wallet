@@ -1,4 +1,4 @@
-import { ConnectionRecord, getAllConnections } from '@adeya/ssi'
+import { DidCommConnectionRecord, getAllConnections } from '@credebl/ssi-mobile-didcomm'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import messaging from '@react-native-firebase/messaging'
 import { Platform } from 'react-native'
@@ -68,7 +68,7 @@ const _requestPermission = async (agent: AdeyaAgent): Promise<void> => {
  * Helper Functions Section
  */
 
-const _getMediatorConnection = async (agent: AdeyaAgent): Promise<ConnectionRecord | undefined> => {
+const _getMediatorConnection = async (agent: AdeyaAgent): Promise<DidCommConnectionRecord | undefined> => {
   const connections = await getAllConnections(agent)
   for (const connection of connections) {
     if (connection.theirLabel?.toUpperCase() === Config.MEDIATOR_LABEL) {

@@ -1,8 +1,11 @@
-import { ConnectionRecord, OutOfBandRecord, findOutOfBandRecordById } from '@adeya/ssi'
+import {
+  useConnectionById,
+  useConnections,
+  findOutOfBandRecordById,
+DidCommOutOfBandRecord,
+ DidCommConnectionRecord
+} from '@credebl/ssi-mobile-didcomm'
 import { useMemo, useState } from 'react'
-
-import { useConnectionById, useConnections } from '../contexts/agent'
-import { AdeyaAgent } from '../utils/agent'
 
 export const useConnectionByOutOfBandId = (outOfBandId: string): ConnectionRecord | undefined => {
   const { records: connections } = useConnections()

@@ -7,16 +7,16 @@ import HistoryListItem from '../components/History/HistoryListItem'
 import { getGenericRecordsByQuery } from '../components/History/HistoryManager'
 import { CustomRecord, RecordType } from '../components/History/types'
 import KeyboardView from '../components/views/KeyboardView'
-import { useAdeyaAgent } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { HistoryStackParams } from '../types/navigators'
+import { useSdk } from '../utils/helpers'
 
 type HistoryPageProps = StackScreenProps<HistoryStackParams>
 
 const HistoryPage: React.FC<HistoryPageProps> = () => {
   const [historyItems, setHistoryItems] = useState<CustomRecord[]>()
   const { t } = useTranslation()
-  const { agent } = useAdeyaAgent()
+  const { sdk } = useSdk()
   const { ColorPallet, TextTheme } = useTheme()
   const [loading, setLoading] = useState<boolean>(true)
 
@@ -64,7 +64,7 @@ const HistoryPage: React.FC<HistoryPageProps> = () => {
     return <HistoryListItem item={item} />
   }
   const getHistory = async () => {
-    const allRecords = await getGenericRecordsByQuery(agent, { type: RecordType.HistoryRecord })
+    const allRecords = await getGenericRecordsByQuery(sdk, { type: RecordType.HistoryRecord })
     allRecords.sort((objA, objB) => {
       const dateA = objA.content.createdAt ? new Date(objA.content.createdAt).getTime() : 0
       const dateB = objB.content.createdAt ? new Date(objB.content.createdAt).getTime() : 0

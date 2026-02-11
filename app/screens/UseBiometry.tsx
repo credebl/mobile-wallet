@@ -37,6 +37,7 @@ type UseBiometryProps = StackScreenProps<AuthenticateStackParams, Screens.UseBio
 
 const UseBiometry: React.FC<UseBiometryProps> = () => {
   const [store, dispatch] = useStore()
+  console.log("🚀 ~ UseBiometry.tsx:40 ~ UseBiometry ~ store:", JSON.stringify(store))
   const { t } = useTranslation()
   const { isBiometricsActive, commitPIN, disableBiometrics } = useAuth()
   const [biometryAvailable, setBiometryAvailable] = useState(false)
@@ -171,17 +172,17 @@ const UseBiometry: React.FC<UseBiometryProps> = () => {
         </View>
       </ScrollView>
       <View style={{ marginTop: 'auto', margin: 20 }}>
-        {store.onboarding.didConsiderBiometry || (
-          <Button
-            title={'Continue'}
-            accessibilityLabel={'Continue'}
-            testID={testIdWithKey('Continue')}
-            onPress={continueTouched}
-            buttonType={ButtonType.Primary}
-            disabled={!continueEnabled}>
-            {!continueEnabled && <ButtonLoading />}
-          </Button>
-        )}
+        {/* {store.onboarding.didConsiderBiometry || ( */}
+        <Button
+          title={'Continue'}
+          accessibilityLabel={'Continue'}
+          testID={testIdWithKey('Continue')}
+          onPress={continueTouched}
+          buttonType={ButtonType.Primary}
+          disabled={!continueEnabled}>
+          {!continueEnabled && <ButtonLoading />}
+        </Button>
+        {/* )} */}
       </View>
       <Modal
         style={{ backgroundColor: ColorPallet.brand.primaryBackground }}

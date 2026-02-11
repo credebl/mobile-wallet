@@ -1,4 +1,4 @@
-import { AnonCredsProof } from '@adeya/ssi'
+import { AnonCredsProof } from '@credebl/ssi-mobile-didcomm'
 type AnonCredsProofIdentifier = AnonCredsProof['identifiers'][number]
 
 export interface MissingAttribute {

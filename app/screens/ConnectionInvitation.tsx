@@ -1,6 +1,6 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
-import { DidExchangeState } from '@adeya/ssi'
+import { DidCommDidExchangeState } from '@credebl/ssi-mobile-didcomm'
 import { useFocusEffect } from '@react-navigation/native'
 import React, { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -15,8 +15,7 @@ import QRRenderer from '../components/misc/QRRenderer'
 import { useTheme } from '../contexts/theme'
 import { useConnectionByOutOfBandId } from '../hooks/connections'
 import { ContactStackParams, Screens } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
-import { createConnectionInvitation } from '../utils/helpers'
+import { createConnectionInvitation, useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type ConnectionInvitationProps = StackScreenProps<ContactStackParams, Screens.ConnectionInvitation>
@@ -27,9 +26,9 @@ const qrContainerSize = windowDimensions.width - 20
 const qrSize = qrContainerSize - 60
 
 const ConnectionInvitation: React.FC<ConnectionInvitationProps> = ({ navigation }) => {
-  const { agent } = useAppAgent()
-  if (!agent) {
-    throw new Error('Unable to fetch agent from AFJ')
+  const { sdk } = useSdk()
+  if (!sdk) {
+    throw new Error('Unable to fetch sdk from AFJ')
   }
 
   const { t } = useTranslation()
@@ -87,7 +86,7 @@ const ConnectionInvitation: React.FC<ConnectionInvitationProps> = ({ navigation 
 
   const createInvitation = useCallback(async () => {
     setInvitation(undefined)
-    const result = await createConnectionInvitation(agent)
+    const result = await createConnectionInvitation(sdk)
     if (result) {
       setRecordId(result.record.id)
       setInvitation(result.invitationUrl)
@@ -111,7 +110,7 @@ const ConnectionInvitation: React.FC<ConnectionInvitationProps> = ({ navigation 
           <Text style={styles.primaryHeaderText}>{t('Connection.ScanQR')}</Text>
           <Text style={styles.secondaryHeaderText}>{t('Connection.ScanQRComment')}</Text>
         </View>
-        {(!record || record?.state === DidExchangeState.InvitationSent) && (
+        {(!record || record?.state === DidCommDidExchangeState.InvitationSent) && (
           <View style={{ flexGrow: 1 }}>
             <View style={styles.qrContainer}>
               {!invitation && <LoadingIndicator />}
@@ -119,7 +118,7 @@ const ConnectionInvitation: React.FC<ConnectionInvitationProps> = ({ navigation 
             </View>
           </View>
         )}
-        {(record?.state === DidExchangeState.RequestReceived || record?.state === DidExchangeState.ResponseSent) && (
+        {(record?.state === DidCommDidExchangeState.RequestReceived || record?.state === DidCommDidExchangeState.ResponseSent) && (
           <View style={{ flexGrow: 1 }}>
             <ConnectionLoading />
             <Text style={styles.statusText}>{t('Connection.JustAMoment')}</Text>
@@ -134,7 +133,7 @@ const ConnectionInvitation: React.FC<ConnectionInvitationProps> = ({ navigation 
             </View>
           </View>
         )}
-        {record?.state === DidExchangeState.Completed && (
+        {record?.state === DidCommDidExchangeState.Completed && (
           <View style={{ flexGrow: 1 }}>
             <View style={{ marginVertical: 40 }}>
               <CheckInCircle {...{ height: 80 }} />

@@ -12,8 +12,7 @@ import { DispatchAction } from '../contexts/reducers/store'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
-import { generateRandomWalletName } from '../utils/helpers'
+import { generateRandomWalletName, useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type ErrorState = {
@@ -32,7 +31,7 @@ const NameWallet: React.FC = () => {
   const { ColorPallet, TextTheme, Assets } = useTheme()
   const navigation = useNavigation()
   const [store, dispatch] = useStore()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const [walletName, setWalletName] = useState(store.preferences.walletName ?? generateRandomWalletName())
   const onBoardingComplete =
     store.onboarding.didCompleteTutorial &&
@@ -119,8 +118,8 @@ const NameWallet: React.FC = () => {
       type: DispatchAction.UPDATE_WALLET_NAME,
       payload: [walletName],
     })
-    if (agent) {
-      agent.config.label = walletName
+    if (sdk) {
+      sdk.config.label = walletName
     }
     dispatch({ type: DispatchAction.DID_NAME_WALLET })
     if (onBoardingComplete) {

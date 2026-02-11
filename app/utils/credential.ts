@@ -1,17 +1,21 @@
-import { AnonCredsCredentialMetadataKey, CredentialExchangeRecord, CredentialState } from '@adeya/ssi'
+import {
+  AnonCredsCredentialMetadataKey,
+  DidCommCredentialExchangeRecord,
+  DidCommCredentialState,
+} from '@credebl/ssi-mobile-didcomm'
 import { ImageSourcePropType } from 'react-native'
 
 import { Attribute, Field, W3CCredentialAttribute } from '../types/record'
 
 import { luminanceForHexColor } from './luminance'
 
-export const isValidAnonCredsCredential = (credential: CredentialExchangeRecord) => {
+export const isValidAnonCredsCredential = (credential: DidCommCredentialExchangeRecord) => {
   return (
     (credential &&
-      credential.state === CredentialState.OfferReceived &&
+      credential.state === DidCommCredentialState.OfferReceived &&
       credential.credentialAttributes &&
       credential.credentialAttributes?.length > 0) ||
-    credential.state === CredentialState.OfferReceived ||
+    credential.state === DidCommCredentialState.OfferReceived ||
     (Boolean(credential.metadata.get(AnonCredsCredentialMetadataKey)) &&
       credential.credentials.find(c => c.credentialRecordType === 'anoncreds' || c.credentialRecordType === 'w3c'))
   )
@@ -33,14 +37,14 @@ export const toImageSource = (source: unknown): ImageSourcePropType => {
   return source as ImageSourcePropType
 }
 
-export const getCredentialIdentifiers = (credential: CredentialExchangeRecord) => {
+export const getCredentialIdentifiers = (credential: DidCommCredentialExchangeRecord) => {
   return {
     credentialDefinitionId: credential.metadata.get(AnonCredsCredentialMetadataKey)?.credentialDefinitionId,
     schemaId: credential.metadata.get(AnonCredsCredentialMetadataKey)?.schemaId,
   }
 }
 
-export const isW3CCredential = (credential: CredentialExchangeRecord) => {
+export const isW3CCredential = (credential: DidCommCredentialExchangeRecord) => {
   return (
     credential &&
     credential?.credentials[0].credentialRecordType === 'w3c' &&

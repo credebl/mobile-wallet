@@ -1,10 +1,11 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
 import {
-  CredentialExchangeRecord,
+  DidCommCredentialExchangeRecord,
   updateCredentialExchangeRecord,
   deleteCredentialExchangeRecordById,
-} from '@adeya/ssi'
+  useConnections
+} from '@credebl/ssi-mobile-didcomm'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { BrandingOverlayType, CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -30,16 +31,14 @@ import Record from '../components/record/Record'
 import RecordRemove from '../components/record/RecordRemove'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
-import { useConnections } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'
 import { CredentialMetadata, customMetadata } from '../types/metadata'
 import { CredentialStackParams, Screens } from '../types/navigators'
 import { ModalUsage } from '../types/remove'
-import { useAppAgent } from '../utils/agent'
 import { credentialTextColor, getCredentialIdentifiers, toImageSource } from '../utils/credential'
-import { formatTime, getCredentialConnectionLabel } from '../utils/helpers'
+import { formatTime, getCredentialConnectionLabel, useSdk } from '../utils/helpers'
 import { buildFieldsFromAnonCredsCredential } from '../utils/oca'
 import { useSocialShare } from '../utils/social-share'
 import { testIdWithKey } from '../utils/testable'
@@ -70,7 +69,7 @@ const CredentialDetails: React.FC<CredentialDetailsProps> = ({ navigation, route
     attributes,
   }
 
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t, i18n } = useTranslation()
   const { TextTheme, ColorPallet } = useTheme()
   const { OCABundleResolver } = useConfiguration()
@@ -143,7 +142,7 @@ const CredentialDetails: React.FC<CredentialDetailsProps> = ({ navigation, route
   })
 
   useEffect(() => {
-    if (!agent || !credential) {
+    if (!sdk || !credential) {
       DeviceEventEmitter.emit(
         EventTypes.ERROR_ADDED,
         new BifoldError(t('Error.Title1033'), t('Error.Message1033'), t('CredentialDetails.CredentialNotFound'), 1033),
@@ -182,7 +181,7 @@ const CredentialDetails: React.FC<CredentialDetailsProps> = ({ navigation, route
     if (credential?.revocationNotification) {
       const meta = credential!.metadata.get(CredentialMetadata.customMetadata)
       credential.metadata.set(CredentialMetadata.customMetadata, { ...meta, revoked_seen: true })
-      updateCredentialExchangeRecord(agent, credential)
+      updateCredentialExchangeRecord(sdk, credential)
     }
   }, [isRevoked])
 
@@ -197,7 +196,7 @@ const CredentialDetails: React.FC<CredentialDetailsProps> = ({ navigation, route
       }
       setIsDeletingCredential(true)
 
-      await deleteCredentialExchangeRecordById(agent, credential.id, {
+      await deleteCredentialExchangeRecordById(sdk, credential.id, {
         deleteAssociatedCredentials: true,
       })
 
@@ -228,7 +227,7 @@ const CredentialDetails: React.FC<CredentialDetailsProps> = ({ navigation, route
     setIsRevokedMessageHidden(true)
     const meta = credential!.metadata.get(CredentialMetadata.customMetadata)
     credential.metadata.set(CredentialMetadata.customMetadata, { ...meta, revoked_detail_dismissed: true })
-    updateCredentialExchangeRecord(agent, credential)
+    updateCredentialExchangeRecord(sdk, credential)
   }
 
   const callOnRemove = useCallback(() => handleOnRemove(), [])
@@ -311,7 +310,7 @@ const CredentialDetails: React.FC<CredentialDetailsProps> = ({ navigation, route
     )
   }
 
-  const CredentialRevocationMessage: React.FC<{ credential: CredentialExchangeRecord }> = ({ credential }) => {
+  const CredentialRevocationMessage: React.FC<{ credential: DidCommCredentialExchangeRecord }> = ({ credential }) => {
     return (
       <InfoBox
         notificationType={InfoBoxType.Error}

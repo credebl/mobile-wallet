@@ -1,13 +1,15 @@
 import {
   ClaimFormat,
   GenericCredentialExchangeRecord,
-  getOpenId4VcCredentialMetadata,
-  getW3cCredentialDisplay,
   getW3cIssuerDisplay,
   JsonTransformer,
-  W3cCredentialJson,
   W3cCredentialRecord,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-didcomm'
+import {
+  W3cCredentialJson,
+  getW3cCredentialDisplay,
+  getOpenId4VcCredentialMetadata,
+} from '@credebl/ssi-mobile-openid4vc'
 import React from 'react'
 import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 

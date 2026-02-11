@@ -89,7 +89,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
     }
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
+      // BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
     }
   }, [navigation])
 

@@ -1,10 +1,10 @@
 import {
-  CredentialExchangeRecord,
+  DidCommCredentialExchangeRecord,
   GenericCredentialExchangeRecord,
   openId4VcCredentialMetadataKey,
   SdJwtVcRecord,
   W3cCredentialRecord,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-didcomm'
 import { Attribute, BrandingOverlayType, Predicate } from '@hyperledger/aries-oca/build/legacy'
 import React from 'react'
 import { ViewStyle } from 'react-native'
@@ -63,7 +63,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
           credName={credName}
           credDefId={credDefId}
           schemaId={schemaId}
-          credential={credential as CredentialExchangeRecord}
+          credential={credential as DidCommCredentialExchangeRecord}
           handleAltCredChange={handleAltCredChange}
           hasAltCredentials={hasAltCredentials}
           proof
@@ -97,7 +97,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
           )}
         </>
       )
-    } else if (credential instanceof CredentialExchangeRecord) {
+    } else if (credential instanceof DidCommCredentialExchangeRecord) {
       if (type === BrandingOverlayType.Branding01) {
         return <CredentialCard10 credential={credential} style={style} onPress={onPress} />
       } else {

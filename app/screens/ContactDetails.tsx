@@ -1,4 +1,12 @@
-import { CredentialState, ProofState, deleteConnectionRecordById, deleteOobRecordById } from '@adeya/ssi'
+import {
+  DidCommCredentialState,
+  DidCommProofState,
+  deleteConnectionRecordById,
+  deleteOobRecordById,
+  useProofByState,
+  useCredentialByState,
+  useConnectionById,
+} from '@credebl/ssi-mobile-didcomm'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useMemo, useState } from 'react'
@@ -12,21 +20,19 @@ import Button, { ButtonType } from '../components/buttons/Button'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
-import { useConnectionById, useCredentialByState, useProofByState } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { ListItems } from '../theme'
 import { BifoldError } from '../types/error'
 import { ContactStackParams, Screens, TabStacks } from '../types/navigators'
 import { ModalUsage } from '../types/remove'
-import { useAppAgent } from '../utils/agent'
-import { formatTime, getConnectionName } from '../utils/helpers'
+import { formatTime, getConnectionName, useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type ContactDetailsProps = StackScreenProps<ContactStackParams, Screens.ContactDetails>
 
 const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   const { connectionId } = route?.params
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t } = useTranslation()
   const navigation = useNavigation<StackNavigationProp<ContactStackParams>>()
   const [isRemoveModalDisplayed, setIsRemoveModalDisplayed] = useState<boolean>(false)
@@ -39,15 +45,15 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   const contactLabelAbbr = useMemo(() => contactLabel?.charAt(0).toUpperCase(), [connection])
   // FIXME: This should be exposed via a react hook that allows to filter credentials by connection id
   const connectionCredentials = [
-    ...useCredentialByState(CredentialState.CredentialReceived),
-    ...useCredentialByState(CredentialState.Done),
+    ...useCredentialByState(DidCommCredentialState.CredentialReceived),
+    ...useCredentialByState(DidCommCredentialState.Done),
   ].filter(credential => credential.connectionId === connection?.id)
   const { ColorPallet, TextTheme } = useTheme()
 
-  const connectionCredentialsOffer = [...useCredentialByState(CredentialState.OfferReceived)].filter(
+  const connectionCredentialsOffer = [...useCredentialByState(DidCommCredentialState.OfferReceived)].filter(
     credential => credential.connectionId === connection?.id,
   )
-  const connectionProofRequest = [...useProofByState(ProofState.RequestReceived)].filter(
+  const connectionProofRequest = [...useProofByState(DidCommProofState.RequestReceived)].filter(
     credential => credential.connectionId === connection?.id,
   )
   const styles = StyleSheet.create({
@@ -101,16 +107,16 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
 
   const handleSubmitRemove = async () => {
     try {
-      if (!(agent && connection)) {
+      if (!(sdk && connection)) {
         return
       }
 
       // deleting connection record
-      await deleteConnectionRecordById(agent, connection.id)
+      await deleteConnectionRecordById(sdk, connection.id)
 
       // deleting oob record
       if (connection?.outOfBandId) {
-        await deleteOobRecordById(agent, connection.outOfBandId)
+        await deleteOobRecordById(sdk, connection.outOfBandId)
       }
 
       setIsRemoveModalDisplayed(false)

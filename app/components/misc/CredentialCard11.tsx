@@ -1,4 +1,4 @@
-import { CredentialExchangeRecord } from '@adeya/ssi'
+import { DidCommCredentialExchangeRecord, useConnections } from '@credebl/ssi-mobile-didcomm'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { Attribute, CredentialOverlay, Predicate } from '@hyperledger/aries-oca/build/legacy'
 import startCase from 'lodash.startcase'
@@ -8,7 +8,6 @@ import { Dimensions, FlatList, Image, ImageBackground, StyleSheet, Text, View, V
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
-import { useConnections } from '../../contexts/agent'
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
 import { CredentialStatus } from '../../types/credential-status'
@@ -20,7 +19,7 @@ import { testIdWithKey } from '../../utils/testable'
 import CardWatermark from './CardWatermark'
 
 interface CredentialCard11Props {
-  credential?: CredentialExchangeRecord
+  credential?: DidCommCredentialExchangeRecord
   onPress?: GenericFn
   style?: ViewStyle
   displayItems?: (Attribute | Predicate)[]

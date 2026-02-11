@@ -8,7 +8,9 @@ import {
   GetCredentialsForRequestReturn,
   sendProofProblemReport,
   utils,
-} from '@adeya/ssi'
+  useConnectionById,
+  useProofById,
+} from '@credebl/ssi-mobile-didcomm'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { DifPexCredentialsForRequestRequirement, SubmissionEntryCredential } from '@credo-ts/core'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -22,7 +24,6 @@ import { CredentialCard } from '../components/misc'
 import ConnectionImage from '../components/misc/ConnectionImage'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import { CREDENTIAL, EventTypes } from '../constants'
-import { useProofById, useConnectionById } from '../contexts/agent'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
@@ -33,7 +34,7 @@ import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { ProofCredentialItems } from '../types/proof-items'
 import { ModalUsage } from '../types/remove'
-import { useAppAgent } from '../utils/agent'
+import { useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 import ProofRequestAccept from './ProofRequestAccept'
@@ -53,7 +54,7 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
 
   // eslint-disable-next-line no-unsafe-optional-chaining
   const { proofId } = route?.params
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t } = useTranslation()
   const { assertConnectedNetwork } = useNetwork()
   const proof = useProofById(proofId)
@@ -68,7 +69,7 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
   const [declineModalVisible, setDeclineModalVisible] = useState(false)
   const { ColorPallet, ListItems, TextTheme } = useTheme()
   const { RecordLoading } = useAnimatedComponents()
-  const goalCode = useOutOfBandByConnectionId(agent, proof?.connectionId ?? '')?.outOfBandInvitation.goalCode
+  const goalCode = useOutOfBandByConnectionId(sdk, proof?.connectionId ?? '')?.outOfBandInvitation.goalCode
   const { OCABundleResolver } = useConfiguration()
   const [containsPI, setContainsPI] = useState(false)
   const [activeCreds, setActiveCreds] = useState<ProofCredentialItems[]>([])
@@ -133,7 +134,7 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
   })
 
   useEffect(() => {
-    if (!agent && !proof) {
+    if (!sdk && !proof) {
       DeviceEventEmitter.emit(
         EventTypes.ERROR_ADDED,
         new BifoldError(t('Error.Title1034'), t('Error.Message1034'), t('ProofRequest.ProofRequestNotFound'), 1034),
@@ -239,7 +240,7 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
 
   const handleAcceptPress = async () => {
     try {
-      if (!(agent && proof && assertConnectedNetwork())) {
+      if (!(sdk && proof && assertConnectedNetwork())) {
         return
       }
       setPendingModalVisible(true)
@@ -265,12 +266,12 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
         throw new Error(t('ProofRequest.RequestedCredentialsCouldNotBeFound'))
       }
 
-      await acceptProofRequest(agent, {
+      await acceptProofRequest(sdk, {
         proofRecordId: proof.id,
         proofFormats,
       })
       if (proof.connectionId && goalCode && goalCode.endsWith('verify.once')) {
-        await deleteConnectionRecordById(agent, proof.connectionId)
+        await deleteConnectionRecordById(sdk, proof.connectionId)
       }
     } catch (err: unknown) {
       setPendingModalVisible(false)
@@ -283,16 +284,16 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
   const handleDeclineTouched = async (reason: string | undefined) => {
     try {
       if (proof) {
-        await declineProofRequest(agent, { proofRecordId: proof.id })
+        await declineProofRequest(sdk, { proofRecordId: proof.id })
 
         // sending a problem report fails if there is neither a connectionId nor a ~service decorator
         if (proof.connectionId) {
-          await sendProofProblemReport(agent, {
+          await sendProofProblemReport(sdk, {
             proofRecordId: proof.id,
             description: reason ? reason : t('ProofRequest.Declined'),
           })
           if (goalCode && goalCode.endsWith('verify.once')) {
-            await deleteConnectionRecordById(agent, proof.connectionId)
+            await deleteConnectionRecordById(sdk, proof.connectionId)
           }
         }
       }

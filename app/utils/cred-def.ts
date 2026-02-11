@@ -1,4 +1,7 @@
-import { AnonCredsCredentialMetadataKey, CredentialExchangeRecord as CredentialRecord } from '@adeya/ssi'
+import {
+  AnonCredsCredentialMetadataKey,
+  DidCommCredentialExchangeRecord as CredentialRecord,
+} from '@credebl/ssi-mobile-didcomm'
 
 import { CREDENTIAL } from '../constants'
 

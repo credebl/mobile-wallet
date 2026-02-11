@@ -1,12 +1,12 @@
 import {
   V1RequestPresentationMessage,
-  CredentialExchangeRecord,
-  ProofExchangeRecord,
-  ProofState,
+  DidCommCredentialExchangeRecord,
+  DidCommProofExchangeRecord,
+  DidCommProofState,
   declineCredentialOffer as declineCredential,
   declineProofRequest as declineProof,
   getProofRequestAgentMessage,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-didcomm'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { V2RequestPresentationMessage } from '@credo-ts/didcomm'
 import { useNavigation } from '@react-navigation/core'
@@ -44,7 +44,7 @@ export enum NotificationType {
 
 interface NotificationListItemProps {
   notificationType: NotificationType
-  notification: CredentialExchangeRecord | ProofExchangeRecord
+  notification: DidCommCredentialExchangeRecord | DidCommProofExchangeRecord
 }
 
 type DisplayDetails = {
@@ -87,7 +87,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
     iconColor: ColorPallet.notification.infoIcon,
     iconName: 'info',
   })
-  const { name, version } = parsedSchema(notification as CredentialExchangeRecord)
+  const { name, version } = parsedSchema(notification as DidCommCredentialExchangeRecord)
 
   const styles = StyleSheet.create({
     container: {
@@ -135,11 +135,11 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
 
   const toggleDeclineModalVisible = () => setDeclineModalVisible(!declineModalVisible)
 
-  const isReceivedProof = notificationType === NotificationType.ProofRequest && notification.state === ProofState.Done
+  const isReceivedProof = notificationType === NotificationType.ProofRequest && notification.state === DidCommProofState.Done
 
   const declineProofRequest = async () => {
     try {
-      const proofId = (notification as ProofExchangeRecord).id
+      const proofId = (notification as DidCommProofExchangeRecord).id
       await declineProof(agent, { proofRecordId: proofId })
     } catch (err: unknown) {
       const error = new BifoldError(t('Error.Title1028'), t('Error.Message1028'), (err as Error).message, 1028)
@@ -151,13 +151,13 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
 
   const dismissProofRequest = async () => {
     if (agent && notificationType === NotificationType.ProofRequest) {
-      markProofAsViewed(agent, notification as ProofExchangeRecord)
+      markProofAsViewed(agent, notification as DidCommProofExchangeRecord)
     }
   }
 
   const declineCredentialOffer = async () => {
     try {
-      const credentialId = (notification as CredentialExchangeRecord).id
+      const credentialId = (notification as DidCommCredentialExchangeRecord).id
 
       await declineCredential(agent, credentialId)
     } catch (err: unknown) {
@@ -179,7 +179,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
 
     if (notificationType === NotificationType.ProofRequest) {
       usage = ModalUsage.ProofRequestDecline
-      if (notification.state === ProofState.Done) {
+      if (notification.state === DidCommProofState.Done) {
         onSubmit = dismissProofRequest
       } else {
         onSubmit = declineProofRequest
@@ -216,7 +216,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
           })
           break
         case NotificationType.ProofRequest: {
-          const proofId = (notification as ProofExchangeRecord).id
+          const proofId = (notification as DidCommProofExchangeRecord).id
           getProofRequestAgentMessage(agent, proofId).then(message => {
             setNotificationDetails(message)
             if (message instanceof V1RequestPresentationMessage && message.indyProofRequest) {
@@ -299,12 +299,12 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
             ) {
               navigation.getParent()?.navigate(Stacks.NotificationStack, {
                 screen: Screens.ProofRequestW3C,
-                params: { proofId: (notification as ProofExchangeRecord).id },
+                params: { proofId: (notification as DidCommProofExchangeRecord).id },
               })
             } else {
               navigation.getParent()?.navigate(Stacks.NotificationStack, {
                 screen: Screens.ProofRequest,
-                params: { proofId: (notification as ProofExchangeRecord).id },
+                params: { proofId: (notification as DidCommProofExchangeRecord).id },
               })
             }
           }

@@ -1,12 +1,10 @@
-import { CredentialExchangeRecord } from '@adeya/ssi'
+import { DidCommCredentialExchangeRecord, useCredentials } from '@credebl/ssi-mobile-didcomm'
 import { useMemo } from 'react'
 
-import { useCredentials } from '../contexts/agent'
-
-export const useCredentialsByConnectionId = (connectionId: string): CredentialExchangeRecord[] => {
+export const useCredentialsByConnectionId = (connectionId: string): DidCommCredentialExchangeRecord[] => {
   const { records: credentials } = useCredentials()
   return useMemo(
-    () => credentials.filter((credential: CredentialExchangeRecord) => credential.connectionId === connectionId),
+    () => credentials.filter((credential: DidCommCredentialExchangeRecord) => credential.connectionId === connectionId),
     [credentials, connectionId],
   )
 }

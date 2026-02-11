@@ -1,4 +1,5 @@
-import { ConnectionRecord, getOID4VCCredentialsForProofRequest, parseInvitationUrl } from '@adeya/ssi'
+import { ConnectionRecord, parseInvitationUrl } from '@credebl/ssi-mobile-core'
+import {getOID4VCCredentialsForProofRequest} from '@credebl/ssi-mobile-openid4vc'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MessageReceiver } from '@credo-ts/didcomm'
 import { StackScreenProps } from '@react-navigation/stack'

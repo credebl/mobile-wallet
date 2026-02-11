@@ -1,4 +1,4 @@
-import { CredentialExchangeRecord } from '@adeya/ssi'
+import { DidCommCredentialExchangeRecord, useConnections } from '@credebl/ssi-mobile-didcomm'
 import { LegacyBrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
 import React, { useEffect, useState } from 'react'
@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { Dimensions, Image, ImageBackground, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-import { useConnections } from '../../contexts/agent'
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
 import { GenericFn } from '../../types/fn'
@@ -23,7 +22,7 @@ import { testIdWithKey } from '../../utils/testable'
 import CardWatermark from './CardWatermark'
 
 interface CredentialCard10Props {
-  credential: CredentialExchangeRecord
+  credential: DidCommCredentialExchangeRecord
   onPress?: GenericFn
   style?: ViewStyle
 }

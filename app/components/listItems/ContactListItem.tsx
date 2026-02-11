@@ -1,10 +1,15 @@
-import { BasicMessageRecord, ConnectionRecord, CredentialExchangeRecord, ProofExchangeRecord } from '@adeya/ssi'
+import {
+  useBasicMessagesByConnectionId,
+  DidCommProofExchangeRecord,
+  DidCommCredentialExchangeRecord,
+  DidCommBasicMessageRecord,
+  DidCommConnectionRecord,
+} from '@credebl/ssi-mobile-didcomm'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native'
 
-import { useBasicMessagesByConnectionId } from '../../contexts/agent'
 import { useTheme } from '../../contexts/theme'
 import { useCredentialsByConnectionId } from '../../hooks/credentials'
 import { useProofsByConnectionId } from '../../hooks/proofs'
@@ -25,7 +30,7 @@ interface CondensedMessage {
   createdAt: Date
 }
 interface Props {
-  contact: ConnectionRecord
+  contact: DidCommConnectionRecord
   navigation: StackNavigationProp<ContactStackParams, Screens.Contacts>
 }
 
@@ -80,7 +85,7 @@ const ContactListItem: React.FC<Props> = ({ contact, navigation }) => {
   })
 
   useEffect(() => {
-    const transformedMessages: Array<CondensedMessage> = basicMessages.map((record: BasicMessageRecord) => {
+    const transformedMessages: Array<CondensedMessage> = basicMessages.map((record: DidCommBasicMessageRecord) => {
       return {
         text: record.content,
         createdAt: record.updatedAt || record.createdAt,
@@ -88,7 +93,7 @@ const ContactListItem: React.FC<Props> = ({ contact, navigation }) => {
     })
 
     transformedMessages.push(
-      ...credentials.map((record: CredentialExchangeRecord) => {
+      ...credentials.map((record: DidCommCredentialExchangeRecord) => {
         const role = getCredentialEventRole(record)
         const userLabel = role === Role.me ? `${t('Chat.UserYou')} ` : ''
         const actionLabel = t(getCredentialEventLabel(record) as any)
@@ -100,7 +105,7 @@ const ContactListItem: React.FC<Props> = ({ contact, navigation }) => {
     )
 
     transformedMessages.push(
-      ...proofs.map((record: ProofExchangeRecord) => {
+      ...proofs.map((record: DidCommProofExchangeRecord) => {
         const role = getProofEventRole(record)
         const userLabel = role === Role.me ? `${t('Chat.UserYou')} ` : ''
         const actionLabel = t(getProofEventLabel(record) as any)

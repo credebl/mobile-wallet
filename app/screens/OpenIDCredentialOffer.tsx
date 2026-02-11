@@ -10,7 +10,7 @@ import {
   getCredentialForDisplay,
   receiveCredentialFromOpenId4VciOffer,
   resolveOpenId4VciOffer,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-openid4vc'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -35,8 +35,8 @@ import { ColorPallet, TextTheme } from '../theme'
 import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, TabStacks } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
-import { useAppAgent } from '../utils/agent'
 import { formatCredentialSubject } from '../utils/credential'
+import { useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type OpenIdCredentialOfferProps = StackScreenProps<NotificationStackParams, Screens.OpenIdCredentialOffer>
@@ -199,7 +199,7 @@ const authorization = {
 }
 
 const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigation, route }) => {
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t } = useTranslation()
   const { storeOpenIdCredential } = useOpenIDCredentials()
   const [loading, setLoading] = useState(true)
@@ -241,14 +241,14 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
               msoMdocDoctypes: [credentialConfig.doctype],
             }
           : credentialConfig?.format === 'vc+sd-jwt' && credentialConfig.vct
-            ? {
-                sdJwtVcVcts: [credentialConfig.vct as string],
-                msoMdocDoctypes: [],
-              }
-            : undefined
+          ? {
+              sdJwtVcVcts: [credentialConfig.vct as string],
+              msoMdocDoctypes: [],
+            }
+          : undefined
 
       const credentialResponses = await receiveCredentialFromOpenId4VciOffer({
-        agent,
+        sdk,
         resolvedCredentialOffer: resolvedOffer,
         credentialConfigurationIdsToRequest: [configurationId],
         accessToken: tokenResponse,
@@ -273,7 +273,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
       const attributesToDisplay =
         display?.attributes && Object.keys(display.attributes).length > 0
           ? display.attributes
-          : (display?.rawAttributes ?? {})
+          : display?.rawAttributes ?? {}
 
       const formattedAttributes = formatCredentialSubject(attributesToDisplay)
       const initializeExpandState = (attrs: W3CCredentialAttributeField[]): W3CCredentialAttributeField[] => {
@@ -298,7 +298,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
       setTables(initializeExpandState(formattedAttributes))
       setNeedsAuthorization(false)
     },
-    [agent],
+    [sdk],
   )
 
   const acquireCredentialsAuth = useCallback(
@@ -317,7 +317,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
       setFetchingPreview(true)
       try {
         const tokenResponse = await acquireAuthorizationCodeAccessToken({
-          agent,
+          sdk,
           resolvedCredentialOffer: resolvedOffer,
           redirectUri: authorization.redirectUri,
           authorizationCode,
@@ -333,7 +333,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
         setFetchingPreview(false)
       }
     },
-    [resolvedOffer, resolvedAuthorizationRequest, retrieveCredentials, agent, t],
+    [resolvedOffer, resolvedAuthorizationRequest, retrieveCredentials, sdk, t],
   )
 
   useEffect(() => {
@@ -365,7 +365,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
     return () => {
       subscription.remove()
     }
-  }, [agent, resolvedOffer, resolvedAuthorizationRequest])
+  }, [sdk, resolvedOffer, resolvedAuthorizationRequest])
 
   const handleAuthorizePress = useCallback(async () => {
     if (!resolvedAuthorizationRequest) {
@@ -383,7 +383,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
     } catch (error) {
       Alert.alert('Error', 'Failed to open authorization page')
     }
-  }, [resolvedAuthorizationRequest, agent])
+  }, [resolvedAuthorizationRequest, sdk])
 
   const fetchCredentialPreview = useCallback(
     async (txCode?: string) => {
@@ -398,7 +398,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
       }
 
       const tokenResponse = await acquirePreAuthorizedAccessToken({
-        agent,
+        sdk,
         resolvedCredentialOffer: resolvedOffer,
         txCode,
       })
@@ -409,7 +409,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
 
       await retrieveCredentials(tokenResponse, configurationId)
     },
-    [agent, retrieveCredentials],
+    [sdk, retrieveCredentials],
   )
 
   const handleAcceptTouched = useCallback(async () => {
@@ -419,7 +419,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
     }
     try {
       setProcessing(true)
-      await storeOpenIdCredential(agent, fetchedCredential)
+      await storeOpenIdCredential(sdk, fetchedCredential)
       setProcessing(false)
       navigation.getParent()?.navigate(TabStacks.CredentialStack, {
         screen: Screens.Credentials,
@@ -431,7 +431,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
         { text: 'OK' },
       ])
     }
-  }, [fetchedCredential, storeOpenIdCredential, agent, navigation])
+  }, [fetchedCredential, storeOpenIdCredential, sdk, navigation])
 
   const handleTxCodeSubmit = useCallback(async () => {
     if (!txCode.trim()) {
@@ -465,7 +465,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
 
         if ('uri' in route.params) {
           const resolved = await resolveOpenId4VciOffer({
-            agent,
+            sdk,
             offer: {
               uri: route.params.uri,
             },
@@ -525,7 +525,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
     }
 
     initializeOffer()
-  }, [agent, route.params, t, fetchCredentialPreview])
+  }, [sdk, route.params, t, fetchCredentialPreview])
 
   if (loading) {
     return (

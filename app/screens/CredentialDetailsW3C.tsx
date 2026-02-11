@@ -2,12 +2,14 @@ import type { StackScreenProps } from '@react-navigation/stack'
 import 'text-encoding'
 
 import {
-  CredentialExchangeRecord,
-  CredentialState,
+  DidCommCredentialExchangeRecord,
+  DidCommCredentialState,
   W3cCredentialRecord,
   deleteCredentialExchangeRecordById,
   getW3cCredentialRecordById,
-} from '@adeya/ssi'
+  useCredentialByState,
+  useConnections,
+} from '@credebl/ssi-mobile-didcomm'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
 import Clipboard from '@react-native-clipboard/clipboard'
@@ -26,14 +28,12 @@ import RecordRemove from '../components/record/RecordRemove'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
 import { ToastType } from '../components/toast/BaseToast'
 import { EventTypes } from '../constants'
-import { useConnections, useCredentialByState } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'
 import { ContactStackParams, CredentialStackParams, Screens } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
 import { ModalUsage } from '../types/remove'
-import { useAppAgent } from '../utils/agent'
 import {
   buildFieldsFromJSONLDCredential,
   credentialTextColor,
@@ -41,6 +41,7 @@ import {
   getCredentialSubject,
   toImageSource,
 } from '../utils/credential'
+import { useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type CredentialDetailsProps = StackScreenProps<CredentialStackParams | ContactStackParams, Screens.CredentialDetailsW3C>
@@ -55,14 +56,14 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
   }
 
   const { credential } = route?.params
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t, i18n } = useTranslation()
   const { TextTheme, ColorPallet } = useTheme()
   const { OCABundleResolver } = useConfiguration()
   const [isRemoveModalDisplayed, setIsRemoveModalDisplayed] = useState<boolean>(false)
   const [tables, setTables] = useState<W3CCredentialAttributeField[]>([])
   const [w3cCredential, setW3cCredential] = useState<W3cCredentialRecord>()
-  const credentialsList = useCredentialByState(CredentialState.Done)
+  const credentialsList = useCredentialByState(DidCommCredentialState.Done)
   const [isDeletingCredential, setIsDeletingCredential] = useState<boolean>(false)
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false)
   const { records: connectionRecords } = useConnections()
@@ -115,7 +116,7 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
   })
 
   useEffect(() => {
-    if (!agent || !credential) {
+    if (!sdk || !credential) {
       DeviceEventEmitter.emit(
         EventTypes.ERROR_ADDED,
         new BifoldError(t('Error.Title1033'), t('Error.Message1033'), t('CredentialDetails.CredentialNotFound'), 1033),
@@ -126,14 +127,14 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
   useEffect(() => {
     if (!w3cCredential) {
       const updateCredential = async () => {
-        if (!agent) {
+        if (!sdk) {
           return
         }
         if (credential instanceof W3cCredentialRecord) {
           return credential
-        } else if (credential instanceof CredentialExchangeRecord) {
+        } else if (credential instanceof DidCommCredentialExchangeRecord) {
           const credentialRecordId = credential.credentials[0].credentialRecordId
-          const record = await getW3cCredentialRecordById(agent, credentialRecordId)
+          const record = await getW3cCredentialRecordById(sdk, credentialRecordId)
           const connection = connectionRecords.find(connection => connection.id === credential?.connectionId)
           record.connectionLabel = connection?.theirLabel
           return record
@@ -171,13 +172,13 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
 
   const handleSubmitRemove = async () => {
     try {
-      if (!(agent && credential)) {
+      if (!(sdk && credential)) {
         return
       }
       const rec = credentialsList.find(cred => cred.credentials[0]?.credentialRecordId === credential.id)
       setIsDeletingCredential(true)
       if (rec) {
-        await deleteCredentialExchangeRecordById(agent, rec.id, {
+        await deleteCredentialExchangeRecordById(sdk, rec.id, {
           deleteAssociatedCredentials: true,
         })
       }

@@ -1,14 +1,16 @@
 import {
   AnonCredsCredentialMetadataKey,
   AnonCredsCredentialOffer,
-  AutoAcceptCredential,
-  CredentialPreviewAttribute,
+  DidCommAutoAcceptCredential,
+  DidCommCredentialPreviewAttribute,
   JsonLdFormatDataCredentialDetail,
   acceptCredentialOffer,
   declineCredentialOffer,
   getFormattedCredentialData,
   sendCredentialProblemReport,
-} from '@adeya/ssi'
+  useCredentialById,
+  useConnections,
+} from '@credebl/ssi-mobile-didcomm'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
 import { StackScreenProps } from '@react-navigation/stack'
@@ -26,7 +28,6 @@ import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import Record from '../components/record/Record'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
 import { CREDENTIAL_W3C, EventTypes } from '../constants'
-import { useConnections, useCredentialById } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { useNetwork } from '../contexts/network'
 import { useStore } from '../contexts/store'
@@ -35,10 +36,9 @@ import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, TabStacks } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
 import { ModalUsage } from '../types/remove'
-import { useAppAgent } from '../utils/agent'
 import { parseCredDefFromId } from '../utils/cred-def'
 import { buildFieldsFromJSONLDCredential, formatCredentialSubject, getCredentialIdentifiers } from '../utils/credential'
-import { getCredentialConnectionLabel, getDefaultHolderDidDocument } from '../utils/helpers'
+import { getCredentialConnectionLabel, getDefaultHolderDidDocument, useSdk } from '../utils/helpers'
 import { buildFieldsFromAnonCredsCredential } from '../utils/oca'
 import { testIdWithKey } from '../utils/testable'
 
@@ -53,7 +53,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
 
   const { credentialId } = route.params
 
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t, i18n } = useTranslation()
   const { ListItems } = useTheme()
   const { assertConnectedNetwork } = useNetwork()
@@ -88,7 +88,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
   })
 
   useEffect(() => {
-    if (!agent && !credential) {
+    if (!sdk && !credential) {
       DeviceEventEmitter.emit(
         EventTypes.ERROR_ADDED,
         new BifoldError(t('Error.Title1035'), t('Error.Message1035'), t('CredentialOffer.CredentialNotFound'), 1035),
@@ -102,7 +102,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
     }
 
     const updateCredentialPreview = async () => {
-      const { ...formatData } = await getFormattedCredentialData(agent, credential.id)
+      const { ...formatData } = await getFormattedCredentialData(sdk, credential.id)
       const { offer, offerAttributes } = formatData
       let offerData
 
@@ -121,7 +121,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
       }
 
       if (offerAttributes) {
-        credential.credentialAttributes = [...offerAttributes.map(item => new CredentialPreviewAttribute(item))]
+        credential.credentialAttributes = [...offerAttributes.map(item => new DidCommCredentialPreviewAttribute(item))]
       }
     }
 
@@ -154,7 +154,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
   const logHistoryRecord = useCallback(
     async (credentialType?: string, credentialName?: string) => {
       try {
-        if (!(agent && store.preferences.useHistoryCapability)) {
+        if (!(sdk && store.preferences.useHistoryCapability)) {
           return
         }
 
@@ -176,30 +176,30 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
           correspondenceId: credentialId,
           correspondenceName: name,
         }
-        await saveHistory(recordData, agent)
+        await saveHistory(recordData, sdk)
       } catch (err: unknown) {
         // error when agent and preferences not getting
       }
     },
-    [agent, store.preferences.useHistoryCapability, credential, credentialId],
+    [sdk, store.preferences.useHistoryCapability, credential, credentialId],
   )
 
   const handleAcceptTouched = async () => {
     try {
-      if (!(agent && credential && assertConnectedNetwork())) {
+      if (!(sdk && credential && assertConnectedNetwork())) {
         return
       }
       setAcceptModalVisible(true)
 
-      const credentialFormatData = await getFormattedCredentialData(agent, credential.id)
+      const credentialFormatData = await getFormattedCredentialData(sdk, credential.id)
 
       // Added holder did as id if did is not present and negotiate offer
       if (
         !credentialFormatData?.offer?.jsonld?.credential?.credentialSubject?.id &&
         credentialFormatData?.offer?.jsonld
       ) {
-        const holderDid = await getDefaultHolderDidDocument(agent)
-        await agent.modules.credentials.negotiateOffer({
+        const holderDid = await getDefaultHolderDidDocument(sdk)
+        await sdk.modules.credentials.negotiateOffer({
           credentialFormats: {
             jsonld: {
               credential: {
@@ -217,11 +217,11 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
           },
           credentialRecordId: credential.id,
           // we added auto accept credential to always accept the credential further flows
-          autoAcceptCredential: AutoAcceptCredential.Always,
+          autoAcceptCredential: DidCommAutoAcceptCredential.Always,
         })
         await logHistoryRecord(CREDENTIAL_W3C, credentialFormatData?.offer?.jsonld?.credential?.type[1])
       } else {
-        await acceptCredentialOffer(agent, { credentialRecordId: credential.id })
+        await acceptCredentialOffer(sdk, { credentialRecordId: credential.id })
         await logHistoryRecord()
       }
     } catch (err: unknown) {
@@ -234,8 +234,8 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
   const handleDeclineTouched = async () => {
     try {
       if (credential) {
-        await declineCredentialOffer(agent, credential.id)
-        await sendCredentialProblemReport(agent, {
+        await declineCredentialOffer(sdk, credential.id)
+        await sendCredentialProblemReport(sdk, {
           credentialRecordId: credential.id,
           description: t('CredentialOffer.Declined'),
         })

@@ -1,3 +1,4 @@
+import { useConnections } from '@credebl/ssi-mobile-didcomm'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/core'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,11 +9,9 @@ import Toast from 'react-native-toast-message'
 import useOrganizationDetailData from '../api/organizationDetailHelper'
 import Button, { ButtonType } from '../components/buttons/Button'
 import { ToastType } from '../components/toast/BaseToast'
-import { useConnections } from '../contexts/agent'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'
 import { Screens, Stacks } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
 import {
   checkIfAlreadyConnected,
   connectFromInvitation,
@@ -21,6 +20,7 @@ import {
   getUrl,
   isValidUrl,
   receiveMessageFromUrlRedirect,
+  useSdk,
 } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
@@ -33,7 +33,7 @@ interface OrganizationDetailProps {
 
 const OrganizationDetails: React.FC = () => {
   const { ColorPallet, ListItems, TextTheme } = useTheme()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const navigation = useNavigation()
   const { t } = useTranslation()
   const params = useRoute<RouteProp<Record<string, OrganizationDetailProps>, string>>().params
@@ -155,7 +155,7 @@ const OrganizationDetails: React.FC = () => {
 
   const handleInvitation = async (value: string): Promise<void> => {
     try {
-      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, value)
+      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, value)
 
       navigation.getParent()?.navigate(Stacks.ConnectionStack, {
         screen: Screens.Connection,
@@ -165,7 +165,7 @@ const OrganizationDetails: React.FC = () => {
       try {
         const json = getJson(value)
         if (json) {
-          await agent?.receiveMessage(json)
+          await sdk?.receiveMessage(json)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,
             params: { threadId: json['@id'] },
@@ -177,7 +177,7 @@ const OrganizationDetails: React.FC = () => {
         const isValidURL = isValidUrl(urlData)
 
         if (isValidURL) {
-          const isAlreadyConnected = await checkIfAlreadyConnected(agent, urlData)
+          const isAlreadyConnected = await checkIfAlreadyConnected(sdk, urlData)
 
           if (isAlreadyConnected) {
             Toast.show({
@@ -188,7 +188,7 @@ const OrganizationDetails: React.FC = () => {
             return
           }
 
-          const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, urlData)
+          const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, urlData)
 
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,
@@ -198,7 +198,7 @@ const OrganizationDetails: React.FC = () => {
         }
         const url = getUrl(value)
         if (url) {
-          const message = await receiveMessageFromUrlRedirect(value, agent)
+          const message = await receiveMessageFromUrlRedirect(value, sdk)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,
             params: { threadId: message['@id'] },

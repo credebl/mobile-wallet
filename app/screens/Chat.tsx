@@ -1,12 +1,15 @@
-import {
-  BasicMessageRecord,
-  CredentialExchangeRecord,
-  CredentialState,
-  ProofExchangeRecord,
-  ProofState,
-  sendBasicMessage,
-  BasicMessageRepository,
-} from '@adeya/ssi'
+import type {
+  DidCommBasicMessageRecord,
+  DidCommCredentialExchangeRecord,
+  DidCommCredentialState,
+  DidCommProofExchangeRecord,
+  DidCommProofState,
+  DidCommsendBasicMessage,
+  DidCommBasicMessageRepository,
+  useConnectionById,
+  useBasicMessagesByConnectionId,
+} from '@credebl/ssi-mobile-didcomm'
+
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -21,7 +24,6 @@ import ActionSlider from '../components/chat/ActionSlider'
 import { renderActions } from '../components/chat/ChatActions'
 import { ChatEvent } from '../components/chat/ChatEvent'
 import { ChatMessage, ExtendedChatMessage, CallbackType } from '../components/chat/ChatMessage'
-import { useBasicMessagesByConnectionId, useConnectionById } from '../contexts/agent'
 import { useNetwork } from '../contexts/network'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
@@ -31,7 +33,6 @@ import { ColorPallet } from '../theme'
 import { Role } from '../types/chat'
 import { BasicMessageMetadata, BasicMessageCustomMetadata } from '../types/metadata'
 import { ContactStackParams, Screens, Stacks } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
 import { isW3CCredential } from '../utils/credential'
 import {
   getCredentialEventLabel,
@@ -39,6 +40,7 @@ import {
   getMessageEventRole,
   getProofEventLabel,
   getProofEventRole,
+  useSdk,
 } from '../utils/helpers'
 
 type ChatProps = StackScreenProps<ContactStackParams, Screens.Chat>
@@ -51,7 +53,7 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
   const { connectionId } = route.params
   const [store] = useStore()
   const { t } = useTranslation()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const connection = useConnectionById(connectionId)
   const basicMessages = useBasicMessagesByConnectionId(connectionId)
   const credentials = useCredentialsByConnectionId(connectionId)
@@ -77,16 +79,16 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
   useEffect(() => {
     basicMessages.forEach(msg => {
       const meta = msg.metadata.get(BasicMessageMetadata.customMetadata) as BasicMessageCustomMetadata
-      if (agent && !meta?.seen) {
+      if (sdk && !meta?.seen) {
         msg.metadata.set(BasicMessageMetadata.customMetadata, { ...meta, seen: true })
-        const basicMessageRepository = agent.context.dependencyManager.resolve(BasicMessageRepository)
-        basicMessageRepository.update(agent.context, msg)
+        const basicMessageRepository = sdk.context.dependencyManager.resolve(DidCommBasicMessageRepository)
+        basicMessageRepository.update(sdk.context, msg)
       }
     })
   }, [basicMessages])
 
   useEffect(() => {
-    const transformedMessages: Array<ExtendedChatMessage> = basicMessages.map((record: BasicMessageRecord) => {
+    const transformedMessages: Array<ExtendedChatMessage> = basicMessages.map((record: DidCommBasicMessageRecord) => {
       const role = getMessageEventRole(record)
       const linkRegex = /(?:https?:\/\/\S{1,100})|(?:\S{1,100}@\S{1,100})/gm
       const mailRegex = /^[\w.-]+@\w+(?:\.\w+)+$/gm
@@ -128,32 +130,34 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
       }
     })
 
-    const callbackTypeForMessage = (record: CredentialExchangeRecord | ProofExchangeRecord) => {
+    const callbackTypeForMessage = (record: DidCommCredentialExchangeRecord | DidCommProofExchangeRecord) => {
       if (
-        record instanceof CredentialExchangeRecord &&
-        (record.state === CredentialState.Done || record.state === CredentialState.OfferReceived)
+        record instanceof DidCommCredentialExchangeRecord &&
+        (record.state === DidCommCredentialState.Done || record.state === DidCommCredentialState.OfferReceived)
       ) {
         return CallbackType.CredentialOffer
       }
 
       if (
-        (record instanceof ProofExchangeRecord && isPresentationReceived(record) && record.isVerified !== undefined) ||
-        record.state === ProofState.RequestReceived ||
-        (record.state === ProofState.Done && record.isVerified === undefined)
+        (record instanceof DidCommProofExchangeRecord &&
+          isPresentationReceived(record) &&
+          record.isVerified !== undefined) ||
+        record.state === DidCommProofState.RequestReceived ||
+        (record.state === DidCommProofState.Done && record.isVerified === undefined)
       ) {
         return CallbackType.ProofRequest
       }
 
       if (
-        record instanceof ProofExchangeRecord &&
-        (record.state === ProofState.PresentationSent || record.state === ProofState.Done)
+        record instanceof DidCommProofExchangeRecord &&
+        (record.state === DidCommProofState.PresentationSent || record.state === DidCommProofState.Done)
       ) {
         return CallbackType.PresentationSent
       }
     }
 
     transformedMessages.push(
-      ...credentials.map((record: CredentialExchangeRecord) => {
+      ...credentials.map((record: DidCommCredentialExchangeRecord) => {
         const role = getCredentialEventRole(record)
         const userLabel = role === Role.me ? t('Chat.UserYou') : theirLabel
         const actionLabel = t(getCredentialEventLabel(record) as any)
@@ -167,14 +171,14 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
           user: { _id: role },
           messageOpensCallbackType: callbackTypeForMessage(record),
           onDetails: () => {
-            const navMap: { [key in CredentialState]?: () => void } = {
-              [CredentialState.Done]: () => {
+            const navMap: { [key in DidCommCredentialState]?: () => void } = {
+              [DidCommCredentialState.Done]: () => {
                 navigation.navigate(Stacks.ContactStack as any, {
                   screen: isW3CCredential(record) ? Screens.CredentialDetailsW3C : Screens.CredentialDetails,
                   params: { credential: record },
                 })
               },
-              [CredentialState.OfferReceived]: () => {
+              [DidCommCredentialState.OfferReceived]: () => {
                 navigation.navigate(Stacks.ContactStack as any, {
                   screen: Screens.CredentialOffer,
                   params: { credentialId: record.id },
@@ -191,7 +195,7 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
     )
 
     transformedMessages.push(
-      ...proofs.map((record: ProofExchangeRecord) => {
+      ...proofs.map((record: DidCommProofExchangeRecord) => {
         const role = getProofEventRole(record)
         const userLabel = role === Role.me ? t('Chat.UserYou') : theirLabel
         const actionLabel = t(getProofEventLabel(record) as any)
@@ -212,17 +216,17 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
                   recordId: record.id,
                   isHistory: true,
                   senderReview:
-                    record.state === ProofState.PresentationSent ||
-                    (record.state === ProofState.Done && record.isVerified === undefined),
+                    record.state === DidCommProofState.PresentationSent ||
+                    (record.state === DidCommProofState.Done && record.isVerified === undefined),
                 },
               })
             }
-            const navMap: { [key in ProofState]?: () => void } = {
-              [ProofState.Done]: toProofDetails,
-              [ProofState.PresentationSent]: toProofDetails,
-              [ProofState.PresentationReceived]: toProofDetails,
-              [ProofState.RequestReceived]: () => {
-                agent.modules.proofs.getFormatData(record.id).then(value => {
+            const navMap: { [key in DidCommProofState]?: () => void } = {
+              [DidCommProofState.Done]: toProofDetails,
+              [DidCommProofState.PresentationSent]: toProofDetails,
+              [DidCommProofState.PresentationReceived]: toProofDetails,
+              [DidCommProofState.RequestReceived]: () => {
+                sdk.modules.proofs.getFormatData(record.id).then(value => {
                   if (value?.request?.indy) {
                     navigation.navigate(Stacks.ContactStack as any, {
                       screen: Screens.ProofRequest,
@@ -270,9 +274,9 @@ const Chat: React.FC<ChatProps> = ({ navigation, route }) => {
 
   const onSend = useCallback(
     async (messages: IMessage[]) => {
-      await sendBasicMessage(agent, connectionId, messages[0].text)
+      await DidCommsendBasicMessage(sdk, connectionId, messages[0].text)
     },
-    [agent, connectionId],
+    [sdk, connectionId],
   )
 
   const onSendRequest = useCallback(async () => {

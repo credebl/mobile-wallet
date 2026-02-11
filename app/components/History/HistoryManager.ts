@@ -1,4 +1,4 @@
-import { Agent } from '@adeya/ssi'
+import { Agent } from '@credebl/ssi-mobile-core'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { GenericRecordTags } from '@credo-ts/core/build/modules/generic-records/repository/GenericRecord'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -9,6 +9,7 @@ import { LocalStorageKeys } from '../../constants'
 
 import { CustomRecord, HistoryBlockSelection, HistoryRecord, RecordType } from './types'
 
+// TODO Need to change Agent
 // Add Generic Record
 export async function addGenericRecord(
   agent: Agent<any> | null,

@@ -1,6 +1,4 @@
-import { deleteConnectionRecordById, ProofState } from '@adeya/ssi'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { MessageReceiver } from '@credo-ts/didcomm'
+import { DidCommProofState, DidCommMessageReceiver, useProofByState } from '@credebl/ssi-mobile-didcomm'
 import { useNavigation } from '@react-navigation/core'
 import { createStackNavigator, StackCardStyleInterpolator, StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useRef, useState } from 'react'
@@ -11,7 +9,6 @@ import Toast from 'react-native-toast-message'
 import { ProofCustomMetadata, ProofMetadata } from '../../verifier'
 import { ToastType } from '../components/toast/BaseToast'
 import { walletTimeout } from '../constants'
-import { useProofByState } from '../contexts/agent'
 import { useAuth } from '../contexts/auth'
 import { useConfiguration } from '../contexts/configuration'
 import { DispatchAction } from '../contexts/reducers/store'
@@ -28,7 +25,6 @@ import { createCarouselStyle } from '../screens/OnboardingPages'
 import PINCreate from '../screens/PINCreate'
 import PINEnter from '../screens/PINEnter'
 import { AuthenticateStackParams, Screens, Stacks } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
 import {
   checkIfAlreadyConnected,
   connectFromInvitation,
@@ -37,6 +33,7 @@ import {
   getUrl,
   isValidUrl,
   receiveMessageFromUrlRedirect,
+  useSdk,
 } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
@@ -53,7 +50,7 @@ import { createDefaultStackOptions } from './defaultStackOptions'
 const RootStack: React.FC = () => {
   const [state, dispatch] = useStore()
   const { removeSavedWalletSecret } = useAuth()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const appState = useRef(AppState.currentState)
   const [backgroundTime, setBackgroundTime] = useState<number | undefined>(undefined)
   const [prevAppStateVisible, setPrevAppStateVisible] = useState<string>('')
@@ -65,26 +62,26 @@ const RootStack: React.FC = () => {
   const OnboardingTheme = theme.OnboardingTheme
   const { pages, terms, splash, useBiometry, enableWalletNaming } = useConfiguration()
   useDeepLinks()
-
   // remove connection on mobile verifier proofs if proof is rejected regardless of if it has been opened
-  const declinedProofs = useProofByState([ProofState.Declined, ProofState.Abandoned])
-  useEffect(() => {
-    declinedProofs.forEach(proof => {
-      const meta = proof?.metadata?.get(ProofMetadata.customMetadata) as ProofCustomMetadata
-      if (meta?.delete_conn_after_seen) {
-        deleteConnectionRecordById(agent, proof?.connectionId ?? '').catch(() => {})
+  // const declinedProofs = useProofByState(['declined', 'abandoned'])
+  // console.log("🚀 ~ RootStack.tsx:67 ~ RootStack ~ declinedProofs:", declinedProofs)
+  // useEffect(() => {
+  //   declinedProofs.forEach(proof => {
+  //     const meta = proof?.metadata?.get(ProofMetadata.customMetadata) as ProofCustomMetadata
+  //     if (meta?.delete_conn_after_seen) {
+  //       sdk.agent?.didcomm.deleteById(sdk, proof?.connectionId ?? '').catch(() => { })
 
-        proof?.metadata.set(ProofMetadata.customMetadata, { ...meta, delete_conn_after_seen: false })
-      }
-    })
-  }, [declinedProofs, state.preferences.useDataRetention])
+  //       proof?.metadata.set(ProofMetadata.customMetadata, { ...meta, delete_conn_after_seen: false })
+  //     }
+  //   })
+  // }, [declinedProofs, state.preferences.useDataRetention])
 
   const lockoutUser = async () => {
-    if (agent && state.authentication.didAuthenticate) {
-      // make sure agent is shutdown so wallet isn't still open
+    if (sdk && state.authentication.didAuthenticate) {
+      // make sure sdk is shutdown so wallet isn't still open
       removeSavedWalletSecret()
-      await agent.wallet.close()
-      await agent.shutdown()
+      // await sdk.wallet.close()
+      await sdk?.agent?.shutdown()
       dispatch({
         type: DispatchAction.DID_AUTHENTICATE,
         payload: [{ didAuthenticate: false }],
@@ -107,7 +104,7 @@ const RootStack: React.FC = () => {
         }
 
         // check if connection already exists
-        const isAlreadyConnected = await checkIfAlreadyConnected(agent, invitationUrl)
+        const isAlreadyConnected = await checkIfAlreadyConnected(sdk, invitationUrl)
 
         if (isAlreadyConnected) {
           Toast.show({
@@ -118,7 +115,7 @@ const RootStack: React.FC = () => {
         }
 
         // Try connection based
-        const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, invitationUrl)
+        const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, invitationUrl)
         navigation.navigate(Stacks.ConnectionStack as any, {
           screen: Screens.Connection,
           params: { connectionId: connectionRecord?.id, outOfBandId: outOfBandRecord.id },
@@ -127,7 +124,7 @@ const RootStack: React.FC = () => {
         try {
           const json = getJson(invitationUrl)
           if (json) {
-            const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
+            const messageReceiver = sdk.agent?.context.dependencyManager.resolve(DidCommMessageReceiver)
             await messageReceiver.receiveMessage(json)
             navigation.getParent()?.navigate(Stacks.ConnectionStack, {
               screen: Screens.Connection,
@@ -140,7 +137,7 @@ const RootStack: React.FC = () => {
           const isValidURL = isValidUrl(urlData)
 
           if (isValidURL) {
-            const isAlreadyConnected = await checkIfAlreadyConnected(agent, urlData)
+            const isAlreadyConnected = await checkIfAlreadyConnected(sdk, urlData)
 
             if (isAlreadyConnected) {
               Toast.show({
@@ -151,7 +148,7 @@ const RootStack: React.FC = () => {
               return
             }
 
-            const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, urlData)
+            const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, urlData)
 
             navigation.getParent()?.navigate(Stacks.ConnectionStack, {
               screen: Screens.Connection,
@@ -164,7 +161,7 @@ const RootStack: React.FC = () => {
           const url = getUrl(invitationUrl)
 
           if (url) {
-            const message = await receiveMessageFromUrlRedirect(invitationUrl, agent)
+            const message = await receiveMessageFromUrlRedirect(invitationUrl, sdk)
             navigation.getParent()?.navigate(Stacks.ConnectionStack, {
               screen: Screens.Connection,
               params: { threadId: message['@id'] },
@@ -182,10 +179,10 @@ const RootStack: React.FC = () => {
         payload: [undefined],
       })
     }
-    if (agent && state.deepLink.activeDeepLink && state.authentication.didAuthenticate) {
+    if (sdk && state.deepLink.activeDeepLink && state.authentication.didAuthenticate) {
       handleDeepLink(state.deepLink.activeDeepLink)
     }
-  }, [agent, state.deepLink.activeDeepLink, state.authentication.didAuthenticate])
+  }, [sdk, state.deepLink.activeDeepLink, state.authentication.didAuthenticate])
 
   useEffect(() => {
     AppState.addEventListener('change', nextAppState => {

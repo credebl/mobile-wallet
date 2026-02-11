@@ -1,13 +1,15 @@
 import {
   AnonCredsCredentialMetadataKey,
-  CredentialExchangeRecord,
-  CredentialState,
+  DidCommCredentialExchangeRecord,
+  DidCommCredentialState,
   GenericCredentialExchangeRecord,
   getAllW3cCredentialRecords,
   openId4VcCredentialMetadataKey,
   W3cCredentialRecord,
   SdJwtVcRecord,
-} from '@adeya/ssi'
+  useCredentialByState,
+  useConnections,
+} from '@credebl/ssi-mobile-didcomm'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MdocRecord } from '@credo-ts/core'
 import { useNavigation } from '@react-navigation/core'
@@ -21,11 +23,9 @@ import { useOpenIDCredentials } from '../components/Provider/OpenIDCredentialRec
 import ScanButton from '../components/common/ScanButton'
 import CredentialCard from '../components/misc/CredentialCard'
 import { OpenIDCredScreenMode } from '../constants'
-import { useConnections, useCredentialByState } from '../contexts/agent'
 import { useConfiguration } from '../contexts/configuration'
 import { CredentialStackParams, Screens } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
-import { getCredentialFormat } from '../utils/helpers'
+import { getCredentialFormat, useSdk } from '../utils/helpers'
 
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string
@@ -37,20 +37,20 @@ interface Props {
 
 const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
   const { t } = useTranslation()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { credentialEmptyList: CredentialEmptyList } = useConfiguration()
   const {
     openIdState: { w3cCredentialRecords, sdJwtVcRecords, mdocRecords },
   } = useOpenIDCredentials()
   const credentials: (GenericCredentialExchangeRecord | W3cCredentialRecord | SdJwtVcRecord | MdocRecord)[] = [
-    ...useCredentialByState(CredentialState.CredentialReceived),
-    ...useCredentialByState(CredentialState.Done),
+    ...useCredentialByState(DidCommCredentialState.CredentialReceived),
+    ...useCredentialByState(DidCommCredentialState.Done),
     ...w3cCredentialRecords,
     ...(sdJwtVcRecords ?? []),
     ...(mdocRecords ?? []),
   ]
   const [credentialList, setCredentialList] = useState<
-    (CredentialExchangeRecord | EnhancedW3CRecord | SdJwtVcRecord | MdocRecord)[]
+    (DidCommCredentialExchangeRecord | EnhancedW3CRecord | SdJwtVcRecord | MdocRecord)[]
   >([])
   const { records: connectionRecords } = useConnections()
 
@@ -72,11 +72,11 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
 
   useEffect(() => {
     const updateCredentials = async () => {
-      if (!agent) {
+      if (!sdk) {
         return
       }
 
-      const w3cCredentialRecords = await getAllW3cCredentialRecords(agent)
+      const w3cCredentialRecords = await getAllW3cCredentialRecords(sdk)
 
       const updatedCredentials = credentials.map(credential => {
         if (
@@ -104,7 +104,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
     updateCredentials().then(updatedCredentials => {
       setCredentialList(updatedCredentials)
     })
-  }, [agent, w3cCredentialRecords, sdJwtVcRecords, mdocRecords, connectionRecords])
+  }, [sdk, w3cCredentialRecords, sdJwtVcRecords, mdocRecords, connectionRecords])
 
   const styles = StyleSheet.create({
     container: { flex: 1, marginHorizontal: 10 },
@@ -138,13 +138,13 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
 
           return (
             <View style={styles.renderView}>
-              {credential instanceof CredentialExchangeRecord ? (
+              {credential instanceof DidCommCredentialExchangeRecord ? (
                 <CredentialCard
                   credential={credential}
                   credentialFormat={format}
                   onPress={() =>
                     navigation.navigate(Screens.CredentialDetails, {
-                      credential: credential as CredentialExchangeRecord,
+                      credential: credential as DidCommCredentialExchangeRecord,
                     })
                   }
                 />

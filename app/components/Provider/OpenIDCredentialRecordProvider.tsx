@@ -1,3 +1,4 @@
+import { recordsAddedByType, recordsRemovedByType } from '@credebl/ssi-mobile-core'
 import {
   // addRecord,
   defaultState,
@@ -5,19 +6,17 @@ import {
   // isW3CCredentialRecord,
   // OpenIDCredentialContext,
   OpenIDCredentialRecordState,
-  recordsAddedByType,
-  recordsRemovedByType,
   removeCredential,
   // removeRecord,
   SdJwtVcRecord,
   storeOpenIdCredential,
   W3cCredentialRecord,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-openid4vc'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Agent, MdocRecord } from '@credo-ts/core'
+import { MdocRecord } from '@credo-ts/core'
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
 
-import { useAdeyaAgent } from '../../contexts/agent/AgentProvider'
+import { useSdk } from '../../utils/helpers'
 
 interface EnhancedOpenIDCredentialRecordState extends OpenIDCredentialRecordState {
   mdocRecords: MdocRecord[]
@@ -100,8 +99,8 @@ const removeMdocRecord = (
 
 type OpenIDCredentialContext = {
   openIdState: EnhancedOpenIDCredentialRecordState
-  storeOpenIdCredential: (agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord) => Promise<void>
-  removeCredential: (agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord) => Promise<void>
+  storeOpenIdCredential: (cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord) => Promise<void>
+  removeCredential: (cred: W3cCredentialRecord | SdJwtVcRecord) => Promise<void>
 }
 
 const OpenIDCredentialRecordContext = createContext<OpenIDCredentialContext>(null as unknown as OpenIDCredentialContext)
@@ -111,58 +110,58 @@ export const OpenIDCredentialRecordProvider: React.FC<PropsWithChildren<OpenIDCr
 }: OpenIDCredentialProviderProps) => {
   const [state, setState] = useState<EnhancedOpenIDCredentialRecordState>({ ...defaultState, mdocRecords: [] })
 
-  const { agent } = useAdeyaAgent()
+  const { sdk } = useSdk()
 
   useEffect(() => {
-    if (!agent) {
+    if (!sdk) {
       return
     }
-    // agent.w3cCredentials?.getAllCredentialRecords().then(w3cCredentialRecords => {
+    // sdk.w3cCredentials?.getAllCredentialRecords().then(w3cCredentialRecords => {
     //   setState(prev => ({
     //     ...prev,
     //     w3cCredentialRecords: filterW3CCredentialsOnly(w3cCredentialRecords),
     //     isLoading: false,
     //   }))
     // })
-    agent.sdJwtVc.getAll().then(sdJwtVcRecords => {
+    sdk.modules.openid.sdJwtVc.then(sdJwtVcRecords => {
       setState(prev => ({
         ...prev,
         sdJwtVcRecords: sdJwtVcRecords,
         isLoading: false,
       }))
     })
-    agent.mdoc.getAll().then(mdocRecords => {
+    sdk.modules.openid.mdoc.then(mdocRecords => {
       setState(prev => ({
         ...prev,
         mdocRecords: mdocRecords,
         isLoading: false,
       }))
     })
-  }, [agent])
+  }, [sdk])
 
   useEffect(() => {
-    if (!state.isLoading && agent) {
-      // const credentialAdded$ = recordsAddedByType(agent, W3cCredentialRecord).subscribe(record => {
+    if (!state.isLoading && sdk) {
+      // const credentialAdded$ = recordsAddedByType(sdk, W3cCredentialRecord).subscribe(record => {
       //     setState(addW3cRecord(record, state))
       // })
 
-      // const credentialRemoved$ = recordsRemovedByType(agent, W3cCredentialRecord).subscribe(record => {
+      // const credentialRemoved$ = recordsRemovedByType(sdk, W3cCredentialRecord).subscribe(record => {
       //   setState(removeRecord(record, state))
       // })
 
-      const sdJwtVcAdded$ = recordsAddedByType(agent, SdJwtVcRecord).subscribe(record => {
+      const sdJwtVcAdded$ = recordsAddedByType(sdk, SdJwtVcRecord).subscribe(record => {
         setState(addSdJwtRecord(record, state))
       })
 
-      const sdJwtVcRemoved$ = recordsRemovedByType(agent, SdJwtVcRecord).subscribe(record => {
+      const sdJwtVcRemoved$ = recordsRemovedByType(sdk, SdJwtVcRecord).subscribe(record => {
         setState(removeSdJwtRecord(record, state))
       })
 
-      const mdocAdded$ = recordsAddedByType(agent, MdocRecord).subscribe(record => {
+      const mdocAdded$ = recordsAddedByType(sdk, MdocRecord).subscribe(record => {
         setState(addMdocRecord(record, state))
       })
 
-      const mdocRemoved$ = recordsRemovedByType(agent, MdocRecord).subscribe(record => {
+      const mdocRemoved$ = recordsRemovedByType(sdk, MdocRecord).subscribe(record => {
         setState(removeMdocRecord(record, state))
       })
 
@@ -175,7 +174,7 @@ export const OpenIDCredentialRecordProvider: React.FC<PropsWithChildren<OpenIDCr
         mdocRemoved$.unsubscribe()
       }
     }
-  }, [state, agent])
+  }, [state, sdk])
 
   return (
     <OpenIDCredentialRecordContext.Provider

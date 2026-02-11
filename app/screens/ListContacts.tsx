@@ -1,4 +1,4 @@
-import { ConnectionRecord, ConnectionType, DidExchangeState } from '@adeya/ssi'
+import { ConnectionRecord, ConnectionType, DidCommDidExchangeState, useConnections } from '@credebl/ssi-mobile-didcomm'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -7,7 +7,6 @@ import { FlatList, StyleSheet, View } from 'react-native'
 import HeaderButton, { ButtonLocation } from '../components/buttons/HeaderButton'
 import ContactListItem from '../components/listItems/ContactListItem'
 import EmptyListContacts from '../components/misc/EmptyListContacts'
-import { useConnections } from '../contexts/agent'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { ContactStackParams, Screens, Stacks } from '../types/navigators'
@@ -36,7 +35,7 @@ const ListContacts: React.FC<ListContactsProps> = ({ navigation }) => {
   let connections: ConnectionRecord[] = records
   if (!store.preferences.developerModeEnabled) {
     connections = records.filter(
-      r => !r.connectionTypes.includes(ConnectionType.Mediator) && r.state === DidExchangeState.Completed,
+      r => !r.connectionTypes.includes(ConnectionType.Mediator) && r.state === DidCommDidExchangeState.Completed,
     )
   }
 

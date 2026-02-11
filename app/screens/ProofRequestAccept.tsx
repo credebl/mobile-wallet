@@ -1,4 +1,4 @@
-import { ProofState } from '@adeya/ssi'
+import { DidCommProofState, useProofById } from '@credebl/ssi-mobile-didcomm'
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -6,7 +6,6 @@ import { Platform, Modal, StatusBar, StyleSheet, Text, View, ScrollView } from '
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import Button, { ButtonType } from '../components/buttons/Button'
-import { useProofById } from '../contexts/agent'
 import { useAnimatedComponents } from '../contexts/animated-components'
 import { useTheme } from '../contexts/theme'
 import { Screens, TabStacks } from '../types/navigators'
@@ -21,7 +20,7 @@ export interface ProofRequestAcceptProps {
 
 const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofId, confirmationOnly }) => {
   const { t } = useTranslation()
-  const [proofDeliveryStatus, setProofDeliveryStatus] = useState<ProofState>(ProofState.RequestReceived)
+  const [proofDeliveryStatus, setProofDeliveryStatus] = useState<DidCommProofState>(DidCommProofState.RequestReceived)
   const proof = useProofById(proofId)
   const navigation = useNavigation()
   const { ColorPallet, TextTheme } = useTheme()
@@ -64,7 +63,7 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
 
   useEffect(() => {
     if (confirmationOnly) {
-      setProofDeliveryStatus(ProofState.PresentationSent)
+      setProofDeliveryStatus(DidCommProofState.PresentationSent)
       return
     }
     if (!proof) return
@@ -73,7 +72,7 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
       return
     }
 
-    if (proof.state === ProofState.Done || proof.state === ProofState.PresentationSent) {
+    if (proof.state === DidCommProofState.Done || proof.state === DidCommProofState.PresentationSent) {
       setProofDeliveryStatus(proof.state)
     }
   }, [proof, proofDeliveryStatus, confirmationOnly])
@@ -88,7 +87,7 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
       <SafeAreaView style={{ backgroundColor: ColorPallet.brand.modalPrimaryBackground }}>
         <ScrollView style={[styles.container]}>
           <View style={[styles.messageContainer]}>
-            {proofDeliveryStatus === ProofState.RequestReceived && (
+            {proofDeliveryStatus === DidCommProofState.RequestReceived && (
               <Text
                 style={[TextTheme.modalHeadingThree, styles.messageText]}
                 testID={testIdWithKey('SendingProofRequest')}>
@@ -96,7 +95,8 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
               </Text>
             )}
 
-            {(proofDeliveryStatus === ProofState.PresentationSent || proofDeliveryStatus === ProofState.Done) && (
+            {(proofDeliveryStatus === DidCommProofState.PresentationSent ||
+              proofDeliveryStatus === DidCommProofState.Done) && (
               <Text
                 style={[TextTheme.modalHeadingThree, styles.messageText]}
                 testID={testIdWithKey('SentProofRequest')}>
@@ -106,10 +106,9 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
           </View>
 
           <View style={[styles.image, { minHeight: 250, alignItems: 'center', justifyContent: 'flex-end' }]}>
-            {proofDeliveryStatus === ProofState.RequestReceived && <SendingProof />}
-            {(proofDeliveryStatus === ProofState.PresentationSent || proofDeliveryStatus === ProofState.Done) && (
-              <SentProof />
-            )}
+            {proofDeliveryStatus === DidCommProofState.RequestReceived && <SendingProof />}
+            {(proofDeliveryStatus === DidCommProofState.PresentationSent ||
+              proofDeliveryStatus === DidCommProofState.Done) && <SentProof />}
           </View>
         </ScrollView>
 

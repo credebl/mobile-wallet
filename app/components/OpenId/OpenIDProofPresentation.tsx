@@ -4,7 +4,7 @@ import {
   DisplayImage,
   FormattedSubmissionEntrySatisfied,
   shareProof,
-} from '@adeya/ssi'
+} from '@credebl/ssi-mobile-openid4vc'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -13,7 +13,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { EventTypes } from '../../constants'
-import { useAdeyaAgent } from '../../contexts/agent/AgentProvider'
 import { useTheme } from '../../contexts/theme'
 import ProofRequestAccept from '../../screens/ProofRequestAccept'
 import { ListItems } from '../../theme'
@@ -22,6 +21,7 @@ import { NotificationStackParams, Screens, Stacks, TabStacks } from '../../types
 import { W3CCredentialAttributeField } from '../../types/record'
 import { ModalUsage } from '../../types/remove'
 import { formatCredentialSubject } from '../../utils/credential'
+import { useSdk } from '../../utils/helpers'
 import { testIdWithKey } from '../../utils/testable'
 import Button, { ButtonType } from '../buttons/Button'
 import CommonRemoveModal from '../modals/CommonRemoveModal'
@@ -71,7 +71,7 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
 
   const { ColorPallet, TextTheme } = useTheme()
   const { t } = useTranslation()
-  const { agent } = useAdeyaAgent()
+  const { sdk } = useSdk()
 
   const satisfiedEntries = credential?.formattedSubmission.entries.filter(
     (e): e is FormattedSubmissionEntrySatisfied => e.isSatisfied,
@@ -106,14 +106,14 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
 
   const handleAcceptTouched = async () => {
     try {
-      if (!agent) {
+      if (!sdk) {
         return
       }
 
       setButtonsVisible(false)
 
       await shareProof({
-        agent,
+        sdk,
         resolvedRequest: credential,
         selectedCredentials,
       })
