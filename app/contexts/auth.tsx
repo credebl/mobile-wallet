@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'reflect-metadata'
 
-import { isWalletPinCorrect } from '@adeya/ssi'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import React, { PropsWithChildren, createContext, useContext, useState, useEffect } from 'react'
@@ -72,6 +71,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }
 
   const getWalletCredentials = async (): Promise<WalletSecret | undefined> => {
+    console.log("🚀 ~ auth.tsx:75 ~ getWalletCredentials ~ walletSecret:", JSON.stringify(walletSecret))
     if (walletSecret && walletSecret.key) {
       return walletSecret
     }
@@ -80,6 +80,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
       t('Biometry.UnlockPromptTitle'),
       t('Biometry.UnlockPromptDescription'),
     )
+    console.log("🚀 ~ auth.tsx:84 ~ getWalletCredentials ~ secret:", JSON.stringify(secret))
 
     DeviceEventEmitter.emit(EventTypes.BIOMETRY_ERROR, err !== undefined)
 
@@ -121,14 +122,14 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
       // NOTE: a custom wallet is used to check if the wallet key is correct. This is different from the wallet used in the rest of the app.
       // We create an AskarWallet instance and open the wallet with the given secret.
-      const response = await isWalletPinCorrect({
-        id: secret.id,
-        key: hash,
-      })
+      // const response = await isWalletPinCorrect({
+      //   id: secret.id,
+      //   key: hash,
+      // })
 
-      if (!response) {
-        throw new Error('Invalid PIN')
-      }
+      // if (!response) {
+      //   throw new Error('Invalid PIN')
+      // }
 
       const fullSecret = await secretForPIN(PIN, secret.salt)
       setWalletSecret(fullSecret)

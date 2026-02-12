@@ -2,7 +2,8 @@ import { useProofs, useCredentials, useProofById, DidCommProofExchangeRecord } f
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { retrieveCredentialsForProof, useSdk } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
+import { retrieveCredentialsForProof } from '../utils/helpers'
 
 export const useProofsByConnectionId = (connectionId: string): DidCommProofExchangeRecord[] => {
   const { records: proofs } = useProofs()

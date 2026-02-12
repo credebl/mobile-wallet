@@ -10,7 +10,7 @@ import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 
 import { animatedComponents } from './app/animated-components'
-import { OpenIDCredentialRecordProvider } from './app/components/Provider/OpenIDCredentialRecordProvider'
+// import { OpenIDCredentialRecordProvider } from './app/components/Provider/OpenIDCredentialRecordProvider'
 // import PushNotifications from './app/components/PushNotifications'
 import ErrorModal from './app/components/modals/ErrorModal'
 import NetInfo from './app/components/network/NetInfo'

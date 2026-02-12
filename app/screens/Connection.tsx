@@ -14,7 +14,7 @@ import { useTheme } from '../contexts/theme'
 import { useOutOfBandById } from '../hooks/connections'
 import { useNotifications } from '../hooks/notifications'
 import { Screens, TabStacks, DeliveryStackParams, Stacks } from '../types/navigators'
-import { useSdk } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
 import { testIdWithKey } from '../utils/testable'
 
 type ConnectionProps = StackScreenProps<DeliveryStackParams, Screens.Connection>

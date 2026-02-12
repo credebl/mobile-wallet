@@ -9,7 +9,7 @@ import { CustomRecord, RecordType } from '../components/History/types'
 import KeyboardView from '../components/views/KeyboardView'
 import { useTheme } from '../contexts/theme'
 import { HistoryStackParams } from '../types/navigators'
-import { useSdk } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
 
 type HistoryPageProps = StackScreenProps<HistoryStackParams>
 

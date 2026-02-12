@@ -12,8 +12,9 @@ import { DispatchAction } from '../contexts/reducers/store'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
-import { generateRandomWalletName, useSdk } from '../utils/helpers'
+import { generateRandomWalletName } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
+import { useSdk } from '../utils/agent'
 
 type ErrorState = {
   visible: boolean

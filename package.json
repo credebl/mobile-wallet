@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@credebl/ssi-mobile-core": "file:./credebl-ssi-mobile-core-2.0.2.tgz",
-    "@credebl/ssi-mobile-didcomm": "file:./credebl-ssi-mobile-didcomm-2.0.3.tgz",
+    "@credebl/ssi-mobile-didcomm": "file:./credebl-ssi-mobile-didcomm-2.0.5.tgz",
     "@credebl/ssi-mobile-openid4vc": "file:./credebl-ssi-mobile-openid4vc-2.0.2.tgz",
     "@ethersproject/shims": "^5.7.0",
     "@formatjs/intl": "^3.1.3",
@@ -40,6 +40,7 @@
     "@robinbobin/react-native-google-drive-api-wrapper": "^1.2.4",
     "axios": "^1.6.0",
     "bip39": "^3.1.0",
+    "core-js": "^3.48.0",
     "crypto-js": "^4.2.0",
     "events": "^1.1.1",
     "expo": "^54.0.33",
@@ -161,6 +162,6 @@
   },
   "resolutions": {
     "nanoid": "^5.0.9",
-    "@credebl/ssi-mobile-openid4vc": "file:./credebl-ssi-mobile-openid4vc-2.0.2.tgz"
+    "@credebl/ssi-mobile-core": "file:./credebl-ssi-mobile-core-2.0.2.tgz"
   }
 }

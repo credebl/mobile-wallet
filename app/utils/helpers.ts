@@ -1,37 +1,36 @@
 import {
   AnonCredsCredentialsForProofRequest,
+  AnonCredsPredicateType,
   AnonCredsProofFormat,
   AnonCredsProofFormatService,
   AnonCredsProofRequestRestriction,
+  AnonCredsRequestedAttribute,
   AnonCredsRequestedAttributeMatch,
+  AnonCredsRequestedPredicate,
   AnonCredsRequestedPredicateMatch,
-  LegacyIndyProofFormat,
-  LegacyIndyProofFormatService,
+  BasicMessageRecord,
+  BasicMessageRole,
+  Buffer,
   ConnectionRecord,
   CredentialExchangeRecord,
   CredentialState,
-  BasicMessageRecord,
-  ProofExchangeRecord,
-  ProofState,
-  Buffer,
-  BasicMessageRole,
-  acceptInvitationFromUrl,
-  createInvitation,
-  AnonCredsRequestedPredicate,
-  getCredentialsForProofRequest,
-  AnonCredsPredicateType,
-  AnonCredsRequestedAttribute,
-  parseInvitationFromUrl,
-  findByReceivedInvitationId,
   DidRecord,
   DidRepository,
-  KeyType,
   DifPresentationExchangeProofFormatService,
-  W3cCredentialRecord,
   GetCredentialsForProofRequestReturn,
-  SdJwtVcRecord,
+  KeyType,
+  LegacyIndyProofFormat,
+  LegacyIndyProofFormatService,
   MdocRecord,
-  useMobileSDK,
+  ProofExchangeRecord,
+  ProofState,
+  SdJwtVcRecord,
+  W3cCredentialRecord,
+  acceptInvitationFromUrl,
+  createInvitation,
+  findByReceivedInvitationId,
+  getCredentialsForProofRequest,
+  parseInvitationFromUrl,
 } from '@credebl/ssi-mobile-core'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { DifPresentationExchangeProofFormat, MessageReceiver, useConnectionById } from '@credebl/ssi-mobile-didcomm'
@@ -43,7 +42,7 @@ import moment from 'moment'
 import queryString from 'query-string'
 import { ReactNode } from 'react'
 import { DeviceEventEmitter } from 'react-native'
-import { uniqueNamesGenerator, Config, names } from 'unique-names-generator'
+import { Config, names, uniqueNamesGenerator } from 'unique-names-generator'
 
 import { EventTypes, domain } from '../constants'
 import { i18n } from '../localization/index'
@@ -53,10 +52,10 @@ import { ProofCredentialAttributes, ProofCredentialItems, ProofCredentialPredica
 import { Attribute, Predicate } from '../types/record'
 import { ChildFn } from '../types/tour'
 
-export { parsedCredDefNameFromCredential } from './cred-def'
 import { AdeyaAgent } from './agent'
 import { parseCredDefFromId } from './cred-def'
-import { Modules } from '../../App'
+
+export { parsedCredDefNameFromCredential } from './cred-def'
 
 export { parsedCredDefName } from './cred-def'
 export { parsedSchema } from './schema'
@@ -1283,9 +1282,4 @@ export const getCredentialFormat = (credential: any): string => {
     return 'AnonCreds'
   }
   return ''
-}
-
-export const useSdk = () => {
-  const { sdk } = useMobileSDK<Modules>()
-  return { sdk }
 }

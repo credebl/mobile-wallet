@@ -1,15 +1,14 @@
-import type {
-  DidCommBasicMessageRecord,
-  DidCommCredentialExchangeRecord,
-  DidCommCredentialState,
-  DidCommProofExchangeRecord,
-  DidCommProofState,
-  DidCommsendBasicMessage,
+import {
+  type DidCommBasicMessageRecord,
+  type DidCommCredentialExchangeRecord,
+  type DidCommCredentialState,
+  type DidCommProofExchangeRecord,
+  type DidCommProofState,
+  type DidCommsendBasicMessage,
   DidCommBasicMessageRepository,
   useConnectionById,
   useBasicMessagesByConnectionId,
 } from '@credebl/ssi-mobile-didcomm'
-
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -33,6 +32,7 @@ import { ColorPallet } from '../theme'
 import { Role } from '../types/chat'
 import { BasicMessageMetadata, BasicMessageCustomMetadata } from '../types/metadata'
 import { ContactStackParams, Screens, Stacks } from '../types/navigators'
+import { useSdk } from '../utils/agent'
 import { isW3CCredential } from '../utils/credential'
 import {
   getCredentialEventLabel,
@@ -40,7 +40,6 @@ import {
   getMessageEventRole,
   getProofEventLabel,
   getProofEventRole,
-  useSdk,
 } from '../utils/helpers'
 
 type ChatProps = StackScreenProps<ContactStackParams, Screens.Chat>

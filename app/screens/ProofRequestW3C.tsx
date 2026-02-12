@@ -34,10 +34,10 @@ import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { ProofCredentialItems } from '../types/proof-items'
 import { ModalUsage } from '../types/remove'
-import { useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 import ProofRequestAccept from './ProofRequestAccept'
+import { useSdk } from '../utils/agent'
 
 type ProofRequestProps = StackScreenProps<NotificationStackParams, Screens.ProofRequestW3C>
 

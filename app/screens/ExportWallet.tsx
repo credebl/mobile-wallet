@@ -8,7 +8,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, PixelRatio, Dimen
 import Button, { ButtonType } from '../components/buttons/Button'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
-import { useSdk } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
 
 const ExportWallet: React.FC = () => {
   const { ColorPallet, TextTheme } = useTheme()

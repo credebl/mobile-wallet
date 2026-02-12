@@ -25,7 +25,8 @@ import { ListItems } from '../theme'
 import { BifoldError } from '../types/error'
 import { ContactStackParams, Screens, TabStacks } from '../types/navigators'
 import { ModalUsage } from '../types/remove'
-import { formatTime, getConnectionName, useSdk } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
+import { formatTime, getConnectionName } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type ContactDetailsProps = StackScreenProps<ContactStackParams, Screens.ContactDetails>

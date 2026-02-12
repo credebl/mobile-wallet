@@ -25,7 +25,8 @@ import CredentialCard from '../components/misc/CredentialCard'
 import { OpenIDCredScreenMode } from '../constants'
 import { useConfiguration } from '../contexts/configuration'
 import { CredentialStackParams, Screens } from '../types/navigators'
-import { getCredentialFormat, useSdk } from '../utils/helpers'
+import { getCredentialFormat } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
 
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string

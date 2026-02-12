@@ -20,9 +20,9 @@ import {
   getUrl,
   isValidUrl,
   receiveMessageFromUrlRedirect,
-  useSdk,
 } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
+import { useSdk } from '../utils/agent'
 
 interface OrganizationDetailProps {
   name: string

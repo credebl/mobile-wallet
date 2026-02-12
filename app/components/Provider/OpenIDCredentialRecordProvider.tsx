@@ -1,11 +1,11 @@
-import { recordsAddedByType, recordsRemovedByType } from '@credebl/ssi-mobile-core'
 import {
   // addRecord,
-  defaultState,
   // filterW3CCredentialsOnly,
   // isW3CCredentialRecord,
   // OpenIDCredentialContext,
   OpenIDCredentialRecordState,
+  recordsAddedByType,
+  recordsRemovedByType,
   removeCredential,
   // removeRecord,
   SdJwtVcRecord,
@@ -13,10 +13,9 @@ import {
   W3cCredentialRecord,
 } from '@credebl/ssi-mobile-openid4vc'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { MdocRecord } from '@credo-ts/core'
+import { Agent, MdocRecord } from '@credo-ts/core'
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
-
-import { useSdk } from '../../utils/helpers'
+import { useSdk } from '../../utils/agent'
 
 interface EnhancedOpenIDCredentialRecordState extends OpenIDCredentialRecordState {
   mdocRecords: MdocRecord[]
@@ -99,8 +98,8 @@ const removeMdocRecord = (
 
 type OpenIDCredentialContext = {
   openIdState: EnhancedOpenIDCredentialRecordState
-  storeOpenIdCredential: (cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord) => Promise<void>
-  removeCredential: (cred: W3cCredentialRecord | SdJwtVcRecord) => Promise<void>
+  storeOpenIdCredential: (agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord) => Promise<void>
+  removeCredential: (agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord) => Promise<void>
 }
 
 const OpenIDCredentialRecordContext = createContext<OpenIDCredentialContext>(null as unknown as OpenIDCredentialContext)
@@ -108,7 +107,12 @@ const OpenIDCredentialRecordContext = createContext<OpenIDCredentialContext>(nul
 export const OpenIDCredentialRecordProvider: React.FC<PropsWithChildren<OpenIDCredentialProviderProps>> = ({
   children,
 }: OpenIDCredentialProviderProps) => {
-  const [state, setState] = useState<EnhancedOpenIDCredentialRecordState>({ ...defaultState, mdocRecords: [] })
+  const [state, setState] = useState<EnhancedOpenIDCredentialRecordState>({
+    w3cCredentialRecords: [],
+    sdJwtVcRecords: [],
+    mdocRecords: [],
+    isLoading: true,
+  })
 
   const { sdk } = useSdk()
 
@@ -116,21 +120,21 @@ export const OpenIDCredentialRecordProvider: React.FC<PropsWithChildren<OpenIDCr
     if (!sdk) {
       return
     }
-    // sdk.w3cCredentials?.getAllCredentialRecords().then(w3cCredentialRecords => {
+    // agent.w3cCredentials?.getAllCredentialRecords().then(w3cCredentialRecords => {
     //   setState(prev => ({
     //     ...prev,
     //     w3cCredentialRecords: filterW3CCredentialsOnly(w3cCredentialRecords),
     //     isLoading: false,
     //   }))
     // })
-    sdk.modules.openid.sdJwtVc.then(sdJwtVcRecords => {
+    sdk.sdJwtVc.getAll().then(sdJwtVcRecords => {
       setState(prev => ({
         ...prev,
         sdJwtVcRecords: sdJwtVcRecords,
         isLoading: false,
       }))
     })
-    sdk.modules.openid.mdoc.then(mdocRecords => {
+    sdk.mdoc.getAll().then(mdocRecords => {
       setState(prev => ({
         ...prev,
         mdocRecords: mdocRecords,
@@ -141,11 +145,11 @@ export const OpenIDCredentialRecordProvider: React.FC<PropsWithChildren<OpenIDCr
 
   useEffect(() => {
     if (!state.isLoading && sdk) {
-      // const credentialAdded$ = recordsAddedByType(sdk, W3cCredentialRecord).subscribe(record => {
+      // const credentialAdded$ = recordsAddedByType(agent, W3cCredentialRecord).subscribe(record => {
       //     setState(addW3cRecord(record, state))
       // })
 
-      // const credentialRemoved$ = recordsRemovedByType(sdk, W3cCredentialRecord).subscribe(record => {
+      // const credentialRemoved$ = recordsRemovedByType(agent, W3cCredentialRecord).subscribe(record => {
       //   setState(removeRecord(record, state))
       // })
 

@@ -20,8 +20,8 @@ import { DeliveryStackParams, Screens } from '../types/navigators'
 import { W3CCredentialAttribute } from '../types/record'
 import { ModalUsage } from '../types/remove'
 import { buildFieldsFromOpenIDTemplate, sanitizeString } from '../utils/credential'
-import { useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
+import { useSdk } from '../utils/agent'
 
 type OpenIDCredentialDetailsProps = StackScreenProps<DeliveryStackParams, Screens.OpenIDCredentialDetails>
 

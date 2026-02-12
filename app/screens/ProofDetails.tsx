@@ -21,8 +21,9 @@ import SharedProofData from '../components/misc/SharedProofData'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { ProofRequestsStackParams, Screens } from '../types/navigators'
-import { getConnectionName, useSdk } from '../utils/helpers'
+import { getConnectionName } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
+import { useSdk } from '../utils/agent'
 
 type ProofDetailsProps = StackScreenProps<ProofRequestsStackParams, Screens.ProofDetails>
 

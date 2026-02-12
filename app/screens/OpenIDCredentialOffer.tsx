@@ -36,8 +36,8 @@ import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, TabStacks } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
 import { formatCredentialSubject } from '../utils/credential'
-import { useSdk } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
+import { useSdk } from '../utils/agent'
 
 type OpenIdCredentialOfferProps = StackScreenProps<NotificationStackParams, Screens.OpenIdCredentialOffer>
 

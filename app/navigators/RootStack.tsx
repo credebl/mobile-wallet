@@ -1,4 +1,4 @@
-import { DidCommProofState, DidCommMessageReceiver, useProofByState } from '@credebl/ssi-mobile-didcomm'
+import { DidCommMessageReceiver } from '@credebl/ssi-mobile-didcomm'
 import { useNavigation } from '@react-navigation/core'
 import { createStackNavigator, StackCardStyleInterpolator, StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useRef, useState } from 'react'
@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { AppState } from 'react-native'
 import Toast from 'react-native-toast-message'
 
-import { ProofCustomMetadata, ProofMetadata } from '../../verifier'
 import { ToastType } from '../components/toast/BaseToast'
 import { walletTimeout } from '../constants'
 import { useAuth } from '../contexts/auth'
@@ -25,6 +24,7 @@ import { createCarouselStyle } from '../screens/OnboardingPages'
 import PINCreate from '../screens/PINCreate'
 import PINEnter from '../screens/PINEnter'
 import { AuthenticateStackParams, Screens, Stacks } from '../types/navigators'
+import { useSdk } from '../utils/agent'
 import {
   checkIfAlreadyConnected,
   connectFromInvitation,
@@ -33,7 +33,6 @@ import {
   getUrl,
   isValidUrl,
   receiveMessageFromUrlRedirect,
-  useSdk,
 } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
@@ -81,7 +80,7 @@ const RootStack: React.FC = () => {
       // make sure sdk is shutdown so wallet isn't still open
       removeSavedWalletSecret()
       // await sdk.wallet.close()
-      await sdk?.agent?.shutdown()
+      await sdk.modules.didcomm.agent.shutdown()
       dispatch({
         type: DispatchAction.DID_AUTHENTICATE,
         payload: [{ didAuthenticate: false }],

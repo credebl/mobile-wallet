@@ -15,7 +15,8 @@ import QRRenderer from '../components/misc/QRRenderer'
 import { useTheme } from '../contexts/theme'
 import { useConnectionByOutOfBandId } from '../hooks/connections'
 import { ContactStackParams, Screens } from '../types/navigators'
-import { createConnectionInvitation, useSdk } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
+import { createConnectionInvitation } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 type ConnectionInvitationProps = StackScreenProps<ContactStackParams, Screens.ConnectionInvitation>
@@ -118,7 +119,8 @@ const ConnectionInvitation: React.FC<ConnectionInvitationProps> = ({ navigation 
             </View>
           </View>
         )}
-        {(record?.state === DidCommDidExchangeState.RequestReceived || record?.state === DidCommDidExchangeState.ResponseSent) && (
+        {(record?.state === DidCommDidExchangeState.RequestReceived ||
+          record?.state === DidCommDidExchangeState.ResponseSent) && (
           <View style={{ flexGrow: 1 }}>
             <ConnectionLoading />
             <Text style={styles.statusText}>{t('Connection.JustAMoment')}</Text>

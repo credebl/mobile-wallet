@@ -38,10 +38,11 @@ import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/na
 import { ProofCredentialAttributes, ProofCredentialItems, ProofCredentialPredicates } from '../types/proof-items'
 import { Attribute, Predicate } from '../types/record'
 import { ModalUsage } from '../types/remove'
-import { evaluatePredicates, useSdk } from '../utils/helpers'
+import { evaluatePredicates } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 import ProofRequestAccept from './ProofRequestAccept'
+import { useSdk } from '../utils/agent'
 
 type ProofRequestProps = StackScreenProps<NotificationStackParams, Screens.ProofRequest>
 type Fields = Record<string, AnonCredsRequestedAttributeMatch[] | AnonCredsRequestedPredicateMatch[]>

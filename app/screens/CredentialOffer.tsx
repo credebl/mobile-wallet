@@ -38,11 +38,12 @@ import { W3CCredentialAttributeField } from '../types/record'
 import { ModalUsage } from '../types/remove'
 import { parseCredDefFromId } from '../utils/cred-def'
 import { buildFieldsFromJSONLDCredential, formatCredentialSubject, getCredentialIdentifiers } from '../utils/credential'
-import { getCredentialConnectionLabel, getDefaultHolderDidDocument, useSdk } from '../utils/helpers'
+import { getCredentialConnectionLabel, getDefaultHolderDidDocument } from '../utils/helpers'
 import { buildFieldsFromAnonCredsCredential } from '../utils/oca'
 import { testIdWithKey } from '../utils/testable'
 
 import CredentialOfferAccept from './CredentialOfferAccept'
+import { useSdk } from '../utils/agent'
 
 type CredentialOfferProps = StackScreenProps<NotificationStackParams, Screens.CredentialOffer>
 

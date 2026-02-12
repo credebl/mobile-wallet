@@ -38,10 +38,11 @@ import { CredentialMetadata, customMetadata } from '../types/metadata'
 import { CredentialStackParams, Screens } from '../types/navigators'
 import { ModalUsage } from '../types/remove'
 import { credentialTextColor, getCredentialIdentifiers, toImageSource } from '../utils/credential'
-import { formatTime, getCredentialConnectionLabel, useSdk } from '../utils/helpers'
+import { formatTime, getCredentialConnectionLabel } from '../utils/helpers'
 import { buildFieldsFromAnonCredsCredential } from '../utils/oca'
 import { useSocialShare } from '../utils/social-share'
 import { testIdWithKey } from '../utils/testable'
+import { useSdk } from '../utils/agent'
 
 type CredentialDetailsProps = StackScreenProps<CredentialStackParams, Screens.CredentialDetails>
 
