@@ -7,44 +7,37 @@ export type Modules = {
   didcomm: DidCommSDK
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getTrustedCerts(): Promise<string[]> {
-  try {
-    // Uncomment and update URL when ready to fetch from remote source
-    // const response = await fetch(
-    //   'https://raw.githubusercontent.com/RinkalBhojani/x509-test-certs/refs/heads/main/trusted-certs.json'
-    // );
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! status: ${response.status}`);
-    // }
-    // const data = await response.json();
-    // console.log('Trusted certificates fetched successfully:', data);
-    // return data;
+  // Uncomment and update URL when ready to fetch from remote source
+  // const response = await fetch(
+  //   'https://raw.githubusercontent.com/RinkalBhojani/x509-test-certs/refs/heads/main/trusted-certs.json'
+  // );
+  // if (!response.ok) {
+  //   throw new Error(`HTTP error! status: ${response.status}`);
+  // }
+  // const data = await response.json();
+  // console.log('Trusted certificates fetched successfully:', data);
+  // return data;
 
-    // Return empty array as fallback
-    const certs: string[] = []
-    return certs
-  } catch (error) {
-    console.error('Error fetching trusted certificates:', error)
-    throw error
-  }
+  // Return empty array as fallback
+  const certs: string[] = []
+  return certs
 }
 
-export const createConfig = (walletId?: string, walletKey?: string): MobileSDKOptions<Modules> => ({
+export const createConfig = (walletId: string, walletKey: string): MobileSDKOptions<Modules> => ({
   agentConfig: {
     allowInsecureHttpUrls: true,
     logger: new ConsoleLogger(LogLevel.debug),
   },
   askarConfig: {
-    id: walletId || 'CREDEBL-wallet',
-    key: walletKey || 'CREDEBL-wallet-key',
+    id: walletId,
+    key: walletKey,
   },
   modules: {
     didcomm: new DidCommSDK({}),
     openid: new OpenID4VCSDK({
-      getTrustedCertificatesForVerification: async (agentContext, { certificateChain, verification }) => {
-        const certs: string[] = await getTrustedCerts()
-        return certs
-      },
+      trustedCertificates: [],
     }),
   },
 })

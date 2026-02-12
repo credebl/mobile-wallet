@@ -13,9 +13,9 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@credebl/ssi-mobile-core": "file:./credebl-ssi-mobile-core-2.0.2.tgz",
-    "@credebl/ssi-mobile-didcomm": "file:./credebl-ssi-mobile-didcomm-2.0.5.tgz",
-    "@credebl/ssi-mobile-openid4vc": "file:./credebl-ssi-mobile-openid4vc-2.0.2.tgz",
+    "@credebl/ssi-mobile-core": "2.0.3-alpha-20260212061443",
+    "@credebl/ssi-mobile-didcomm": "2.0.3-alpha-20260212061443",
+    "@credebl/ssi-mobile-openid4vc": "2.0.3-alpha-20260212061443",
     "@ethersproject/shims": "^5.7.0",
     "@formatjs/intl": "^3.1.3",
     "@hyperledger/anoncreds-react-native": "0.3.4",
@@ -73,7 +73,7 @@
     "react-native-gifted-chat": "^2.4.0",
     "react-native-html-to-pdf": "^0.12.0",
     "react-native-keyboard-controller": "^1.16.8",
-    "react-native-keychain": "^8.1.2",
+    "react-native-keychain": "~10.0.0",
     "react-native-localize": "^3.0.2",
     "react-native-pdf": "^6.7.5",
     "react-native-permissions": "^3.9.0",
@@ -161,7 +161,6 @@
     "stream": "stream-browserify"
   },
   "resolutions": {
-    "nanoid": "^5.0.9",
-    "@credebl/ssi-mobile-core": "file:./credebl-ssi-mobile-core-2.0.2.tgz"
+    "nanoid": "^5.0.9"
   }
 }

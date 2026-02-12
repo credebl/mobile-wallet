@@ -5,6 +5,7 @@ import { CommonActions } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import Config from 'react-native-config'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import InfoBox, { InfoBoxType } from '../components/misc/InfoBox'
@@ -249,10 +250,9 @@ const Splash: React.FC = () => {
   useEffect(() => {
     const initAgent = async (): Promise<void> => {
       try {
-        console.log("🚀 ~ Splash.tsx:256 ~ initAgent ~ store:", JSON.stringify(store))
-        // if (!store.authentication.didAuthenticate || !store.onboarding.didConsiderBiometry) {
-        //   return
-        // }
+        if (!store.authentication.didAuthenticate || !store.onboarding.didConsiderBiometry) {
+          return
+        }
 
         setStep(4)
         const credentials = await getWalletCredentials()
@@ -264,23 +264,22 @@ const Splash: React.FC = () => {
 
         setStep(5)
         if (!isInitialized) {
-          const newAgent = createConfig(credentials.id, credentials.key)
+          const newAgent = createConfig('1234', '4567')
           await initializeSDK(newAgent)
         }
 
-        setStep(6)
-        //  await getDefaultHolderDidDocument(newAgent)
+        // setStep(6)
+        // await getDefaultHolderDidDocument(newAgent)
         // setAgent(newAgent)
 
-        setStep(7)
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: Stacks.TabStack }],
-          }),
-        )
+        // setStep(7)
+        // navigation.dispatch(
+        //   CommonActions.reset({
+        //     index: 0,
+        //     routes: [{ name: Stacks.TabStack }],
+        //   }),
+        // )
       } catch (e: unknown) {
-        console.log('🚀 ~ Splash.tsx:341 ~ initAgent ~ e:', e)
         setInitErrorType(InitErrorTypes.Agent)
         setInitError(e as Error)
       }
@@ -290,12 +289,33 @@ const Splash: React.FC = () => {
   }, [store.authentication.didAuthenticate, store.onboarding.didConsiderBiometry, initAgentCount])
 
   useEffect(() => {
-    if (isInitialized) {
-      sdk.modules.didcomm.mediatorRecipient.startMediation(
-        'https://qa-mediator.sovio.id/invite?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOiIyOWFiNDdhZi0zOGQ2LTQ5ZjItYjYwMC0xNjljY2UzZGJiY2IiLCJsYWJlbCI6ImNyZWRlYmxfbWVkaWF0b3IiLCJhY2NlcHQiOlsiZGlkY29tbS9haXAxIiwiZGlkY29tbS9haXAyO2Vudj1yZmMxOSJdLCJoYW5kc2hha2VfcHJvdG9jb2xzIjpbImh0dHBzOi8vZGlkY29tbS5vcmcvZGlkZXhjaGFuZ2UvMS4wIiwiaHR0cHM6Ly9kaWRjb21tLm9yZy9jb25uZWN0aW9ucy8xLjAiXSwic2VydmljZXMiOlt7ImlkIjoiI2lubGluZS0wIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9xYS1tZWRpYXRvci5zb3Zpby5pZCIsInR5cGUiOiJkaWQtY29tbXVuaWNhdGlvbiIsInJlY2lwaWVudEtleXMiOlsiZGlkOmtleTp6Nk1rZWp6YXBneEZYd0wyN0N4VlhrTWU2b1g5NHBlelllZVJiTUhwMTlmaDd5RzIiXSwicm91dGluZ0tleXMiOltdfSx7ImlkIjoiI2lubGluZS0xIiwic2VydmljZUVuZHBvaW50Ijoid3NzOi8vcWEtbWVkaWF0b3Iuc292aW8uaWQiLCJ0eXBlIjoiZGlkLWNvbW11bmljYXRpb24iLCJyZWNpcGllbnRLZXlzIjpbImRpZDprZXk6ejZNa2VqemFwZ3hGWHdMMjdDeFZYa01lNm9YOTRwZXpZZWVSYk1IcDE5Zmg3eUcyIl0sInJvdXRpbmdLZXlzIjpbXX1dfQ',
-        'CREDEBL_MEDIATOR',
-      )
+    if (!isInitialized) {
+      return
     }
+
+    const startMediation = async () => {
+      try {
+        if (!Config.MEDIATOR_URL) {
+          throw new Error('Missing mediator URL')
+        }
+        const resp = await sdk.modules.didcomm.mediatorRecipient.startMediation(Config.MEDIATOR_URL, 'Holder')
+
+        if (resp) {
+          setStep(7)
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: Stacks.TabStack }],
+            }),
+          )
+        }
+      } catch (error) {
+        setInitErrorType(InitErrorTypes.Agent)
+        setInitError(error as Error)
+      }
+    }
+
+    startMediation()
   }, [isInitialized])
   const handleErrorCallToActionPressed = () => {
     setInitError(null)

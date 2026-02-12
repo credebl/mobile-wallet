@@ -1256,20 +1256,22 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@credebl/ssi-mobile-core@2.0.2", "@credebl/ssi-mobile-core@file:./credebl-ssi-mobile-core-2.0.2.tgz":
-  version "2.0.2"
-  resolved "file:./credebl-ssi-mobile-core-2.0.2.tgz#8c8c2685eb2bc323477ce540e1ef5828fd0eedeb"
+"@credebl/ssi-mobile-core@2.0.3-alpha-20260212061443":
+  version "2.0.3-alpha-20260212061443"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-core/-/ssi-mobile-core-2.0.3-alpha-20260212061443.tgz#e4eee61f0c21c3130e95d7df9e7fe42b7ad0f2e8"
+  integrity sha512-w3NqOTj58lCU19UStI0L4wpa9hJrFpDv+Bx5riSwqsJ0YFvwMQ7mzeut7HefY/idQFUbHlfz2veEAQWuN3AUUw==
   dependencies:
     "@credo-ts/askar" "0.6.1"
     "@credo-ts/core" "0.6.1"
     "@credo-ts/react-native" "0.6.1"
     rxjs "^7.8.2"
 
-"@credebl/ssi-mobile-didcomm@file:./credebl-ssi-mobile-didcomm-2.0.5.tgz":
-  version "2.0.5"
-  resolved "file:./credebl-ssi-mobile-didcomm-2.0.5.tgz#2628e5d895024cd54fc5c5a0c12f360f3c1a9543"
+"@credebl/ssi-mobile-didcomm@2.0.3-alpha-20260212061443":
+  version "2.0.3-alpha-20260212061443"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-didcomm/-/ssi-mobile-didcomm-2.0.3-alpha-20260212061443.tgz#e7fb460ce1fbe10ab772165431de5bb3854a5b5b"
+  integrity sha512-kRrSvyucaGy57fwmTmrXm8RRIWzVR5QvO67MTFGMBve1eImcDw/5NhL9+JDCU6gE1X7+0+CX9ldR0Yba4lxEwA==
   dependencies:
-    "@credebl/ssi-mobile-core" "2.0.2"
+    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260212061443"
     "@credo-ts/anoncreds" "0.6.1"
     "@credo-ts/askar" "0.6.1"
     "@credo-ts/core" "0.6.1"
@@ -1279,14 +1281,15 @@
     "@credo-ts/react-native" "0.6.1"
     rxjs "^7.8.2"
 
-"@credebl/ssi-mobile-openid4vc@file:./credebl-ssi-mobile-openid4vc-2.0.2.tgz":
-  version "2.0.2"
-  resolved "file:./credebl-ssi-mobile-openid4vc-2.0.2.tgz#c73f60a5e7dda8a9a3648dd3fa76f6d439073495"
+"@credebl/ssi-mobile-openid4vc@2.0.3-alpha-20260212061443":
+  version "2.0.3-alpha-20260212061443"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-openid4vc/-/ssi-mobile-openid4vc-2.0.3-alpha-20260212061443.tgz#fbd0500a354f4f74c272f9d7dc34873e93253cde"
+  integrity sha512-WFSvgzvaCWJG2z36DISjGV1SMSLGA8p1U0Ty9K5EaK3Hko2XfdQYFm/vD7XL/Xon/sj36JgRL+BkMkiwhqkFWw==
   dependencies:
     "@animo-id/expo-digital-credentials-api" "^0.4.0"
     "@animo-id/mdoc" "0.5.2"
     "@astronautlabs/jsonpath" "^1.1.2"
-    "@credebl/ssi-mobile-core" "2.0.2"
+    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260212061443"
     "@credo-ts/core" "0.6.1"
     "@credo-ts/openid4vc" "0.6.1"
     expo-asset "^12.0.10"
@@ -10118,10 +10121,10 @@ react-native-keyboard-controller@^1.16.8:
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
 
-react-native-keychain@^8.1.2:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-8.2.0.tgz#aea82df37aacbb04f8b567a8e0e6d7292025610a"
-  integrity sha512-SkRtd9McIl1Ss2XSWNLorG+KMEbgeVqX+gV+t3u1EAAqT8q2/OpRmRbxpneT2vnb/dMhiU7g6K/pf3nxLUXRvA==
+react-native-keychain@~10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-10.0.0.tgz#1de6f54d27b2376deaac4d51883c066f53b7be7b"
+  integrity sha512-YzPKSAnSzGEJ12IK6CctNLU79T1W15WDrElRQ+1/FsOazGX9ucFPTQwgYe8Dy8jiSEDJKM4wkVa3g4lD2Z+Pnw==
 
 react-native-lightbox-v2@^0.9.2:
   version "0.9.2"

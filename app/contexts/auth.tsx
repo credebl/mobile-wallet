@@ -5,9 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import React, { PropsWithChildren, createContext, useContext, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DeviceEventEmitter } from 'react-native'
 
-import { EventTypes } from '../constants'
 import {
   secretForPIN,
   storeWalletSecret,
@@ -71,22 +69,12 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }
 
   const getWalletCredentials = async (): Promise<WalletSecret | undefined> => {
-    console.log("🚀 ~ auth.tsx:75 ~ getWalletCredentials ~ walletSecret:", JSON.stringify(walletSecret))
     if (walletSecret && walletSecret.key) {
       return walletSecret
     }
 
-    const { secret, err } = await loadWalletSecret(
-      t('Biometry.UnlockPromptTitle'),
-      t('Biometry.UnlockPromptDescription'),
-    )
-    console.log("🚀 ~ auth.tsx:84 ~ getWalletCredentials ~ secret:", JSON.stringify(secret))
+    const secret = await loadWalletSecret(t('Biometry.UnlockPromptTitle'), t('Biometry.UnlockPromptDescription'))
 
-    DeviceEventEmitter.emit(EventTypes.BIOMETRY_ERROR, err !== undefined)
-
-    if (!secret) {
-      return
-    }
     setWalletSecret(secret)
 
     return secret
@@ -118,6 +106,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
         return false
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const hash = await hashPIN(PIN, secret.salt)
 
       // NOTE: a custom wallet is used to check if the wallet key is correct. This is different from the wallet used in the rest of the app.

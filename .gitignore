@@ -78,4 +78,8 @@ google-services.json
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
+# react-native-config codegen
+ios/tmp.xcconfig
 !.yarn/versions
+
+*.tgz
