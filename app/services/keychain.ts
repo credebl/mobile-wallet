@@ -48,10 +48,7 @@ export const optionsForKeychainAccess = (service: KeychainServices, useBiometric
   return opts
 }
 
-export const secretForPIN = async (
-  PIN: string,
-  salt?: string
-): Promise<WalletSecret> => {
+export const secretForPIN = async (PIN: string, salt?: string): Promise<WalletSecret> => {
   const mySalt = salt ?? uuid()
   const myKey = await hashPIN(PIN, mySalt)
   const secret: WalletSecret = {

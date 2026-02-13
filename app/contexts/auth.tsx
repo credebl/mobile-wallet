@@ -3,7 +3,7 @@ import 'reflect-metadata'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
-import React, { PropsWithChildren, createContext, useContext, useState, useEffect } from 'react'
+import React, { PropsWithChildren, createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -15,7 +15,6 @@ import {
   wipeWalletKey,
 } from '../services/keychain'
 import { WalletSecret } from '../types/security'
-import { hashPIN } from '../utils/crypto'
 
 import { DispatchAction } from './reducers/store'
 import { useStore } from './store'
@@ -68,18 +67,19 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     await storeWalletSecret(secret)
   }
 
-  const getWalletCredentials = async (): Promise<WalletSecret | undefined> => {
-    console.log("🚀 ~ auth.tsx:72 ~ getWalletCredentials ~ walletSecret:", walletSecret)
-    if (walletSecret && walletSecret.key) {
+  const getWalletCredentials = useCallback(async (): Promise<WalletSecret | undefined> => {
+    if (walletSecret) {
       return walletSecret
     }
 
-    const secret = await loadWalletSecret(t('Biometry.UnlockPromptTitle'), t('Biometry.UnlockPromptDescription'))
-
-    setWalletSecret(secret)
-
-    return secret
-  }
+    try {
+      const secret = await loadWalletSecret(t('Biometry.UnlockPromptTitle'), t('Biometry.UnlockPromptDescription'))
+      setWalletSecret(secret)
+      return secret
+    } catch (e) {
+      return undefined
+    }
+  }, [t, walletSecret])
 
   const commitPIN = async (useBiometry: boolean): Promise<boolean> => {
     const secret = await getWalletCredentials()
@@ -106,20 +106,6 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
       if (!secret || !secret.salt) {
         return false
       }
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const hash = await hashPIN(PIN, secret.salt)
-
-      // NOTE: a custom wallet is used to check if the wallet key is correct. This is different from the wallet used in the rest of the app.
-      // We create an AskarWallet instance and open the wallet with the given secret.
-      // const response = await isWalletPinCorrect({
-      //   id: secret.id,
-      //   key: hash,
-      // })
-
-      // if (!response) {
-      //   throw new Error('Invalid PIN')
-      // }
 
       const fullSecret = await secretForPIN(PIN, secret.salt)
       setWalletSecret(fullSecret)
