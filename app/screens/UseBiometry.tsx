@@ -51,7 +51,7 @@ const UseBiometry: React.FC<UseBiometryProps> = () => {
 
   const styles = StyleSheet.create({
     container: {
-      height: '100%',
+      // height: '100%',
       padding: 20,
       backgroundColor: ColorPallet.brand.primaryBackground,
     },
@@ -123,7 +123,7 @@ const UseBiometry: React.FC<UseBiometryProps> = () => {
   }
 
   return (
-    <SafeAreaView edges={['left', 'right', 'bottom']}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1 }}>
       <StatusBar
         barStyle={Platform.OS === 'android' ? StatusBarStyles.Light : statusBarStyleForColor(ColorPallet.brand.primary)}
       />
@@ -169,20 +169,21 @@ const UseBiometry: React.FC<UseBiometryProps> = () => {
             </Pressable>
           </View>
         </View>
-        <View style={{ marginTop: 'auto', margin: 20 }}>
-          {store.onboarding.didConsiderBiometry || (
-            <Button
-              title={'Continue'}
-              accessibilityLabel={'Continue'}
-              testID={testIdWithKey('Continue')}
-              onPress={continueTouched}
-              buttonType={ButtonType.Primary}
-              disabled={!continueEnabled}>
-              {!continueEnabled && <ButtonLoading />}
-            </Button>
-          )}
-        </View>
+
       </ScrollView>
+      <View style={{ marginTop: 'auto', margin: 20 }}>
+        {store.onboarding.didConsiderBiometry || (
+          <Button
+            title={'Continue'}
+            accessibilityLabel={'Continue'}
+            testID={testIdWithKey('Continue')}
+            onPress={continueTouched}
+            buttonType={ButtonType.Primary}
+            disabled={!continueEnabled}>
+            {!continueEnabled && <ButtonLoading />}
+          </Button>
+        )}
+      </View>
       <Modal
         style={{ backgroundColor: ColorPallet.brand.primaryBackground }}
         visible={canSeeCheckPIN}

@@ -19,14 +19,13 @@ import { useTranslation } from 'react-i18next'
 import { FlatList, StyleSheet, View } from 'react-native'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 
-import { useOpenIDCredentials } from '../components/Provider/OpenIDCredentialRecordProvider'
 import ScanButton from '../components/common/ScanButton'
 import CredentialCard from '../components/misc/CredentialCard'
 import { OpenIDCredScreenMode } from '../constants'
 import { useConfiguration } from '../contexts/configuration'
 import { CredentialStackParams, Screens } from '../types/navigators'
-import { getCredentialFormat } from '../utils/helpers'
 import { useSdk } from '../utils/agent'
+import { getCredentialFormat } from '../utils/helpers'
 
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string
@@ -40,15 +39,9 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
   const { t } = useTranslation()
   const { sdk } = useSdk()
   const { credentialEmptyList: CredentialEmptyList } = useConfiguration()
-  const {
-    openIdState: { w3cCredentialRecords, sdJwtVcRecords, mdocRecords },
-  } = useOpenIDCredentials()
   const credentials: (GenericCredentialExchangeRecord | W3cCredentialRecord | SdJwtVcRecord | MdocRecord)[] = [
     ...useCredentialByState(DidCommCredentialState.CredentialReceived),
     ...useCredentialByState(DidCommCredentialState.Done),
-    ...w3cCredentialRecords,
-    ...(sdJwtVcRecords ?? []),
-    ...(mdocRecords ?? []),
   ]
   const [credentialList, setCredentialList] = useState<
     (DidCommCredentialExchangeRecord | EnhancedW3CRecord | SdJwtVcRecord | MdocRecord)[]
@@ -105,7 +98,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
     updateCredentials().then(updatedCredentials => {
       setCredentialList(updatedCredentials)
     })
-  }, [sdk, w3cCredentialRecords, sdJwtVcRecords, mdocRecords, connectionRecords])
+  }, [sdk, connectionRecords])
 
   const styles = StyleSheet.create({
     container: { flex: 1, marginHorizontal: 10 },

@@ -29,7 +29,7 @@ import { GenericFn } from '../types/fn'
 import { Screens, SettingStackParams, Stacks } from '../types/navigators'
 import { SettingSection } from '../types/settings'
 import * as PushNotificationHelper from '../utils/PushNotificationHelper'
-import { useAppAgent } from '../utils/agent'
+import { useSdk } from '../utils/agent'
 import { getDefaultHolderDidDocument } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
@@ -40,7 +40,7 @@ const touchCountToEnableBiometrics = 9
 const Settings: React.FC<SettingsProps> = ({ navigation }) => {
   const { t, i18n } = useTranslation()
   const [store, dispatch] = useStore()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const developerOptionCount = useRef(0)
   const { SettingsTheme, TextTheme, ColorPallet, Assets } = useTheme()
   const { settings, enableTours } = useConfiguration()
@@ -93,7 +93,7 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
     },
   })
   const getPushNotificationCapable = async () => {
-    if (!agent) return
+    if (!sdk) return
     if ((await AsyncStorage.getItem('MEDIATOR_NOTIFICATION_SUPPORT')) === 'true') setPushNotificationCapable(true)
     else setPushNotificationCapable(false)
   }
@@ -102,20 +102,20 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
     setEnablePushNotifications(await PushNotificationHelper.isEnabled())
   }
   const toggleDevPushNotificationsSwitch = async () => {
-    if (!pushNotificationCapable || !agent) return
-    await PushNotificationHelper.setDeviceInfo(agent, enablePushNotifications)
+    if (!pushNotificationCapable || !sdk) return
+    await PushNotificationHelper.setDeviceInfo(sdk, enablePushNotifications)
     setEnablePushNotifications(!enablePushNotifications)
   }
 
   useEffect(() => {
-    if (agent) {
+    if (sdk) {
       getPushNotificationCapable()
       initializePushNotificationsToggle()
-      getDefaultHolderDidDocument(agent).then(didDoc => {
+      getDefaultHolderDidDocument(sdk).then(didDoc => {
         setHolderDid(didDoc?.id)
       })
     }
-  }, [agent])
+  }, [sdk])
 
   const currentLanguage = languages.find(l => l.id === i18n.language)?.value
 

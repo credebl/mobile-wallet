@@ -19,9 +19,9 @@ import { useTheme } from '../contexts/theme'
 import { DeliveryStackParams, Screens } from '../types/navigators'
 import { W3CCredentialAttribute } from '../types/record'
 import { ModalUsage } from '../types/remove'
+import { useSdk } from '../utils/agent'
 import { buildFieldsFromOpenIDTemplate, sanitizeString } from '../utils/credential'
 import { testIdWithKey } from '../utils/testable'
-import { useSdk } from '../utils/agent'
 
 type OpenIDCredentialDetailsProps = StackScreenProps<DeliveryStackParams, Screens.OpenIDCredentialDetails>
 
@@ -40,7 +40,7 @@ const OpenIDCredentialDetails: React.FC<OpenIDCredentialDetailsProps> = ({ navig
   const { t } = useTranslation()
   const { ColorPallet, TextTheme } = useTheme()
   const { sdk } = useSdk()
-  const { removeCredential } = useOpenIDCredentials()
+  // const { removeCredential } = useOpenIDCredentials()
   const [isRemoveModalDisplayed, setIsRemoveModalDisplayed] = useState(false)
 
   const convertFieldToAttribute = (field: any, level: number = 0): W3CCredentialAttribute => {
@@ -129,7 +129,21 @@ const OpenIDCredentialDetails: React.FC<OpenIDCredentialDetailsProps> = ({ navig
 
   const handleRemove = async () => {
     try {
-      await removeCredential(sdk, credential)
+      await sdk.deleteCredential({
+        id: 'sd-jwt',
+        format: credential,
+      })
+
+      // await sdk.deleteCredential({
+      //   id: 'mdoc',
+      //   format: credential
+      // })
+
+      await sdk.deleteCredential({
+        id: '',
+        format: credential,
+      })
+      // await removeCredential(sdk, credential)
       navigation.pop()
 
       await new Promise(resolve => setTimeout(resolve, 50))

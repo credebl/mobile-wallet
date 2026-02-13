@@ -20,11 +20,11 @@ import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { useTemplate } from '../hooks/proof-request-templates'
 import { Screens, ProofRequestsStackParams } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
 import { formatIfDate, pTypeToText } from '../utils/helpers'
 import { buildFieldsFromAnonCredsProofRequestTemplate } from '../utils/oca'
 import { parseSchemaFromId } from '../utils/schema'
 import { testIdWithKey } from '../utils/testable'
+import { useSdk } from '../utils/agent'
 
 type ProofRequestDetailsProps = StackScreenProps<ProofRequestsStackParams, Screens.ProofRequestDetails>
 
@@ -216,8 +216,8 @@ const ProofRequestDetails: React.FC<ProofRequestDetailsProps> = ({ route, naviga
   const { i18n } = useTranslation()
   const { OCABundleResolver } = useConfiguration()
 
-  const { agent } = useAppAgent()
-  if (!agent) {
+  const { sdk } = useSdk()
+  if (!sdk) {
     throw new Error('Unable to fetch agent from AFJ')
   }
 
@@ -319,9 +319,9 @@ const ProofRequestDetails: React.FC<ProofRequestDetailsProps> = ({ route, naviga
 
     if (connectionId) {
       // Send to specific contact and redirect to the chat with him
-      sendProofRequest(agent, template, connectionId, customPredicateValues).then(result => {
+      sendProofRequest(sdk, template, connectionId, customPredicateValues).then(result => {
         if (result?.proofRecord) {
-          linkProofWithTemplate(agent, result.proofRecord, templateId)
+          linkProofWithTemplate(sdk, result.proofRecord, templateId)
         }
       })
 
@@ -330,7 +330,7 @@ const ProofRequestDetails: React.FC<ProofRequestDetailsProps> = ({ route, naviga
       // Else redirect to the screen with connectionless request
       navigation.navigate(Screens.ProofRequesting, { templateId, predicateValues: customPredicateValues })
     }
-  }, [agent, template, templateId, connectionId, customPredicateValues, invalidPredicate])
+  }, [sdk, template, templateId, connectionId, customPredicateValues, invalidPredicate])
 
   const showTemplateUsageHistory = useCallback(async () => {
     navigation.navigate(Screens.ProofRequestUsageHistory, { templateId })

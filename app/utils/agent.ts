@@ -35,7 +35,11 @@ export const createConfig = (walletId: string, walletKey: string): MobileSDKOpti
     key: walletKey,
   },
   modules: {
-    didcomm: new DidCommSDK({}),
+    didcomm: new DidCommSDK({
+      peerNumAlgoForDidExchangeRequests: 1,
+      peerNumAlgoForDidRotation: 4,
+      processDidCommMessagesConcurrently: true,
+    }),
     openid: new OpenID4VCSDK({
       trustedCertificates: [],
     }),

@@ -28,16 +28,15 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { useOpenIDCredentials } from '../components/Provider/OpenIDCredentialRecordProvider'
 import Button, { ButtonType } from '../components/buttons/Button'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
 import { ColorPallet, TextTheme } from '../theme'
 import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, TabStacks } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
+import { useSdk } from '../utils/agent'
 import { formatCredentialSubject } from '../utils/credential'
 import { testIdWithKey } from '../utils/testable'
-import { useSdk } from '../utils/agent'
 
 type OpenIdCredentialOfferProps = StackScreenProps<NotificationStackParams, Screens.OpenIdCredentialOffer>
 
@@ -201,7 +200,7 @@ const authorization = {
 const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigation, route }) => {
   const { sdk } = useSdk()
   const { t } = useTranslation()
-  const { storeOpenIdCredential } = useOpenIDCredentials()
+  // const { storeOpenIdCredential } = useOpenIDCredentials()
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<BifoldError | undefined>()
@@ -419,7 +418,8 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
     }
     try {
       setProcessing(true)
-      await storeOpenIdCredential(sdk, fetchedCredential)
+      await sdk.modules.openid.storeOpenIdCredential(fetchedCredential)
+      // await storeOpenIdCredential(sdk, fetchedCredential)
       setProcessing(false)
       navigation.getParent()?.navigate(TabStacks.CredentialStack, {
         screen: Screens.Credentials,
@@ -431,7 +431,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
         { text: 'OK' },
       ])
     }
-  }, [fetchedCredential, storeOpenIdCredential, sdk, navigation])
+  }, [fetchedCredential, sdk, navigation])
 
   const handleTxCodeSubmit = useCallback(async () => {
     if (!txCode.trim()) {

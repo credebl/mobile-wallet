@@ -145,8 +145,10 @@ const Splash: React.FC = () => {
   const loadAuthAttempts = async (): Promise<LoginAttemptState | undefined> => {
     try {
       const attemptsData = await AsyncStorage.getItem(LocalStorageKeys.LoginAttempts)
+      console.log('🚀 ~ Splash.tsx:148 ~ loadAuthAttempts ~ attemptsData:', attemptsData)
       if (attemptsData) {
         const attempts = JSON.parse(attemptsData) as LoginAttemptState
+        console.log('🚀 ~ Splash.tsx:151 ~ loadAuthAttempts ~ attempts:', attempts)
         dispatch({
           type: DispatchAction.ATTEMPT_UPDATED,
           payload: [attempts],
@@ -167,15 +169,12 @@ const Splash: React.FC = () => {
         }
 
         setStep(1)
-        // load authentication attempts from storage
         const attemptData = await loadAuthAttempts()
 
         setStep(2)
         const preferencesData = await AsyncStorage.getItem(LocalStorageKeys.Preferences)
-
         if (preferencesData) {
           const dataAsJSON = JSON.parse(preferencesData) as PreferencesState
-
           dispatch({
             type: DispatchAction.PREFERENCES_UPDATED,
             payload: [dataAsJSON],
@@ -185,7 +184,6 @@ const Splash: React.FC = () => {
         const toursData = await AsyncStorage.getItem(LocalStorageKeys.Tours)
         if (toursData) {
           const dataAsJSON = JSON.parse(toursData) as ToursState
-
           dispatch({
             type: DispatchAction.TOUR_DATA_UPDATED,
             payload: [dataAsJSON],
@@ -201,38 +199,36 @@ const Splash: React.FC = () => {
             payload: [dataAsJSON],
           })
 
-          if (onboardingComplete(dataAsJSON) && !attemptData?.lockoutDate) {
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: Screens.EnterPIN }],
-              }),
-            )
-            return
-          }
-          if (onboardingComplete(dataAsJSON) && attemptData?.lockoutDate) {
-            // return to lockout screen if lockout date is set
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: Screens.AttemptLockout }],
-              }),
-            )
+          if (onboardingComplete(dataAsJSON)) {
+            if (attemptData?.lockoutDate) {
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: Screens.AttemptLockout }],
+                }),
+              )
+              return
+            }
+
+            setTimeout(() => {
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: Screens.EnterPIN }],
+                }),
+              )
+            }, 100)
             return
           }
 
-          // If onboarding was interrupted we need to pickup from where we left off.
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
               routes: [{ name: resumeOnboardingAt(dataAsJSON, enableWalletNaming) }],
             }),
           )
-
           return
         }
-
-        // We have no onboarding state, starting from step zero.
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -245,8 +241,7 @@ const Splash: React.FC = () => {
       }
     }
     initOnboarding()
-  }, [store.authentication.didAuthenticate, initOnboardingCount])
-
+  }, [initOnboardingCount])
   useEffect(() => {
     const initAgent = async (): Promise<void> => {
       try {
@@ -256,15 +251,15 @@ const Splash: React.FC = () => {
 
         setStep(4)
         const credentials = await getWalletCredentials()
+        console.log('🚀 ~ Splash.tsx:260 ~ initAgent ~ credentials:', credentials)
 
         if (!credentials?.id || !credentials.key) {
-          // Cannot find wallet id/secret
           return
         }
 
         setStep(5)
         if (!isInitialized) {
-          const newAgent = createConfig('1234', '4567')
+          const newAgent = createConfig(credentials.id, credentials.key)
           await initializeSDK(newAgent)
         }
 
@@ -280,6 +275,7 @@ const Splash: React.FC = () => {
         //   }),
         // )
       } catch (e: unknown) {
+        console.log('🚀 ~ Splash.tsx:290 ~ initAgent ~ e:', e)
         setInitErrorType(InitErrorTypes.Agent)
         setInitError(e as Error)
       }
@@ -301,7 +297,7 @@ const Splash: React.FC = () => {
         const resp = await sdk.modules.didcomm.mediatorRecipient.startMediation(Config.MEDIATOR_URL, 'Holder')
 
         if (resp) {
-          setStep(7)
+          setStep(6)
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
@@ -310,6 +306,7 @@ const Splash: React.FC = () => {
           )
         }
       } catch (error) {
+        console.log('🚀 ~ Splash.tsx:322 ~ startMediation ~ error:', error)
         setInitErrorType(InitErrorTypes.Agent)
         setInitError(error as Error)
       }

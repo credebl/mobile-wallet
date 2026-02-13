@@ -25,7 +25,7 @@ import { BifoldError } from '../../types/error'
 import { GenericFn } from '../../types/fn'
 import { HomeStackParams, Screens, Stacks } from '../../types/navigators'
 import { ModalUsage } from '../../types/remove'
-import { useAppAgent } from '../../utils/agent'
+import { useSdk } from '../../utils/agent'
 import { parsedSchema } from '../../utils/helpers'
 import { testIdWithKey } from '../../utils/testable'
 import Button, { ButtonType } from '../buttons/Button'
@@ -67,7 +67,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
   const [, dispatch] = useStore()
   const { t } = useTranslation()
   const { ColorPallet, TextTheme } = useTheme()
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const [declineModalVisible, setDeclineModalVisible] = useState(false)
   const [notificationDetails, setNotificationDetails] = useState<V2RequestPresentationMessage | null>(null)
   const [details, setDetails] = useState<DisplayDetails>({
@@ -135,12 +135,13 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
 
   const toggleDeclineModalVisible = () => setDeclineModalVisible(!declineModalVisible)
 
-  const isReceivedProof = notificationType === NotificationType.ProofRequest && notification.state === DidCommProofState.Done
+  const isReceivedProof =
+    notificationType === NotificationType.ProofRequest && notification.state === DidCommProofState.Done
 
   const declineProofRequest = async () => {
     try {
       const proofId = (notification as DidCommProofExchangeRecord).id
-      await declineProof(agent, { proofRecordId: proofId })
+      await declineProof(sdk, { proofRecordId: proofId })
     } catch (err: unknown) {
       const error = new BifoldError(t('Error.Title1028'), t('Error.Message1028'), (err as Error).message, 1028)
       DeviceEventEmitter.emit(EventTypes.ERROR_ADDED, error)
@@ -150,8 +151,8 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
   }
 
   const dismissProofRequest = async () => {
-    if (agent && notificationType === NotificationType.ProofRequest) {
-      markProofAsViewed(agent, notification as DidCommProofExchangeRecord)
+    if (sdk && notificationType === NotificationType.ProofRequest) {
+      markProofAsViewed(sdk, notification as DidCommProofExchangeRecord)
     }
   }
 
@@ -159,7 +160,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
     try {
       const credentialId = (notification as DidCommCredentialExchangeRecord).id
 
-      await declineCredential(agent, credentialId)
+      await declineCredential(sdk, credentialId)
     } catch (err: unknown) {
       const error = new BifoldError(t('Error.Title1028'), t('Error.Message1028'), (err as Error).message, 1028)
       DeviceEventEmitter.emit(EventTypes.ERROR_ADDED, error)
@@ -217,7 +218,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
           break
         case NotificationType.ProofRequest: {
           const proofId = (notification as DidCommProofExchangeRecord).id
-          getProofRequestAgentMessage(agent, proofId).then(message => {
+          getProofRequestAgentMessage(sdk, proofId).then(message => {
             setNotificationDetails(message)
             if (message instanceof V1RequestPresentationMessage && message.indyProofRequest) {
               resolve({

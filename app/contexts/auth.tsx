@@ -69,6 +69,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }
 
   const getWalletCredentials = async (): Promise<WalletSecret | undefined> => {
+    console.log("🚀 ~ auth.tsx:72 ~ getWalletCredentials ~ walletSecret:", walletSecret)
     if (walletSecret && walletSecret.key) {
       return walletSecret
     }

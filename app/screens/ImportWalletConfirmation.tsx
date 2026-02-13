@@ -26,7 +26,7 @@ import { useAuth } from '../contexts/auth'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { AuthenticateStackParams, Screens } from '../types/navigators'
-import { adeyaAgentModules, useAppAgent } from '../utils/agent'
+// import { useSdk } from '../utils/agent'
 
 type ImportWalletVerifyProps = StackScreenProps<AuthenticateStackParams, Screens.ImportWalletVerify>
 
@@ -37,7 +37,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
   const { getWalletCredentials } = useAuth()
   const [verify, setVerify] = useState(false)
   const [selectedFilePath, setSelectedFilePath] = useState('')
-  const { setAgent } = useAppAgent()
+  // const { sdk } = useSdk()
   const { height } = Dimensions.get('window')
   const { width } = Dimensions.get('window')
 
@@ -97,6 +97,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
     setVerify(true)
     Keyboard.dismiss()
     const credentials = await getWalletCredentials()
+    console.log("🚀 ~ ImportWalletConfirmation.tsx:100 ~ initAgent ~ credentials:", credentials)
     if (!credentials?.id || !credentials.key) {
       // Cannot find wallet id/secret
       return
@@ -135,17 +136,17 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
         autoUpdateStorageOnStartup: true,
       }
 
-      const agent = await importWalletWithAgent({
-        agentConfig,
-        importConfig,
-        modules: {
-          ...adeyaAgentModules(),
-        },
-      })
+      // const agent = await importWalletWithAgent({
+      //   agentConfig,
+      //   importConfig,
+      //   modules: {
+      //     ...adeyaAgentModules(),
+      //   },
+      // })
 
       await RNFS.unlink(restoreDirectoryPath + '/CREDEBL_WALLET_RESTORE')
 
-      setAgent(agent!)
+      // setAgent(agent!)
       setVerify(true)
       Toast.show({
         type: ToastType.Success,

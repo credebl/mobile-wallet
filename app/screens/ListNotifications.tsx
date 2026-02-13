@@ -7,8 +7,8 @@ import NoNewUpdates from '../components/misc/NoNewUpdates'
 import { useConfiguration } from '../contexts/configuration'
 
 const ListNotifications: React.FC = () => {
-  const { useCustomNotifications } = useConfiguration()
-  const { notifications } = useCustomNotifications()
+  // const { useCustomNotifications } = useConfiguration()
+  // const { notifications } = useCustomNotifications()
 
   const getNotificationType = (notification: any): NotificationType => {
     let retType = NotificationType.ProofRequest
@@ -27,25 +27,27 @@ const ListNotifications: React.FC = () => {
   }
 
   return (
-    <FlatList
-      data={notifications}
-      keyExtractor={notification => notification.id}
-      renderItem={({ item: notification, index }) => (
-        <View
-          style={{
-            marginHorizontal: 15,
-            marginTop: 15,
-            marginBottom: index === notifications.length - 1 ? 45 : 0,
-          }}>
-          <NotificationListItem notificationType={getNotificationType(notification)} notification={notification} />
-        </View>
-      )}
-      ListEmptyComponent={() => (
-        <View style={{ margin: 15 }}>
-          <NoNewUpdates />
-        </View>
-      )}
-    />
+    <View>
+    </View>
+    // <FlatList
+    //   data={notifications}
+    //   keyExtractor={notification => notification.id}
+    //   renderItem={({ item: notification, index }) => (
+    //     <View
+    //       style={{
+    //         marginHorizontal: 15,
+    //         marginTop: 15,
+    //         marginBottom: index === notifications.length - 1 ? 45 : 0,
+    //       }}>
+    //       <NotificationListItem notificationType={getNotificationType(notification)} notification={notification} />
+    //     </View>
+    //   )}
+    //   ListEmptyComponent={() => (
+    //     <View style={{ margin: 15 }}>
+    //       <NoNewUpdates />
+    //     </View>
+    //   )}
+    // />
   )
 }
 

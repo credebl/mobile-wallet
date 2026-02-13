@@ -26,7 +26,7 @@ const CameraDisclosureModal: React.FC<CameraDisclosureModalProps> = ({ requestCa
 
   const styles = StyleSheet.create({
     container: {
-      height: '100%',
+      // flex: 1,
       backgroundColor: ColorPallet.brand.modalPrimaryBackground,
       padding: 20,
     },
@@ -67,7 +67,7 @@ const CameraDisclosureModal: React.FC<CameraDisclosureModalProps> = ({ requestCa
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: ColorPallet.brand.modalPrimaryBackground }}>
+    <SafeAreaView style={{ backgroundColor: ColorPallet.brand.modalPrimaryBackground, flex: 1 }}>
       {showSettingsPopup && (
         <DismissiblePopupModal
           title={t('CameraDisclosure.AllowCameraUse')}

@@ -12,7 +12,7 @@ import { useAnimatedComponents } from '../contexts/animated-components'
 import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { useOutOfBandById } from '../hooks/connections'
-import { useNotifications } from '../hooks/notifications'
+// import { useNotifications } from '../hooks/notifications'
 import { Screens, TabStacks, DeliveryStackParams, Stacks } from '../types/navigators'
 import { useSdk } from '../utils/agent'
 import { testIdWithKey } from '../utils/testable'
@@ -39,7 +39,7 @@ const Connection: React.FC<ConnectionProps> = ({ navigation, route }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const connection = connectionId ? useConnectionById(connectionId) : undefined
   const { t } = useTranslation()
-  const { notifications } = useNotifications()
+  // const { notifications } = useNotifications()
   const { ColorPallet, TextTheme } = useTheme()
   const { ConnectionLoading } = useAnimatedComponents()
   const { sdk } = useSdk()
@@ -183,24 +183,24 @@ const Connection: React.FC<ConnectionProps> = ({ navigation, route }) => {
     }, []),
   )
 
-  useEffect(() => {
-    if (state.isVisible) {
-      for (const notification of notifications) {
-        if (
-          !state.notificationRecord &&
-          ((connectionId && notification.connectionId === connectionId) ||
-            (threadId && notification.threadId == threadId))
-        ) {
-          dispatch({ notificationRecord: notification, isVisible: false })
-          break
-        }
-        if (!connection && notification.state === 'request-received') {
-          dispatch({ notificationRecord: notification, isVisible: false })
-          break
-        }
-      }
-    }
-  }, [notifications])
+  // useEffect(() => {
+  //   if (state.isVisible) {
+  //     for (const notification of notifications) {
+  //       if (
+  //         !state.notificationRecord &&
+  //         ((connectionId && notification.connectionId === connectionId) ||
+  //           (threadId && notification.threadId == threadId))
+  //       ) {
+  //         dispatch({ notificationRecord: notification, isVisible: false })
+  //         break
+  //       }
+  //       if (!connection && notification.state === 'request-received') {
+  //         dispatch({ notificationRecord: notification, isVisible: false })
+  //         break
+  //       }
+  //     }
+  //   }
+  // }, [notifications])
 
   return (
     <View>

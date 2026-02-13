@@ -19,8 +19,8 @@ import OrganizationStack from './OrganizationStack'
 
 const TabStack: React.FC = () => {
   const { width, height } = useWindowDimensions()
-  const { useCustomNotifications } = useConfiguration()
-  const { total } = useCustomNotifications()
+  // const { useCustomNotifications } = useConfiguration()
+  // const { total } = useCustomNotifications()
   const { t } = useTranslation()
   const Tab = createBottomTabNavigator<TabStackParams>()
   const { ColorPallet, TabTheme } = useTheme()
@@ -73,11 +73,11 @@ const TabStack: React.FC = () => {
               </View>
             ),
             tabBarShowLabel: false,
-            tabBarAccessibilityLabel: `${t('TabStack.Home')} (${
-              total === 1 ? t('Home.OneNotification') : t('Home.CountNotifications', { count: total || 0 })
-            })`,
+            // tabBarAccessibilityLabel: `${t('TabStack.Home')} (${
+            //   total === 1 ? t('Home.OneNotification') : t('Home.CountNotifications', { count: total || 0 })
+            // })`,
             tabBarTestID: testIdWithKey(t('TabStack.Home')),
-            tabBarBadge: total || undefined,
+            // tabBarBadge: total || undefined,
             tabBarBadgeStyle: {
               marginLeft: leftMarginForDevice(width, height),
               backgroundColor: ColorPallet.semantic.error,

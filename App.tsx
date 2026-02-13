@@ -2,16 +2,16 @@
 global.Buffer = require('buffer').Buffer
 
 import { MobileSDKProvider } from '@credebl/ssi-mobile-core'
+import { DidCommSDK } from '@credebl/ssi-mobile-didcomm'
+import { OpenID4VCSDK } from '@credebl/ssi-mobile-openid4vc'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
-import { useEffect, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import { StatusBar } from 'react-native'
 import { Config } from 'react-native-config'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 
 import { animatedComponents } from './app/animated-components'
-// import { OpenIDCredentialRecordProvider } from './app/components/Provider/OpenIDCredentialRecordProvider'
-// import PushNotifications from './app/components/PushNotifications'
 import ErrorModal from './app/components/modals/ErrorModal'
 import NetInfo from './app/components/network/NetInfo'
 import toastConfig from './app/components/toast/ToastConfig'
@@ -28,9 +28,35 @@ import { defaultConfiguration } from './app/defaultConfiguration'
 import { initLanguages, initStoredLanguage, translationResources } from './app/localization'
 import RootStack from './app/navigators/RootStack'
 import { theme } from './app/theme'
+import { useSdk } from './app/utils/agent'
 
 initLanguages(translationResources)
 
+interface AuthWrappedProps {
+  children: ReactNode
+}
+
+function AuthWrapped({ children }: AuthWrappedProps) {
+  const { sdk } = useSdk()
+
+  if (sdk?.agent) {
+    return <OpenID4VCSDK.OpenIDProvider agent={sdk.agent}>{children}</OpenID4VCSDK.OpenIDProvider>
+  }
+
+  // Before SDK initializes
+  return <>{children}</>
+}
+
+function DidCommWrapped({ children }: AuthWrappedProps) {
+  const { sdk } = useSdk()
+
+  if (sdk?.agent) {
+    return <DidCommSDK.DidCommProvider agent={sdk.agent}>{children}</DidCommSDK.DidCommProvider>
+  }
+
+  // Before SDK initializes
+  return <>{children}</>
+}
 const App = () => {
   useMemo(() => {
     initStoredLanguage().then()
@@ -51,36 +77,36 @@ const App = () => {
   return (
     <StoreProvider>
       <MobileSDKProvider>
-        {/* <AgentProvider> */}
         <ThemeProvider value={theme}>
-          {/* <OpenIDCredentialRecordProvider> */}
-          <AnimatedComponentsProvider value={animatedComponents}>
-            <ConfigurationProvider value={defaultConfiguration}>
-              <CommonUtilProvider>
-                <AuthProvider>
-                  <NetworkProvider>
-                    <StatusBar
-                      hidden={false}
-                      barStyle="light-content"
-                      backgroundColor={theme.ColorPallet.brand.primary}
-                      translucent={false}
-                    />
-                    <NetInfo />
-                    <ErrorModal />
-                    <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
-                      <RootStack />
-                    </TourProvider>
-                    <Toast topOffset={15} config={toastConfig} />
-                    {/* <PushNotifications /> */}
-                  </NetworkProvider>
-                </AuthProvider>
-              </CommonUtilProvider>
-            </ConfigurationProvider>
-          </AnimatedComponentsProvider>
-          {/* </OpenIDCredentialRecordProvider> */}
+          <DidCommWrapped>
+            <AuthWrapped>
+              <AnimatedComponentsProvider value={animatedComponents}>
+                <ConfigurationProvider value={defaultConfiguration}>
+                  <CommonUtilProvider>
+                    <AuthProvider>
+                      <NetworkProvider>
+                        <StatusBar
+                          hidden={false}
+                          barStyle="light-content"
+                          backgroundColor={theme.ColorPallet.brand.primary}
+                          translucent={false}
+                        />
+                        <NetInfo />
+                        <ErrorModal />
+                        <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
+                          <RootStack />
+                        </TourProvider>
+                        <Toast topOffset={15} config={toastConfig} />
+                        {/* <PushNotifications /> */}
+                      </NetworkProvider>
+                    </AuthProvider>
+                  </CommonUtilProvider>
+                </ConfigurationProvider>
+              </AnimatedComponentsProvider>
+            </AuthWrapped>
+          </DidCommWrapped>
         </ThemeProvider>
       </MobileSDKProvider>
-      {/* </AgentProvider> */}
     </StoreProvider>
   )
 }

@@ -3,27 +3,27 @@ import { useTranslation } from 'react-i18next'
 
 import PushNotificationsModal from '../components/modals/PushNotificationsModal'
 import { isMediatorCapable, isRegistered, setup, isUserDenied } from '../utils/PushNotificationHelper'
-import { useAppAgent } from '../utils/agent'
+import { useSdk } from '../utils/agent'
 
 const PushNotifications = () => {
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t } = useTranslation()
   const [infoModalVisible, setInfoModalVisible] = useState(false)
 
   const setupPushNotifications = async () => {
     setInfoModalVisible(false)
-    if (!agent || (await isUserDenied())) return
-    setup(agent, false)
+    if (!sdk || (await isUserDenied())) return
+    setup(sdk, false)
   }
 
   const initializeCapabilityRequest = async () => {
-    if (!agent || !(await isMediatorCapable(agent)) || (await isRegistered())) return
+    if (!sdk || !(await isMediatorCapable(sdk)) || (await isRegistered())) return
     setInfoModalVisible(true)
   }
 
   useEffect(() => {
     initializeCapabilityRequest()
-  }, [agent]) // Reload if agent becomes defined
+  }, [sdk]) // Reload if agent becomes defined
 
   return (
     <PushNotificationsModal

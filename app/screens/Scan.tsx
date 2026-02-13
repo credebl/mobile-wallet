@@ -1,5 +1,5 @@
 import { ConnectionRecord, parseInvitationUrl } from '@credebl/ssi-mobile-core'
-import {getOID4VCCredentialsForProofRequest} from '@credebl/ssi-mobile-openid4vc'
+import { getOID4VCCredentialsForProofRequest } from '@credebl/ssi-mobile-openid4vc'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MessageReceiver } from '@credo-ts/didcomm'
 import { StackScreenProps } from '@react-navigation/stack'
@@ -22,7 +22,7 @@ import { useStore } from '../contexts/store'
 import { BifoldError, QrCodeScanError } from '../types/error'
 import { ConnectStackParams, Screens, Stacks } from '../types/navigators'
 import { PermissionContract } from '../types/permissions'
-import { useAppAgent } from '../utils/agent'
+import { useSdk } from '../utils/agent'
 import {
   checkIfAlreadyConnected,
   connectFromInvitation,
@@ -37,7 +37,7 @@ import {
 export type ScanProps = StackScreenProps<ConnectStackParams>
 
 const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const { t } = useTranslation()
   const [store] = useStore()
   const [loading, setLoading] = useState<boolean>(true)
@@ -49,12 +49,12 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
   }
   const resolveOpenIDPresentationRequest = useCallback(
     async (uri: string | undefined) => {
-      if (!agent) {
+      if (!sdk) {
         return
       }
       try {
         const record = await getOID4VCCredentialsForProofRequest({
-          agent: agent,
+          agent: sdk,
           uri: uri,
         })
         return record
@@ -68,14 +68,14 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         DeviceEventEmitter.emit(EventTypes.ERROR_ADDED, error)
       }
     },
-    [agent, t],
+    [sdk, t],
   )
 
   const logHistoryRecord = async (connectionRecord: ConnectionRecord | undefined) => {
     const contactLabel: string | void = await getConnectionName(connectionRecord)
 
     try {
-      if (!(agent && store.preferences.useHistoryCapability)) {
+      if (!(sdk && store.preferences.useHistoryCapability)) {
         return
       }
       const type = HistoryCardType.Connection
@@ -93,7 +93,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
           connection: contactLabel,
         }
         // Save the history record asynchronously
-        await saveHistory(recordData, agent)
+        await saveHistory(recordData, sdk)
       } catch (error) {
         // error when save history
       }
@@ -138,7 +138,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         return
       }
 
-      const isAlreadyConnected = await checkIfAlreadyConnected(agent, value)
+      const isAlreadyConnected = await checkIfAlreadyConnected(sdk, value)
 
       if (isAlreadyConnected) {
         setLoading(false)
@@ -151,7 +151,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         return
       }
 
-      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, value)
+      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, value)
       setLoading(false)
       logHistoryRecord(connectionRecord)
       navigation.getParent()?.navigate(Stacks.ConnectionStack, {
@@ -163,7 +163,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         // if scanned value is json -> pass into AFJ as is
         const json = getJson(value)
         if (json) {
-          const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
+          const messageReceiver = sdk.agent?.dependencyManager.resolve(MessageReceiver)
           await messageReceiver.receiveMessage(json)
           setLoading(false)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
@@ -177,7 +177,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         const isValidURL = isValidUrl(urlData)
 
         if (isValidURL) {
-          const isAlreadyConnected = await checkIfAlreadyConnected(agent, urlData)
+          const isAlreadyConnected = await checkIfAlreadyConnected(sdk, urlData)
 
           if (isAlreadyConnected) {
             setLoading(false)
@@ -190,7 +190,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
             return
           }
 
-          const { connectionRecord, outOfBandRecord } = await connectFromInvitation(agent, urlData)
+          const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, urlData)
           setLoading(false)
           logHistoryRecord(connectionRecord)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
@@ -204,7 +204,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         const url = getUrl(value)
 
         if (url) {
-          const message = await receiveMessageFromUrlRedirect(value, agent)
+          const message = await receiveMessageFromUrlRedirect(value, sdk)
           setLoading(false)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,

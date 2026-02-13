@@ -4,6 +4,7 @@ import {
   DidCommCredentialExchangeRecord,
   DidCommBasicMessageRecord,
   DidCommConnectionRecord,
+  useCredentialsByConnectionId,
 } from '@credebl/ssi-mobile-didcomm'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -11,7 +12,6 @@ import { useTranslation } from 'react-i18next'
 import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native'
 
 import { useTheme } from '../../contexts/theme'
-import { useCredentialsByConnectionId } from '../../hooks/credentials'
 import { useProofsByConnectionId } from '../../hooks/proofs'
 import { Role } from '../../types/chat'
 import { ContactStackParams, Screens, Stacks } from '../../types/navigators'

@@ -26,10 +26,10 @@ import Button, { ButtonType } from '../components/buttons/Button'
 import { ToastType } from '../components/toast/BaseToast'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
-import { useAppAgent } from '../utils/agent'
+import { useSdk } from '../utils/agent'
 
 function ExportWalletConfirmation() {
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const navigation = useNavigation()
   const parms = useRoute()
   const { t } = useTranslation()
@@ -167,7 +167,7 @@ function ExportWalletConfirmation() {
         path: encryptedFileLocation,
       }
 
-      await exportAdeyaWallet(agent, exportConfig)
+      await exportAdeyaWallet(sdk, exportConfig)
 
       await zip(zipUpDirectory, destinationZipPath)
 

@@ -12,7 +12,7 @@ import {
 } from '../../../verifier'
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
-import { useAppAgent } from '../../utils/agent'
+import { useSdk } from '../../utils/agent'
 import { toImageSource } from '../../utils/credential'
 import { formatIfDate, pTypeToText } from '../../utils/helpers'
 import { buildFieldsFromSharedAnonCredsProof } from '../../utils/oca'
@@ -127,7 +127,9 @@ const SharedDataCard: React.FC<{ sharedData: GroupedSharedProofDataItem }> = ({ 
   const CardBody: React.FC<{ overlay: CredentialOverlay<BrandingOverlay> }> = ({ overlay }) => {
     return (
       <View style={styles.cardAttributes}>
-        {overlay.presentationFields?.map(item => <CardField item={item} key={item.name || item.toString()} />)}
+        {overlay.presentationFields?.map(item => (
+          <CardField item={item} key={item.name || item.toString()} />
+        ))}
       </View>
     )
   }
@@ -184,7 +186,7 @@ const SharedDataCard: React.FC<{ sharedData: GroupedSharedProofDataItem }> = ({ 
 }
 
 const SharedProofData: React.FC<SharedProofDataProps> = ({ recordId, onSharedProofDataLoad }: SharedProofDataProps) => {
-  const { agent } = useAppAgent()
+  const { sdk } = useSdk()
   const styles = StyleSheet.create({
     container: {
       flexGrow: 1,
@@ -195,7 +197,7 @@ const SharedProofData: React.FC<SharedProofDataProps> = ({ recordId, onSharedPro
     },
   })
 
-  if (!agent) {
+  if (!sdk) {
     throw new Error('Unable to fetch agent from AFJ')
   }
 
@@ -203,7 +205,7 @@ const SharedProofData: React.FC<SharedProofDataProps> = ({ recordId, onSharedPro
   const [sharedData, setSharedData] = useState<GroupedSharedProofData | undefined>(undefined)
 
   useEffect(() => {
-    getProofData(agent, recordId)
+    getProofData(sdk, recordId)
       .then(data => {
         if (data) {
           const groupedSharedProofData = groupSharedProofDataByCredential(data)

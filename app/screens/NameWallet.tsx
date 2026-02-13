@@ -12,9 +12,9 @@ import { DispatchAction } from '../contexts/reducers/store'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
+import { useSdk } from '../utils/agent'
 import { generateRandomWalletName } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
-import { useSdk } from '../utils/agent'
 
 type ErrorState = {
   visible: boolean
@@ -33,6 +33,7 @@ const NameWallet: React.FC = () => {
   const navigation = useNavigation()
   const [store, dispatch] = useStore()
   const { sdk } = useSdk()
+  console.log("🚀 ~ NameWallet.tsx:37 ~ NameWallet ~ store:", store)
   const [walletName, setWalletName] = useState(store.preferences.walletName ?? generateRandomWalletName())
   const onBoardingComplete =
     store.onboarding.didCompleteTutorial &&

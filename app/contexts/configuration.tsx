@@ -37,7 +37,7 @@ export interface ConfigurationContext {
   indyLedgers: IndyVdrPoolConfig[]
   settings: SettingSection[]
   customNotification: NotificationConfiguration
-  useCustomNotifications: () => { total: number; notifications: any }
+  // useCustomNotifications: () => { total: number; notifications: any }
   connectionTimerDelay?: number
   autoRedirectConnectionToHome?: boolean
   proofRequestTemplates?: () => Array<ProofRequestTemplate>

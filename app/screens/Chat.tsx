@@ -8,6 +8,7 @@ import {
   DidCommBasicMessageRepository,
   useConnectionById,
   useBasicMessagesByConnectionId,
+  useCredentialsByConnectionId,
 } from '@credebl/ssi-mobile-didcomm'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -26,7 +27,6 @@ import { ChatMessage, ExtendedChatMessage, CallbackType } from '../components/ch
 import { useNetwork } from '../contexts/network'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
-import { useCredentialsByConnectionId } from '../hooks/credentials'
 import { useProofsByConnectionId } from '../hooks/proofs'
 import { ColorPallet } from '../theme'
 import { Role } from '../types/chat'
