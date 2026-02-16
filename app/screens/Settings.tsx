@@ -92,15 +92,15 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
       alignItems: 'center',
     },
   })
-  const getPushNotificationCapable = async () => {
-    if (!sdk) return
-    if ((await AsyncStorage.getItem('MEDIATOR_NOTIFICATION_SUPPORT')) === 'true') setPushNotificationCapable(true)
-    else setPushNotificationCapable(false)
-  }
+  // const getPushNotificationCapable = async () => {
+  //   if (!sdk) return
+  //   if ((await AsyncStorage.getItem('MEDIATOR_NOTIFICATION_SUPPORT')) === 'true') setPushNotificationCapable(true)
+  //   else setPushNotificationCapable(false)
+  // }
 
-  const initializePushNotificationsToggle = async () => {
-    setEnablePushNotifications(await PushNotificationHelper.isEnabled())
-  }
+  // const initializePushNotificationsToggle = async () => {
+  //   setEnablePushNotifications(await PushNotificationHelper.isEnabled())
+  // }
   const toggleDevPushNotificationsSwitch = async () => {
     if (!pushNotificationCapable || !sdk) return
     await PushNotificationHelper.setDeviceInfo(sdk, enablePushNotifications)
@@ -108,13 +108,13 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
   }
 
   useEffect(() => {
-    if (sdk) {
-      getPushNotificationCapable()
-      initializePushNotificationsToggle()
-      getDefaultHolderDidDocument(sdk).then(didDoc => {
-        setHolderDid(didDoc?.id)
-      })
-    }
+    // if (sdk) {
+    //   // getPushNotificationCapable()
+    //   // initializePushNotificationsToggle()
+    //   getDefaultHolderDidDocument(sdk.agent).then(didDoc => {
+    //     setHolderDid(didDoc?.id)
+    //   })
+    // }
   }, [sdk])
 
   const currentLanguage = languages.find(l => l.id === i18n.language)?.value
@@ -273,7 +273,7 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
             t('PushNotifications.PushNotifications') +
             (pushNotificationCapable ? '' : t('PushNotifications.NotAvailable')),
           testID: testIdWithKey('PushNotificationsSwitch'),
-          onPress: () => {},
+          onPress: () => { },
         },
       ],
     },

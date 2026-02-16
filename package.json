@@ -61,7 +61,6 @@
     "react-native-argon2": "^2.0.1",
     "react-native-blob-util": "^0.19.9",
     "react-native-bouncy-checkbox": "^3.0.7",
-    "react-native-camera": "^4.2.1",
     "react-native-collapsible": "^1.6.1",
     "react-native-config": "^1.6.1",
     "react-native-confirmation-code-field": "^7.3.1",

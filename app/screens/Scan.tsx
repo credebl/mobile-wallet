@@ -1,12 +1,10 @@
-import { ConnectionRecord, parseInvitationUrl } from '@credebl/ssi-mobile-core'
+import { DidCommConnectionRecord, DidCommMessageReceiver, parseInvitationUrl } from '@credebl/ssi-mobile-didcomm'
 import { getOID4VCCredentialsForProofRequest } from '@credebl/ssi-mobile-openid4vc'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { MessageReceiver } from '@credo-ts/didcomm'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, Platform } from 'react-native'
-import { BarCodeReadEvent } from 'react-native-camera'
 import { check, Permission, PERMISSIONS, request, RESULTS } from 'react-native-permissions'
 import Toast from 'react-native-toast-message'
 
@@ -35,6 +33,11 @@ import {
 } from '../utils/helpers'
 
 export type ScanProps = StackScreenProps<ConnectStackParams>
+
+// Define the barcode scan event interface for react-native-vision-camera
+export interface VisionCameraCodeScanEvent {
+  data: string
+}
 
 const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
   const { sdk } = useSdk()
@@ -71,7 +74,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
     [sdk, t],
   )
 
-  const logHistoryRecord = async (connectionRecord: ConnectionRecord | undefined) => {
+  const logHistoryRecord = async (connectionRecord: DidCommConnectionRecord | undefined) => {
     const contactLabel: string | void = await getConnectionName(connectionRecord)
 
     try {
@@ -163,7 +166,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         // if scanned value is json -> pass into AFJ as is
         const json = getJson(value)
         if (json) {
-          const messageReceiver = sdk.agent?.dependencyManager.resolve(MessageReceiver)
+          const messageReceiver = sdk.agent?.dependencyManager.resolve(DidCommMessageReceiver)
           await messageReceiver.receiveMessage(json)
           setLoading(false)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
@@ -222,7 +225,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
     }
   }
 
-  const handleCodeScan = async (event: BarCodeReadEvent) => {
+  const handleCodeScan = async (event: VisionCameraCodeScanEvent) => {
     setQrCodeScanError(null)
     try {
       const uri = event.data

@@ -3,9 +3,9 @@ import { useNavigation } from '@react-navigation/core'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Vibration, View, StyleSheet, Text, ScrollView, Dimensions } from 'react-native'
-import { BarCodeReadEvent, RNCamera } from 'react-native-camera'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera'
 
 import { useStore } from '../../contexts/store'
 import { useTheme } from '../../contexts/theme'
@@ -23,9 +23,13 @@ import ScanTab from './ScanTab'
 const windowDimensions = Dimensions.get('window')
 const qrSize = windowDimensions.width - 40
 
+interface VisionCameraCodeScanEvent {
+  data: string
+}
+
 interface Props {
   defaultToConnect: boolean
-  handleCodeScan: (event: BarCodeReadEvent) => Promise<void>
+  handleCodeScan: (event: VisionCameraCodeScanEvent) => Promise<void>
   error?: QrCodeScanError | null
   enableCameraOnError?: boolean
 }
@@ -42,6 +46,35 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
   const invalidQrCodes = new Set<string>()
   const { ColorPallet, TextTheme } = useTheme()
   const { sdk } = useSdk()
+
+  const device = useCameraDevice('back')
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr'],
+    onCodeScanned: codes => {
+      if (codes.length > 0 && codes[0].value) {
+        const qrData = codes[0].value
+
+        if (invalidQrCodes.has(qrData)) {
+          return
+        }
+
+        if (error?.data === qrData) {
+          invalidQrCodes.add(error.data)
+          if (enableCameraOnError) {
+            return setCameraActive(true)
+          }
+        }
+
+        if (cameraActive) {
+          Vibration.vibrate()
+          handleCodeScan({ data: qrData })
+          setCameraActive(false)
+        }
+      }
+    },
+  })
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -135,34 +168,22 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
   return (
     <SafeAreaView edges={['bottom', 'left', 'right']} style={styles.container}>
       {firstTabActive ? (
-        <RNCamera
-          style={styles.camera}
-          type={RNCamera.Constants.Type.back}
-          flashMode={torchActive ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
-          captureAudio={false}
-          androidCameraPermissionOptions={{
-            title: t('QRScanner.PermissionToUseCamera'),
-            message: t('QRScanner.WeNeedYourPermissionToUseYourCamera'),
-            buttonPositive: t('QRScanner.Ok'),
-            buttonNegative: t('Global.Cancel'),
-          }}
-          barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
-          onBarCodeRead={(event: BarCodeReadEvent) => {
-            if (invalidQrCodes.has(event.data)) {
-              return
-            }
-            if (error?.data === event?.data) {
-              invalidQrCodes.add(error.data)
-              if (enableCameraOnError) {
-                return setCameraActive(true)
-              }
-            }
-            if (cameraActive) {
-              Vibration.vibrate()
-              handleCodeScan(event)
-              return setCameraActive(false)
-            }
-          }}>
+        <>
+          {device ? (
+            <Camera
+              style={styles.camera}
+              device={device}
+              isActive={cameraActive && firstTabActive}
+              codeScanner={codeScanner}
+              torch={torchActive ? 'on' : 'off'}
+            />
+          ) : (
+            <View style={styles.camera}>
+              <Text style={[TextTheme.normal, { color: ColorPallet.grayscale.white }]}>
+                {t('QRScanner.CameraNotAvailable')}
+              </Text>
+            </View>
+          )}
           <View style={styles.cameraViewContainer}>
             <View style={styles.errorContainer}>
               {error ? (
@@ -181,7 +202,7 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
             </View>
             <QRScannerTorch active={torchActive} onPress={() => setTorchActive(!torchActive)} />
           </View>
-        </RNCamera>
+        </>
       ) : (
         <ScrollView>
           <View style={{ alignItems: 'center' }}>
