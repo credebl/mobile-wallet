@@ -68,7 +68,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
         return
       }
 
-      const w3cCredentialRecords = await sdk.agent.w3cCredentials.getAll()
+      const w3cCredentialRecords = await sdk?.agent?.w3cCredentials.getAll()
 
       const updatedCredentials = credentials.map(credential => {
         if (
@@ -77,7 +77,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
         ) {
           const credentialRecordId = credential?.credentials[0]?.credentialRecordId
           try {
-            const record = w3cCredentialRecords.find(record => record.id === credentialRecordId)
+            const record = w3cCredentialRecords?.find(record => record.id === credentialRecordId)
             if (credential?.connectionId) {
               const connection = connectionRecords.find(connection => connection.id === credential?.connectionId)
               const enhancedRecord = record as EnhancedW3CRecord

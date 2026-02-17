@@ -24,7 +24,7 @@ import {
   Onboarding as StoreOnboardingState,
   Tours as ToursState,
 } from '../types/state'
-import { createConfig, useSdk } from '../utils/agent'
+import { createConfig, isMediationConfigured, useSdk } from '../utils/agent'
 import { getDefaultHolderDidDocument } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
@@ -84,6 +84,7 @@ const Splash: React.FC = () => {
   const [stepText, setStepText] = useState<string>(t('Init.Starting'))
   const [initError, setInitError] = useState<Error | null>(null)
   const [initErrorType, setInitErrorType] = useState<InitErrorTypes>(InitErrorTypes.Onboarding)
+  const [mediationStarted, setMediationStarted] = useState(false)
   const { Assets } = useTheme()
   const [store, dispatch] = useStore()
   const navigation = useNavigation()
@@ -282,41 +283,43 @@ const Splash: React.FC = () => {
   }, [store.authentication.didAuthenticate, store.onboarding.didConsiderBiometry, initAgentCount])
 
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized || !sdk || mediationStarted) {
       return
     }
 
     const startMediation = async () => {
       try {
+        setMediationStarted(true)
         if (!Config.MEDIATOR_URL) {
           throw new Error('Missing mediator URL')
         }
         await getDefaultHolderDidDocument(sdk)
 
-        const resp = await sdk.modules.didcomm.mediatorRecipient.startMediation(
-          Config.MEDIATOR_URL,
-          store.preferences.walletName,
-        )
+        const isConfigured = await isMediationConfigured(sdk)
+
+        if (!isConfigured) {
+          await sdk.modules.didcomm.mediatorRecipient.startMediation(Config.MEDIATOR_URL, store.preferences.walletName)
+        }
+
         await sdk.modules.didcomm.mediatorRecipient.initiateMessagePickup()
 
-        if (resp) {
-          setStep(6)
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: Stacks.TabStack }],
-            }),
-          )
-        }
+        setStep(6)
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: Stacks.TabStack }],
+          }),
+        )
       } catch (error) {
         console.log('🚀 ~ Splash.tsx:322 ~ startMediation ~ error:', error)
+        setMediationStarted(false)
         setInitErrorType(InitErrorTypes.Agent)
         setInitError(error as Error)
       }
     }
 
     startMediation()
-  }, [isInitialized])
+  }, [isInitialized, sdk])
   const handleErrorCallToActionPressed = () => {
     setInitError(null)
     if (initErrorType === InitErrorTypes.Agent) {

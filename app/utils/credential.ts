@@ -320,6 +320,11 @@ export const formatCredentialSubject = (subject: any): W3CCredentialAttribute[] 
 }
 
 export const getCredentialSubject = (data: any): any => {
+  // New SDK: W3cCredentialRecord.firstCredential
+  if (data?.firstCredential?.credentialSubject) {
+    return data.firstCredential.credentialSubject
+  }
+
   if (data?.jsonld?.credential?.credentialSubject) {
     return data.jsonld.credential.credentialSubject
   }

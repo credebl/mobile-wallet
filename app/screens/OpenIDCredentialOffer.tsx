@@ -32,7 +32,7 @@ import Button, { ButtonType } from '../components/buttons/Button'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
 import { ColorPallet, TextTheme } from '../theme'
 import { BifoldError } from '../types/error'
-import { NotificationStackParams, Screens, TabStacks } from '../types/navigators'
+import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
 import { useSdk } from '../utils/agent'
 import { formatCredentialSubject } from '../utils/credential'
@@ -421,9 +421,9 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
       await sdk.modules.openid.storeOpenIdCredential(fetchedCredential)
       // await storeOpenIdCredential(sdk, fetchedCredential)
       setProcessing(false)
-      navigation.getParent()?.navigate(TabStacks.CredentialStack, {
-        screen: Screens.Credentials,
-        params: { credentialId: fetchedCredential.id },
+      navigation.getParent()?.navigate(Stacks.TabStack, {
+        screen: TabStacks.CredentialStack,
+        params: { screen: Screens.Credentials },
       })
     } catch (err: unknown) {
       setProcessing(false)

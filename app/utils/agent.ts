@@ -58,3 +58,8 @@ export const useSdk = () => {
   const { sdk } = useMobileSDK<Modules>()
   return { sdk }
 }
+
+export const isMediationConfigured = async (sdk: AdeyaSdk): Promise<boolean> => {
+  const mediationRecord = await sdk.modules.didcomm.agent.didcomm.mediationRecipient.findDefaultMediator()
+  return mediationRecord !== null
+}

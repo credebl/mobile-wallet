@@ -35,17 +35,17 @@ initLanguages(translationResources)
 function SDKProviders({ children }: { children: ReactNode }) {
   const { sdk } = useSdk()
 
-  if (sdk?.agent) {
-    return (
-      <DidCommSDK.DidCommProvider agent={sdk.agent}>
-        <OpenID4VCSDK.OpenIDProvider agent={sdk.agent}>
-          <W3cCredentialRecordProvider agent={sdk.agent}>{children}</W3cCredentialRecordProvider>
-        </OpenID4VCSDK.OpenIDProvider>
-      </DidCommSDK.DidCommProvider>
-    )
+  if (!sdk?.agent) {
+    return <>{children}</>
   }
 
-  return <>{children}</>
+  return (
+    <DidCommSDK.DidCommProvider agent={sdk.agent}>
+      <OpenID4VCSDK.OpenIDProvider agent={sdk.agent}>
+        <W3cCredentialRecordProvider agent={sdk.agent}>{children}</W3cCredentialRecordProvider>
+      </OpenID4VCSDK.OpenIDProvider>
+    </DidCommSDK.DidCommProvider>
+  )
 }
 const App = () => {
   useMemo(() => {

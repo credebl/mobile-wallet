@@ -1,4 +1,6 @@
-import 'react-native-get-random-values'
+import { install } from 'react-native-quick-crypto'
+install() // Polyfills global.crypto (including crypto.subtle) and global.Buffer
+
 import '@ethersproject/shims'
 import 'react-native-gesture-handler'
 import 'react-native-url-polyfill/auto'

@@ -128,7 +128,7 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
 
   const handleDeclineTouched = async () => {
     toggleDeclineModalVisible()
-    navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
+    navigation.getParent()?.navigate(Stacks.TabStack, { screen: TabStacks.HomeStack, params: { screen: Screens.Home } })
   }
 
   const handleAltCredChange = (

@@ -1,4 +1,9 @@
-import { ConnectionRecord, ConnectionType, DidCommDidExchangeState, useConnections } from '@credebl/ssi-mobile-didcomm'
+import {
+  DidCommConnectionRecord,
+  DidCommConnectionType,
+  DidCommDidExchangeState,
+  useConnections,
+} from '@credebl/ssi-mobile-didcomm'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -32,10 +37,10 @@ const ListContacts: React.FC<ListContactsProps> = ({ navigation }) => {
   const { records } = useConnections()
   const [store] = useStore()
   // Filter out mediator agents and connections that are not completed
-  let connections: ConnectionRecord[] = records
+  let connections: DidCommConnectionRecord[] = records
   if (!store.preferences.developerModeEnabled) {
     connections = records.filter(
-      r => !r.connectionTypes.includes(ConnectionType.Mediator) && r.state === DidCommDidExchangeState.Completed,
+      r => !r.connectionTypes.includes(DidCommConnectionType.Mediator) && r.state === DidCommDidExchangeState.Completed,
     )
   }
 

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { AttachTourStep } from '../components/tour/AttachTourStep'
-import { useConfiguration } from '../contexts/configuration'
+// import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { Assets } from '../theme'
 import { TabStackParams, TabStacks } from '../types/navigators'
@@ -76,7 +76,7 @@ const TabStack: React.FC = () => {
             // tabBarAccessibilityLabel: `${t('TabStack.Home')} (${
             //   total === 1 ? t('Home.OneNotification') : t('Home.CountNotifications', { count: total || 0 })
             // })`,
-            tabBarTestID: testIdWithKey(t('TabStack.Home')),
+            // tabBarTestID: testIdWithKey(t('TabStack.Home')),
             // tabBarBadge: total || undefined,
             tabBarBadgeStyle: {
               marginLeft: leftMarginForDevice(width, height),

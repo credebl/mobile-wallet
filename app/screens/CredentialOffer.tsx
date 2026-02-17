@@ -4,10 +4,6 @@ import {
   DidCommAutoAcceptCredential,
   DidCommCredentialPreviewAttribute,
   JsonLdFormatDataCredentialDetail,
-  acceptCredentialOffer,
-  declineCredentialOffer,
-  getFormattedCredentialData,
-  sendCredentialProblemReport,
   useCredentialById,
   useConnections,
 } from '@credebl/ssi-mobile-didcomm'
@@ -33,9 +29,10 @@ import { useNetwork } from '../contexts/network'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'
-import { NotificationStackParams, Screens, TabStacks } from '../types/navigators'
+import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
 import { ModalUsage } from '../types/remove'
+import { useSdk } from '../utils/agent'
 import { parseCredDefFromId } from '../utils/cred-def'
 import { buildFieldsFromJSONLDCredential, formatCredentialSubject, getCredentialIdentifiers } from '../utils/credential'
 import { getCredentialConnectionLabel, getDefaultHolderDidDocument } from '../utils/helpers'
@@ -43,7 +40,6 @@ import { buildFieldsFromAnonCredsCredential } from '../utils/oca'
 import { testIdWithKey } from '../utils/testable'
 
 import CredentialOfferAccept from './CredentialOfferAccept'
-import { useSdk } from '../utils/agent'
 
 type CredentialOfferProps = StackScreenProps<NotificationStackParams, Screens.CredentialOffer>
 
@@ -98,12 +94,12 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
   }, [])
 
   useEffect(() => {
-    if (!credential) {
+    if (!sdk || !credential) {
       return
     }
 
     const updateCredentialPreview = async () => {
-      const { ...formatData } = await getFormattedCredentialData(sdk, credential.id)
+      const { ...formatData } = await sdk.modules.didcomm.credentials.getFormattedCredentialData(credential.id)
       const { offer, offerAttributes } = formatData
       let offerData
 
@@ -192,7 +188,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
       }
       setAcceptModalVisible(true)
 
-      const credentialFormatData = await getFormattedCredentialData(sdk, credential.id)
+      const credentialFormatData = await sdk.modules.didcomm.credentials.getFormattedCredentialData(credential.id)
 
       // Added holder did as id if did is not present and negotiate offer
       if (
@@ -200,7 +196,7 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
         credentialFormatData?.offer?.jsonld
       ) {
         const holderDid = await getDefaultHolderDidDocument(sdk)
-        await sdk.modules.credentials.negotiateOffer({
+        await sdk.modules.didcomm.agent.didcomm.credentials.negotiateOffer({
           credentialFormats: {
             jsonld: {
               credential: {
@@ -216,13 +212,13 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
               },
             },
           },
-          credentialRecordId: credential.id,
+          credentialExchangeRecordId: credential.id,
           // we added auto accept credential to always accept the credential further flows
           autoAcceptCredential: DidCommAutoAcceptCredential.Always,
         })
         await logHistoryRecord(CREDENTIAL_W3C, credentialFormatData?.offer?.jsonld?.credential?.type[1])
       } else {
-        await acceptCredentialOffer(sdk, { credentialRecordId: credential.id })
+        await sdk.modules.didcomm.credentials.acceptCredentialOffer({ credentialExchangeRecordId: credential.id })
         await logHistoryRecord()
       }
     } catch (err: unknown) {
@@ -235,15 +231,17 @@ const CredentialOffer: React.FC<CredentialOfferProps> = ({ navigation, route }) 
   const handleDeclineTouched = async () => {
     try {
       if (credential) {
-        await declineCredentialOffer(sdk, credential.id)
-        await sendCredentialProblemReport(sdk, {
-          credentialRecordId: credential.id,
+        await sdk.modules.didcomm.credentials.declineCredentialOffer({ credentialExchangeRecordId: credential.id })
+        await sdk.modules.didcomm.credentials.sendCredentialProblemReport({
+          credentialExchangeRecordId: credential.id,
           description: t('CredentialOffer.Declined'),
         })
       }
 
       toggleDeclineModalVisible()
-      navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
+      navigation
+        .getParent()
+        ?.navigate(Stacks.TabStack, { screen: TabStacks.HomeStack, params: { screen: Screens.Home } })
     } catch (err: unknown) {
       const error = new BifoldError(t('Error.Title1025'), t('Error.Message1025'), (err as Error).message, 1025)
 

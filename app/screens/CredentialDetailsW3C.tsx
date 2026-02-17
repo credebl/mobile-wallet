@@ -41,7 +41,7 @@ import {
   getCredentialSubject,
   toImageSource,
 } from '../utils/credential'
-import { useSdk } from '../utils/helpers'
+import { useSdk } from '../utils/agent'
 import { testIdWithKey } from '../utils/testable'
 
 type CredentialDetailsProps = StackScreenProps<CredentialStackParams | ContactStackParams, Screens.CredentialDetailsW3C>
@@ -144,25 +144,28 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
       updateCredential().then(cred => setW3cCredential(cred))
     }
 
-    if (!w3cCredential) {
+    const resolvedCredential = w3cCredential?.firstCredential ?? w3cCredential?.credential
+    if (!resolvedCredential) {
       return
     }
 
+    const credentialType = resolvedCredential.type?.[1] ?? resolvedCredential.type?.[0] ?? 'Unknown'
+
     const params = {
       identifiers: {
-        schemaId: w3cCredential.credential.type[1],
-        credentialDefinitionId: w3cCredential.credential.type[1],
+        schemaId: credentialType,
+        credentialDefinitionId: credentialType,
       },
       meta: {
-        alias: w3cCredential?.connectionLabel ?? w3cCredential.credential.issuerId,
-        credConnectionId: w3cCredential.credential.issuerId,
-        credName: w3cCredential.credential.type[1],
+        alias: w3cCredential?.connectionLabel ?? resolvedCredential.issuerId,
+        credConnectionId: resolvedCredential.issuerId,
+        credName: credentialType,
       },
-      attributes: buildFieldsFromJSONLDCredential(w3cCredential.credential.credentialSubject),
+      attributes: buildFieldsFromJSONLDCredential(resolvedCredential.credentialSubject),
       language: i18n.language,
     }
 
-    const jsonLdValues = formatCredentialSubject(getCredentialSubject(w3cCredential))
+    const jsonLdValues = formatCredentialSubject(resolvedCredential.credentialSubject)
     setTables(jsonLdValues)
 
     OCABundleResolver.resolveAllBundles(params).then(bundle => {
@@ -360,11 +363,12 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
     try {
       setIsGeneratingPdf(true)
 
-      const certificateAttributes = w3cCredential?.credential.credentialSubject.claims
+      const resolvedCred = w3cCredential?.firstCredential ?? w3cCredential?.credential
+      const certificateAttributes = resolvedCred?.credentialSubject?.claims ?? resolvedCred?.credentialSubject
 
       const dataToEncrypt = JSON.stringify({
-        email: certificateAttributes['email'] ?? 'email',
-        schemaUrl: w3cCredential?.credential.contexts[1],
+        email: certificateAttributes?.['email'] ?? 'email',
+        schemaUrl: resolvedCred?.contexts?.[1],
       })
 
       // eslint-disable-next-line import/namespace

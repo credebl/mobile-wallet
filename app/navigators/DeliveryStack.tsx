@@ -12,7 +12,7 @@ import CredentialOffer from '../screens/CredentialOffer'
 import OpenIDCredentialDetails from '../screens/OpenIDCredentialOffer'
 import ProofRequest from '../screens/ProofRequest'
 import ProofRequestW3C from '../screens/ProofRequestW3C'
-import { DeliveryStackParams, Screens, TabStacks } from '../types/navigators'
+import { DeliveryStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { testIdWithKey } from '../utils/testable'
 
 import { createDefaultStackOptions } from './defaultStackOptions'
@@ -71,7 +71,9 @@ const DeliveryStack: React.FC = () => {
               accessibilityLabel={t('Global.Back')}
               testID={testIdWithKey('BackButton')}
               onPress={() => {
-                navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
+                navigation
+                  .getParent()
+                  ?.navigate(Stacks.TabStack, { screen: TabStacks.HomeStack, params: { screen: Screens.Home } })
               }}
               icon="arrow-left"
             />

@@ -23,7 +23,7 @@ import { EventTypes } from '../constants'
 import { useTheme } from '../contexts/theme'
 import { ListItems } from '../theme'
 import { BifoldError } from '../types/error'
-import { ContactStackParams, Screens, TabStacks } from '../types/navigators'
+import { ContactStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { ModalUsage } from '../types/remove'
 import { useSdk } from '../utils/agent'
 import { formatTime, getConnectionName } from '../utils/helpers'
@@ -139,10 +139,10 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   }
 
   const handleGoToCredentials = () => {
-    navigation.getParent()?.navigate(TabStacks.CredentialStack, { screen: Screens.Credentials })
+    navigation.getParent()?.navigate(Stacks.TabStack, { screen: TabStacks.CredentialStack, params: { screen: Screens.Credentials } })
   }
   const handleGoToCredentialsOffer = () => {
-    navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
+    navigation.getParent()?.navigate(Stacks.TabStack, { screen: TabStacks.HomeStack, params: { screen: Screens.Home } })
   }
   const handleCancelUnableRemove = () => {
     setIsCredentialsRemoveModalDisplayed(false)
@@ -165,7 +165,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   const callCancelUnableToRemoveProofRequest = useCallback(() => handleProofRequestCancelUnableRemove(), [])
 
   const onDismissModalTouched = () => {
-    navigation.getParent()?.navigate(TabStacks.HomeStack, { screen: Screens.Home })
+    navigation.getParent()?.navigate(Stacks.TabStack, { screen: TabStacks.HomeStack, params: { screen: Screens.Home } })
   }
   return (
     <SafeAreaView style={{ flexGrow: 1 }} edges={['bottom', 'left', 'right']}>

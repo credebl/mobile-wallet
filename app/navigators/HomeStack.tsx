@@ -19,8 +19,8 @@ const HomeStack: React.FC = () => {
   const theme = useTheme()
   const { t } = useTranslation()
   const defaultStackOptions = createDefaultStackOptions(theme)
-  // const { useCustomNotifications } = useConfiguration()
-  // const { notifications } = useCustomNotifications()
+  const { useCustomNotifications } = useConfiguration()
+  const { notifications } = useCustomNotifications()
 
   return (
     <Stack.Navigator screenOptions={{ ...defaultStackOptions }}>
@@ -29,7 +29,7 @@ const HomeStack: React.FC = () => {
         component={Home}
         options={() => ({
           title: t('Screens.Home'),
-          // headerRight: () => <HistoryMenu type={true} notificationCount={notifications.length} />,
+          headerRight: () => <HistoryMenu type={true} notificationCount={notifications.length} />,
           headerLeft: () => <SettingsMenu />,
         })}
       />

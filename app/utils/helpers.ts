@@ -581,7 +581,8 @@ export const processW3CProofAttributes = (
     // iterate over all credentials that satisfy the proof
     for (const credential of credentialList) {
       const w3cCredentialRecord = credential.credentialRecord as W3cCredentialRecord
-      const credName = w3cCredentialRecord.credential.type[1]
+      const resolvedCred = w3cCredentialRecord.firstCredential ?? (w3cCredentialRecord as any).credential
+      const credName = resolvedCred?.type?.[1] ?? resolvedCred?.type?.[0] ?? 'Unknown'
       const paths = inputDescriptor.constraints?.fields[0].path ?? []
 
       const attributeNames = paths.map(path => extractKeyFromPath(path))
@@ -610,7 +611,8 @@ export const processW3CProofAttributes = (
 
         let attributeValue = ''
         if (w3cCredentialRecord) {
-          attributeValue = w3cCredentialRecord.credential.credentialSubject.claims[attributeName]
+          const subject = resolvedCred?.credentialSubject
+          attributeValue = subject?.claims?.[attributeName] ?? subject?.[attributeName] ?? ''
         }
         processedAttributes[w3cCredentialRecord.id].attributes?.push(
           new Attribute({

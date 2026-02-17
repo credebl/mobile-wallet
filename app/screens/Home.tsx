@@ -18,8 +18,8 @@ const offsetPadding = 5
 type HomeProps = StackScreenProps<HomeStackParams, Screens.Home>
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
-  // const { useCustomNotifications } = useConfiguration()
-  // const { notifications } = useCustomNotifications()
+  const { useCustomNotifications } = useConfiguration()
+  const { notifications } = useCustomNotifications()
   const { t } = useTranslation()
   const { HomeTheme } = useTheme()
 
@@ -83,7 +83,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.rowContainer}>
-        {/* {notifications?.length > 0 ? (
+        {notifications?.length > 0 ? (
           <AttachTourStep index={1} fill>
             <Text style={[HomeTheme.notificationsHeader, styles.header]}>
               {t('Home.Notifications')}
@@ -103,9 +103,9 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
             onPress={() => navigation.navigate(Screens.Notifications)}>
             <Text style={styles.link}>{t('Home.SeeAll')}</Text>
           </TouchableOpacity>
-        ) : null} */}
+        ) : null}
       </View>
-      {/* <FlatList
+      <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
         scrollEnabled={notifications?.length > 0 ? true : false}
@@ -137,7 +137,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
             {DisplayListItemType(item)}
           </View>
         )}
-      /> */}
+      />
       <View style={styles.messageContainer}>
         <Image source={require('../assets/img/homeimage.png')} resizeMode="contain" style={styles.homeImage} />
       </View>

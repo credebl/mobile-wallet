@@ -102,8 +102,9 @@ const W3CCredentialRecord: React.FC<RecordProps> = ({
 
       if (tables && tables.length > 0) {
         setAttributes(applyInitialVisibility(tables))
-      } else if (w3cCredential?.credential?.credentialSubject) {
-        const formattedAttributes = formatCredentialSubject(w3cCredential.credential.credentialSubject)
+      } else if (w3cCredential?.firstCredential?.credentialSubject ?? w3cCredential?.credential?.credentialSubject) {
+        const subject = w3cCredential.firstCredential?.credentialSubject ?? w3cCredential.credential?.credentialSubject
+        const formattedAttributes = formatCredentialSubject(subject)
         setAttributes(applyInitialVisibility(formattedAttributes))
       }
     })
