@@ -1,4 +1,6 @@
 import { useConnections } from '@credebl/ssi-mobile-didcomm'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { DidCommMessageReceiver } from '@credo-ts/didcomm'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/core'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,9 +11,11 @@ import Toast from 'react-native-toast-message'
 import useOrganizationDetailData from '../api/organizationDetailHelper'
 import Button, { ButtonType } from '../components/buttons/Button'
 import { ToastType } from '../components/toast/BaseToast'
+import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { BifoldError } from '../types/error'
 import { Screens, Stacks } from '../types/navigators'
+import { useSdk } from '../utils/agent'
 import {
   checkIfAlreadyConnected,
   connectFromInvitation,
@@ -22,7 +26,6 @@ import {
   receiveMessageFromUrlRedirect,
 } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
-import { useSdk } from '../utils/agent'
 
 interface OrganizationDetailProps {
   name: string
@@ -34,6 +37,7 @@ interface OrganizationDetailProps {
 const OrganizationDetails: React.FC = () => {
   const { ColorPallet, ListItems, TextTheme } = useTheme()
   const { sdk } = useSdk()
+  const [store] = useStore()
   const navigation = useNavigation()
   const { t } = useTranslation()
   const params = useRoute<RouteProp<Record<string, OrganizationDetailProps>, string>>().params
@@ -155,7 +159,11 @@ const OrganizationDetails: React.FC = () => {
 
   const handleInvitation = async (value: string): Promise<void> => {
     try {
-      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, value)
+      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(
+        sdk,
+        value,
+        store.preferences.walletName,
+      )
 
       navigation.getParent()?.navigate(Stacks.ConnectionStack, {
         screen: Screens.Connection,
@@ -165,7 +173,8 @@ const OrganizationDetails: React.FC = () => {
       try {
         const json = getJson(value)
         if (json) {
-          await sdk?.receiveMessage(json)
+          const messageReceiver = sdk.agent?.context.dependencyManager.resolve(DidCommMessageReceiver)
+          await messageReceiver?.receiveMessage(json)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,
             params: { threadId: json['@id'] },
@@ -188,7 +197,11 @@ const OrganizationDetails: React.FC = () => {
             return
           }
 
-          const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, urlData)
+          const { connectionRecord, outOfBandRecord } = await connectFromInvitation(
+            sdk,
+            urlData,
+            store.preferences.walletName,
+          )
 
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,

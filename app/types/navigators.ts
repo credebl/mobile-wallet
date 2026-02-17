@@ -1,10 +1,6 @@
-import {
-  CredentialExchangeRecord,
-  MdocRecord,
-  OpenId4VPRequestRecord,
-  SdJwtVcRecord,
-  W3cCredentialRecord,
-} from '@adeya/ssi'
+import { MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credebl/ssi-mobile-core'
+import { DidCommCredentialExchangeRecord } from '@credebl/ssi-mobile-didcomm'
+import { OpenId4VPRequestRecord } from '@credebl/ssi-mobile-openid4vc'
 import { NavigatorScreenParams } from '@react-navigation/core'
 import { StackNavigationOptions } from '@react-navigation/stack'
 
@@ -133,7 +129,7 @@ export type ContactStackParams = {
   [Screens.ContactDetails]: { connectionId: string }
   [Screens.WhatAreContacts]: undefined
   [Screens.CredentialDetails]: { credentialId: string }
-  [Screens.CredentialDetailsW3C]: { credential: CredentialExchangeRecord }
+  [Screens.CredentialDetailsW3C]: { credential: DidCommCredentialExchangeRecord }
   [Screens.CredentialOffer]: { credentialId: string }
   [Screens.ProofDetails]: { recordId: string; isHistory?: boolean }
   [Screens.ProofRequest]: { proofId: string }
@@ -174,7 +170,7 @@ export type ProofRequestsStackParams = {
 
 export type CredentialStackParams = {
   [Screens.Credentials]: undefined
-  [Screens.CredentialDetails]: { credential: CredentialExchangeRecord }
+  [Screens.CredentialDetails]: { credential: DidCommCredentialExchangeRecord }
   [Screens.CredentialDetailsW3C]: { credential: W3cCredentialRecord }
   [Screens.RenderCertificate]: {
     content: HTMLDataElement
@@ -200,7 +196,7 @@ export type OrganizationStackParams = {
 export type HomeStackParams = {
   [Screens.Home]: undefined
   [Screens.Notifications]: undefined
-  [Screens.CredentialDetails]: { credential: CredentialExchangeRecord }
+  [Screens.CredentialDetails]: { credential: DidCommCredentialExchangeRecord }
   [Screens.CredentialDetailsW3C]: { credential: W3cCredentialRecord }
   [Screens.HistoryPage]: undefined
   [Screens.Credentials]: undefined

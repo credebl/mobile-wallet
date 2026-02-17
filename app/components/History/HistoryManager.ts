@@ -1,6 +1,5 @@
-import { Agent } from '@credebl/ssi-mobile-core'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { GenericRecordTags } from '@credo-ts/core/build/modules/generic-records/repository/GenericRecord'
+import { Agent, GenericRecordTags } from '@credo-ts/core'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment'
 import { useTranslation } from 'react-i18next'

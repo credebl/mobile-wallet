@@ -1,4 +1,5 @@
-import { exportWallet as exportAdeyaWallet } from '@adeya/ssi'
+// TODO: migrate to new SDK export
+// import { exportWallet as exportAdeyaWallet } from '@adeya/ssi'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { useNavigation, useRoute } from '@react-navigation/core'
 import { GDrive, ListQueryBuilder, MimeTypes } from '@robinbobin/react-native-google-drive-api-wrapper'

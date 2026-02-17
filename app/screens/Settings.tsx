@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
+// import AsyncStorage from '@react-native-async-storage/async-storage'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useRef, useState } from 'react'
@@ -108,13 +108,13 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
   }
 
   useEffect(() => {
-    // if (sdk) {
-    //   // getPushNotificationCapable()
-    //   // initializePushNotificationsToggle()
-    //   getDefaultHolderDidDocument(sdk.agent).then(didDoc => {
-    //     setHolderDid(didDoc?.id)
-    //   })
-    // }
+    if (sdk) {
+      // getPushNotificationCapable()
+      // initializePushNotificationsToggle()
+      getDefaultHolderDidDocument(sdk).then(didDoc => {
+        setHolderDid(didDoc?.id)
+      })
+    }
   }, [sdk])
 
   const currentLanguage = languages.find(l => l.id === i18n.language)?.value

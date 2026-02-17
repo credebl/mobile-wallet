@@ -1,11 +1,15 @@
-import { MobileSDKOptions, useMobileSDK } from '@credebl/ssi-mobile-core'
-import { ConsoleLogger, DidCommSDK, LogLevel } from '@credebl/ssi-mobile-didcomm'
+import { MobileSDK, MobileSDKOptions, useMobileSDK } from '@credebl/ssi-mobile-core'
+import { ConsoleLogger, DidCommMediatorPickupStrategy, DidCommSDK, LogLevel } from '@credebl/ssi-mobile-didcomm'
 import { OpenID4VCSDK } from '@credebl/ssi-mobile-openid4vc'
+
+import ledgers from '../../configs/ledgers/indy'
 
 export type Modules = {
   openid: OpenID4VCSDK
   didcomm: DidCommSDK
 }
+
+export type AdeyaSdk = MobileSDK<Modules>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getTrustedCerts(): Promise<string[]> {
@@ -39,6 +43,10 @@ export const createConfig = (walletId: string, walletKey: string): MobileSDKOpti
       peerNumAlgoForDidExchangeRequests: 1,
       peerNumAlgoForDidRotation: 4,
       processDidCommMessagesConcurrently: true,
+      mediatorPickupStrategy: DidCommMediatorPickupStrategy.PickUpV2LiveMode,
+      indyVdr: {
+        networks: ledgers,
+      },
     }),
     openid: new OpenID4VCSDK({
       trustedCertificates: [],

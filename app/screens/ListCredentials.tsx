@@ -1,17 +1,13 @@
+import { MdocRecord } from '@credebl/ssi-mobile-core'
 import {
   AnonCredsCredentialMetadataKey,
   DidCommCredentialExchangeRecord,
   DidCommCredentialState,
-  GenericCredentialExchangeRecord,
-  getAllW3cCredentialRecords,
-  openId4VcCredentialMetadataKey,
   W3cCredentialRecord,
   SdJwtVcRecord,
   useCredentialByState,
   useConnections,
 } from '@credebl/ssi-mobile-didcomm'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { MdocRecord } from '@credo-ts/core'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
@@ -27,6 +23,8 @@ import { CredentialStackParams, Screens } from '../types/navigators'
 import { useSdk } from '../utils/agent'
 import { getCredentialFormat } from '../utils/helpers'
 
+const openId4VcCredentialMetadataKey = '_credebl/openId4VcCredentialMetadata'
+
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string
 }
@@ -39,7 +37,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
   const { t } = useTranslation()
   const { sdk } = useSdk()
   const { credentialEmptyList: CredentialEmptyList } = useConfiguration()
-  const credentials: (GenericCredentialExchangeRecord | W3cCredentialRecord | SdJwtVcRecord | MdocRecord)[] = [
+  const credentials: (DidCommCredentialExchangeRecord | W3cCredentialRecord | SdJwtVcRecord | MdocRecord)[] = [
     ...useCredentialByState(DidCommCredentialState.CredentialReceived),
     ...useCredentialByState(DidCommCredentialState.Done),
   ]
@@ -70,7 +68,7 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
         return
       }
 
-      const w3cCredentialRecords = await getAllW3cCredentialRecords(sdk)
+      const w3cCredentialRecords = await sdk.agent.w3cCredentials.getAll()
 
       const updatedCredentials = credentials.map(credential => {
         if (

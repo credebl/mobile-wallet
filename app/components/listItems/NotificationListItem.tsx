@@ -1,14 +1,10 @@
 import {
-  V1RequestPresentationMessage,
   DidCommCredentialExchangeRecord,
   DidCommProofExchangeRecord,
   DidCommProofState,
-  declineCredentialOffer as declineCredential,
-  declineProofRequest as declineProof,
-  getProofRequestAgentMessage,
 } from '@credebl/ssi-mobile-didcomm'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { V2RequestPresentationMessage } from '@credo-ts/didcomm'
+import { DidCommRequestPresentationV2Message } from '@credo-ts/didcomm'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useState, useEffect } from 'react'
@@ -69,7 +65,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
   const { ColorPallet, TextTheme } = useTheme()
   const { sdk } = useSdk()
   const [declineModalVisible, setDeclineModalVisible] = useState(false)
-  const [notificationDetails, setNotificationDetails] = useState<V2RequestPresentationMessage | null>(null)
+  const [notificationDetails, setNotificationDetails] = useState<DidCommRequestPresentationV2Message | null>(null)
   const [details, setDetails] = useState<DisplayDetails>({
     type: InfoBoxType.Info,
     title: undefined,
@@ -141,7 +137,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
   const declineProofRequest = async () => {
     try {
       const proofId = (notification as DidCommProofExchangeRecord).id
-      await declineProof(sdk, { proofRecordId: proofId })
+      await sdk.modules.didcomm.proofs.declineProofRequest({ proofExchangeRecordId: proofId })
     } catch (err: unknown) {
       const error = new BifoldError(t('Error.Title1028'), t('Error.Message1028'), (err as Error).message, 1028)
       DeviceEventEmitter.emit(EventTypes.ERROR_ADDED, error)
@@ -160,7 +156,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
     try {
       const credentialId = (notification as DidCommCredentialExchangeRecord).id
 
-      await declineCredential(sdk, credentialId)
+      await sdk.modules.didcomm.credentials.declineCredentialOffer({ credentialExchangeRecordId: credentialId })
     } catch (err: unknown) {
       const error = new BifoldError(t('Error.Title1028'), t('Error.Message1028'), (err as Error).message, 1028)
       DeviceEventEmitter.emit(EventTypes.ERROR_ADDED, error)
@@ -218,17 +214,10 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
           break
         case NotificationType.ProofRequest: {
           const proofId = (notification as DidCommProofExchangeRecord).id
-          getProofRequestAgentMessage(sdk, proofId).then(message => {
+          sdk.modules.didcomm.proofs.getProofRequestAgentMessage(proofId).then(message => {
             setNotificationDetails(message)
-            if (message instanceof V1RequestPresentationMessage && message.indyProofRequest) {
-              resolve({
-                type: InfoBoxType.Info,
-                title: t('ProofRequest.NewProofRequest'),
-                body: message.indyProofRequest.name,
-                buttonTitle: undefined,
-              })
-            } else if (
-              message instanceof V2RequestPresentationMessage &&
+            if (
+              message instanceof DidCommRequestPresentationV2Message &&
               message?.formats?.length > 0 &&
               message?.formats[0].format.includes('dif/presentation-exchange')
             ) {

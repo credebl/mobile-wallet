@@ -2,6 +2,7 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply plugin: "com.google.gms.google-services"
+apply plugin: "org.rnrepo.tools.prebuilds-plugin"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -86,8 +87,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 18
         versionName "1.0.12"
-
-        missingDimensionStrategy 'react-native-camera', 'general'
     }
 
     compileOptions {

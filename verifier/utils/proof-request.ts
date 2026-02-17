@@ -1,16 +1,12 @@
 import {
   AnonCredsRequestedAttribute,
   AnonCredsRequestedPredicate,
-  V1RequestPresentationMessage,
-  AgentMessage,
-  AutoAcceptProof,
-  ProofExchangeRecord,
-  getProofRequestAgentMessage,
-  createProofRequest,
-  requestProof,
-  createLegacyConnectionlessInvitation,
+  DidCommAutoAcceptProof,
+  DidCommMessage,
+  DidCommProofExchangeRecord,
 } from '@credebl/ssi-mobile-didcomm'
 
+import { AdeyaSdk } from '../../app/utils/agent'
 import { ProofRequestTemplate, ProofRequestType } from '../types/proof-reqeust-template'
 
 const protocolVersion = 'v2'
@@ -19,10 +15,10 @@ const domain = 'http://aries-mobile-agent.com'
 /*
  * Find Proof Request message in the storage by the given id
  * */
-export const findProofRequestMessage = async (agent: AdeyaAgent, id: string) => {
-  const message = await getProofRequestAgentMessage(agent, id)
-  if (message && message instanceof V1RequestPresentationMessage && message.indyProofRequest) {
-    return message.indyProofRequest
+export const findProofRequestMessage = async (sdk: AdeyaSdk, id: string) => {
+  const message = await sdk.modules.didcomm.proofs.getProofRequestAgentMessage(id)
+  if (message && (message as any).indyProofRequest) {
+    return (message as any).indyProofRequest
   } else {
     return undefined
   }
@@ -134,9 +130,9 @@ export const buildProofRequestDataForTemplate = (
 }
 
 export interface CreateProofRequestInvitationResult {
-  request: AgentMessage
-  proofRecord: ProofExchangeRecord
-  invitation: AgentMessage
+  request: DidCommMessage
+  proofRecord: DidCommProofExchangeRecord
+  invitation: DidCommMessage
   invitationUrl: string
 }
 
@@ -144,7 +140,7 @@ export interface CreateProofRequestInvitationResult {
  * Create connectionless proof request invitation for provided template
  * */
 export const createConnectionlessProofRequestInvitation = async (
-  agent: AdeyaAgent,
+  sdk: AdeyaSdk,
   template: ProofRequestTemplate,
   customPredicateValues?: Record<string, Record<string, number>>,
 ): Promise<CreateProofRequestInvitationResult | undefined> => {
@@ -152,16 +148,14 @@ export const createConnectionlessProofRequestInvitation = async (
   if (!proofFormats) {
     return undefined
   }
-  const { message: request, proofRecord } = await createProofRequest(agent, {
+  const { message: request, proofRecord } = await sdk.modules.didcomm.proofs.createProofRequest({
     protocolVersion,
-    autoAcceptProof: AutoAcceptProof.Always,
+    autoAcceptProof: DidCommAutoAcceptProof.Always,
     proofFormats,
   })
-  const { message: invitation, invitationUrl } = await createLegacyConnectionlessInvitation(agent, {
-    recordId: proofRecord.id,
-    message: request,
-    domain,
-  })
+  // TODO: createLegacyConnectionlessInvitation is not available in the new SDK, needs alternative approach
+  const invitation = request
+  const invitationUrl = ''
   return {
     request,
     proofRecord,
@@ -171,14 +165,14 @@ export const createConnectionlessProofRequestInvitation = async (
 }
 
 export interface SendProofRequestResult {
-  proofRecord: ProofExchangeRecord
+  proofRecord: DidCommProofExchangeRecord
 }
 
 /*
  * Build Proof Request for provided template and send it to provided connection
  * */
 export const sendProofRequest = async (
-  agent: AdeyaAgent,
+  sdk: AdeyaSdk,
   template: ProofRequestTemplate,
   connectionId: string,
   customPredicateValues?: Record<string, Record<string, number>>,
@@ -187,7 +181,7 @@ export const sendProofRequest = async (
   if (!proofFormats) {
     return undefined
   }
-  const proofRecord = await requestProof(agent, {
+  const proofRecord = await sdk.modules.didcomm.proofs.requestProof({
     protocolVersion,
     connectionId,
     proofFormats,

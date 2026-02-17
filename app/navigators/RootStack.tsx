@@ -1,4 +1,5 @@
-import { DidCommMessageReceiver } from '@credebl/ssi-mobile-didcomm'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { DidCommMessageReceiver } from '@credo-ts/didcomm'
 import { useNavigation } from '@react-navigation/core'
 import { createStackNavigator, StackCardStyleInterpolator, StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useRef, useState } from 'react'
@@ -114,7 +115,11 @@ const RootStack: React.FC = () => {
         }
 
         // Try connection based
-        const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, invitationUrl)
+        const { connectionRecord, outOfBandRecord } = await connectFromInvitation(
+          sdk,
+          invitationUrl,
+          state.preferences.walletName,
+        )
         navigation.navigate(Stacks.ConnectionStack as any, {
           screen: Screens.Connection,
           params: { connectionId: connectionRecord?.id, outOfBandId: outOfBandRecord.id },
@@ -124,7 +129,7 @@ const RootStack: React.FC = () => {
           const json = getJson(invitationUrl)
           if (json) {
             const messageReceiver = sdk.agent?.context.dependencyManager.resolve(DidCommMessageReceiver)
-            await messageReceiver.receiveMessage(json)
+            await messageReceiver?.receiveMessage(json)
             navigation.getParent()?.navigate(Stacks.ConnectionStack, {
               screen: Screens.Connection,
               params: { threadId: json['@id'] },
@@ -147,7 +152,11 @@ const RootStack: React.FC = () => {
               return
             }
 
-            const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, urlData)
+            const { connectionRecord, outOfBandRecord } = await connectFromInvitation(
+              sdk,
+              urlData,
+              state.preferences.walletName,
+            )
 
             navigation.getParent()?.navigate(Stacks.ConnectionStack, {
               screen: Screens.Connection,

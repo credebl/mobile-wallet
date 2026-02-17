@@ -1,24 +1,25 @@
 import {
   useConnectionById,
   useConnections,
-  findOutOfBandRecordById,
-DidCommOutOfBandRecord,
- DidCommConnectionRecord
+  DidCommOutOfBandRecord,
+  DidCommConnectionRecord,
 } from '@credebl/ssi-mobile-didcomm'
 import { useMemo, useState } from 'react'
 
-export const useConnectionByOutOfBandId = (outOfBandId: string): ConnectionRecord | undefined => {
+import { AdeyaSdk } from '../utils/agent'
+
+export const useConnectionByOutOfBandId = (outOfBandId: string): DidCommConnectionRecord | undefined => {
   const { records: connections } = useConnections()
   return useMemo(
-    () => connections.find((connection: ConnectionRecord) => connection.outOfBandId === outOfBandId),
+    () => connections.find((connection: DidCommConnectionRecord) => connection.outOfBandId === outOfBandId),
     [connections, outOfBandId],
   )
 }
 
-export const useOutOfBandById = (agent: AdeyaAgent, oobId: string): OutOfBandRecord | undefined => {
-  const [oob, setOob] = useState<OutOfBandRecord | undefined>(undefined)
+export const useOutOfBandById = (sdk: AdeyaSdk, oobId: string): DidCommOutOfBandRecord | undefined => {
+  const [oob, setOob] = useState<DidCommOutOfBandRecord | undefined>(undefined)
   if (!oob) {
-    findOutOfBandRecordById(agent, oobId).then(res => {
+    sdk.modules.didcomm.connections.findOutOfBandRecordById(oobId).then(res => {
       if (res) {
         setOob(res)
       }
@@ -27,7 +28,7 @@ export const useOutOfBandById = (agent: AdeyaAgent, oobId: string): OutOfBandRec
   return oob
 }
 
-export const useOutOfBandByConnectionId = (agent: AdeyaAgent, connectionId: string): OutOfBandRecord | undefined => {
+export const useOutOfBandByConnectionId = (sdk: AdeyaSdk, connectionId: string): DidCommOutOfBandRecord | undefined => {
   const connection = useConnectionById(connectionId)
-  return useOutOfBandById(agent, connection?.outOfBandId ?? '')
+  return useOutOfBandById(sdk, connection?.outOfBandId ?? '')
 }

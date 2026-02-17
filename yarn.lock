@@ -1256,22 +1256,22 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@credebl/ssi-mobile-core@2.0.3-alpha-20260212061443":
-  version "2.0.3-alpha-20260212061443"
-  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-core/-/ssi-mobile-core-2.0.3-alpha-20260212061443.tgz#e4eee61f0c21c3130e95d7df9e7fe42b7ad0f2e8"
-  integrity sha512-w3NqOTj58lCU19UStI0L4wpa9hJrFpDv+Bx5riSwqsJ0YFvwMQ7mzeut7HefY/idQFUbHlfz2veEAQWuN3AUUw==
+"@credebl/ssi-mobile-core@2.0.3-alpha-20260216072812":
+  version "2.0.3-alpha-20260216072812"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-core/-/ssi-mobile-core-2.0.3-alpha-20260216072812.tgz#201fb32401d417c764a31811462384377d044fc6"
+  integrity sha512-rqqBFlyrn4lkzBy4fDlsFR3ZZDY9SFJAxHrg+u2bt5CeEdifOYWhKZF644pLaqnjNSGQmICMuvezXYjcr3nh9Q==
   dependencies:
     "@credo-ts/askar" "0.6.1"
     "@credo-ts/core" "0.6.1"
     "@credo-ts/react-native" "0.6.1"
     rxjs "^7.8.2"
 
-"@credebl/ssi-mobile-didcomm@2.0.3-alpha-20260212061443":
-  version "2.0.3-alpha-20260212061443"
-  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-didcomm/-/ssi-mobile-didcomm-2.0.3-alpha-20260212061443.tgz#e7fb460ce1fbe10ab772165431de5bb3854a5b5b"
-  integrity sha512-kRrSvyucaGy57fwmTmrXm8RRIWzVR5QvO67MTFGMBve1eImcDw/5NhL9+JDCU6gE1X7+0+CX9ldR0Yba4lxEwA==
+"@credebl/ssi-mobile-didcomm@2.0.3-alpha-20260216072812":
+  version "2.0.3-alpha-20260216072812"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-didcomm/-/ssi-mobile-didcomm-2.0.3-alpha-20260216072812.tgz#9ee092bdf3f11c9932512352f983232538fb8849"
+  integrity sha512-vNHteTMBuYl8wWptOMy9PqoEJLPjisXUF8KA+RlcQLPqW/rtg8TaXivi32CLp/KZSO9HJLw88vO0m7WyMAWnLA==
   dependencies:
-    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260212061443"
+    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260216072812"
     "@credo-ts/anoncreds" "0.6.1"
     "@credo-ts/askar" "0.6.1"
     "@credo-ts/core" "0.6.1"
@@ -1281,15 +1281,15 @@
     "@credo-ts/react-native" "0.6.1"
     rxjs "^7.8.2"
 
-"@credebl/ssi-mobile-openid4vc@2.0.3-alpha-20260212061443":
-  version "2.0.3-alpha-20260212061443"
-  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-openid4vc/-/ssi-mobile-openid4vc-2.0.3-alpha-20260212061443.tgz#fbd0500a354f4f74c272f9d7dc34873e93253cde"
-  integrity sha512-WFSvgzvaCWJG2z36DISjGV1SMSLGA8p1U0Ty9K5EaK3Hko2XfdQYFm/vD7XL/Xon/sj36JgRL+BkMkiwhqkFWw==
+"@credebl/ssi-mobile-openid4vc@2.0.3-alpha-20260216072812":
+  version "2.0.3-alpha-20260216072812"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-openid4vc/-/ssi-mobile-openid4vc-2.0.3-alpha-20260216072812.tgz#f603699539d39d5b884506ba81ef004831da4a76"
+  integrity sha512-izxlAXvvsDU/vYWi4ZYOmIBBG1FZ2ep4VXrYkjJpuDEqOziCKCRrxvePOE7BqtyEXUdy+G55HeucsNwFw4VmyA==
   dependencies:
     "@animo-id/expo-digital-credentials-api" "^0.4.0"
     "@animo-id/mdoc" "0.5.2"
     "@astronautlabs/jsonpath" "^1.1.2"
-    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260212061443"
+    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260216072812"
     "@credo-ts/core" "0.6.1"
     "@credo-ts/openid4vc" "0.6.1"
     expo-asset "^12.0.10"

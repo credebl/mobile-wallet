@@ -1,9 +1,9 @@
-import { CredentialExchangeRecord } from '@adeya/ssi'
+import { DidCommCredentialExchangeRecord } from '@credebl/ssi-mobile-didcomm'
 
 import { CredentialSharedProofData, AnonCredsProofRequestTemplatePayloadData } from '../../verifier'
 import { Attribute, Field, Predicate } from '../types/record'
 
-export const buildFieldsFromAnonCredsCredential = (credential: CredentialExchangeRecord): Array<Field> => {
+export const buildFieldsFromAnonCredsCredential = (credential: DidCommCredentialExchangeRecord): Array<Field> => {
   return credential?.credentialAttributes?.map(attr => new Attribute(attr)) || []
 }
 

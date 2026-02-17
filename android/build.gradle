@@ -12,12 +12,14 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://packages.rnrepo.org/releases" }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
         classpath("com.google.gms:google-services:4.4.1")
+        classpath("org.rnrepo.tools:prebuilds-plugin:0.2.2")
     }
 }
 
@@ -26,6 +28,7 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
+        maven { url "https://packages.rnrepo.org/releases" }
     }
 }
 

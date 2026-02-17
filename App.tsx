@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 global.Buffer = require('buffer').Buffer
 
-import { MobileSDKProvider } from '@credebl/ssi-mobile-core'
+import { MobileSDKProvider, W3cCredentialRecordProvider } from '@credebl/ssi-mobile-core'
 import { DidCommSDK } from '@credebl/ssi-mobile-didcomm'
 import { OpenID4VCSDK } from '@credebl/ssi-mobile-openid4vc'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
@@ -32,29 +32,19 @@ import { useSdk } from './app/utils/agent'
 
 initLanguages(translationResources)
 
-interface AuthWrappedProps {
-  children: ReactNode
-}
-
-function AuthWrapped({ children }: AuthWrappedProps) {
+function SDKProviders({ children }: { children: ReactNode }) {
   const { sdk } = useSdk()
 
   if (sdk?.agent) {
-    return <OpenID4VCSDK.OpenIDProvider agent={sdk.agent}>{children}</OpenID4VCSDK.OpenIDProvider>
+    return (
+      <DidCommSDK.DidCommProvider agent={sdk.agent}>
+        <OpenID4VCSDK.OpenIDProvider agent={sdk.agent}>
+          <W3cCredentialRecordProvider agent={sdk.agent}>{children}</W3cCredentialRecordProvider>
+        </OpenID4VCSDK.OpenIDProvider>
+      </DidCommSDK.DidCommProvider>
+    )
   }
 
-  // Before SDK initializes
-  return <>{children}</>
-}
-
-function DidCommWrapped({ children }: AuthWrappedProps) {
-  const { sdk } = useSdk()
-
-  if (sdk?.agent) {
-    return <DidCommSDK.DidCommProvider agent={sdk.agent}>{children}</DidCommSDK.DidCommProvider>
-  }
-
-  // Before SDK initializes
   return <>{children}</>
 }
 const App = () => {
@@ -78,33 +68,31 @@ const App = () => {
     <StoreProvider>
       <MobileSDKProvider>
         <ThemeProvider value={theme}>
-          <DidCommWrapped>
-            <AuthWrapped>
-              <AnimatedComponentsProvider value={animatedComponents}>
-                <ConfigurationProvider value={defaultConfiguration}>
-                  <CommonUtilProvider>
-                    <AuthProvider>
-                      <NetworkProvider>
-                        <StatusBar
-                          hidden={false}
-                          barStyle="light-content"
-                          backgroundColor={theme.ColorPallet.brand.primary}
-                          translucent={false}
-                        />
-                        <NetInfo />
-                        <ErrorModal />
-                        <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
-                          <RootStack />
-                        </TourProvider>
-                        <Toast topOffset={15} config={toastConfig} />
-                        {/* <PushNotifications /> */}
-                      </NetworkProvider>
-                    </AuthProvider>
-                  </CommonUtilProvider>
-                </ConfigurationProvider>
-              </AnimatedComponentsProvider>
-            </AuthWrapped>
-          </DidCommWrapped>
+          <SDKProviders>
+            <AnimatedComponentsProvider value={animatedComponents}>
+              <ConfigurationProvider value={defaultConfiguration}>
+                <CommonUtilProvider>
+                  <AuthProvider>
+                    <NetworkProvider>
+                      <StatusBar
+                        hidden={false}
+                        barStyle="light-content"
+                        backgroundColor={theme.ColorPallet.brand.primary}
+                        translucent={false}
+                      />
+                      <NetInfo />
+                      <ErrorModal />
+                      <TourProvider steps={homeTourSteps} overlayColor={'gray'} overlayOpacity={0.7}>
+                        <RootStack />
+                      </TourProvider>
+                      <Toast topOffset={15} config={toastConfig} />
+                      {/* <PushNotifications /> */}
+                    </NetworkProvider>
+                  </AuthProvider>
+                </CommonUtilProvider>
+              </ConfigurationProvider>
+            </AnimatedComponentsProvider>
+          </SDKProviders>
         </ThemeProvider>
       </MobileSDKProvider>
     </StoreProvider>

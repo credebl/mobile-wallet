@@ -1,24 +1,20 @@
-import { useNavigation } from '@react-navigation/core'
 import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useWindowDimensions, Vibration, View, StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera'
 
 import { useTheme } from '../../contexts/theme'
 import { QrCodeScanError } from '../../types/error'
 
 import QRScannerClose from './QRScannerClose'
 import QRScannerTorch from './QRScannerTorch'
-
-interface VisionCameraCodeScanEvent {
-  data: string
-}
+import ScanCamera from './ScanCamera'
 
 interface Props {
-  handleCodeScan: (event: VisionCameraCodeScanEvent) => Promise<void>
+  handleCodeScan: (value: string) => Promise<void>
   error?: QrCodeScanError | null
   enableCameraOnError?: boolean
+  navigation: any
+  isCameraActive: boolean
 }
 
 const CameraViewContainer: React.FC<{ portrait: boolean; children: React.ReactNode }> = ({ portrait, children }) => {
@@ -34,44 +30,11 @@ const CameraViewContainer: React.FC<{ portrait: boolean; children: React.ReactNo
   )
 }
 
-const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError }) => {
-  const navigation = useNavigation()
-  const [cameraActive, setCameraActive] = useState(true)
+const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError, navigation, isCameraActive }) => {
   const [torchActive, setTorchActive] = useState(false)
   const { width, height } = useWindowDimensions()
   const portraitMode = height > width
-  const { t } = useTranslation()
-  const invalidQrCodes = new Set<string>()
   const { ColorPallet, TextTheme } = useTheme()
-
-  const device = useCameraDevice('back')
-
-  const codeScanner = useCodeScanner({
-    codeTypes: ['qr'],
-    onCodeScanned: codes => {
-      if (codes.length > 0 && codes[0].value) {
-        const qrData = codes[0].value
-
-        if (invalidQrCodes.has(qrData)) {
-          return
-        }
-
-        if (error?.data === qrData) {
-          invalidQrCodes.add(error.data)
-          if (enableCameraOnError) {
-            return setCameraActive(true)
-          }
-        }
-
-        if (cameraActive) {
-          Vibration.vibrate()
-          handleCodeScan({ data: qrData })
-          setCameraActive(false)
-        }
-      }
-    },
-  })
-
   const styles = StyleSheet.create({
     container: {
       height: '100%',
@@ -101,32 +64,21 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
       padding: 4,
     },
   })
-
-  if (!device) {
-    return (
-      <View style={styles.container}>
-        <Text style={[TextTheme.normal, { color: ColorPallet.grayscale.white }]}>
-          {t('QRScanner.CameraNotAvailable')}
-        </Text>
-      </View>
-    )
-  }
-
   return (
     <View style={styles.container}>
-      <Camera
-        style={StyleSheet.absoluteFill}
-        device={device}
-        isActive={cameraActive}
-        codeScanner={codeScanner}
-        torch={torchActive ? 'on' : 'off'}
+      <ScanCamera
+        handleCodeScan={handleCodeScan}
+        error={error}
+        enableCameraOnError={enableCameraOnError}
+        torchActive={torchActive}
+        isCameraActive={isCameraActive}
       />
       <CameraViewContainer portrait={portraitMode}>
-        <QRScannerClose onPress={() => navigation.goBack()}></QRScannerClose>
+        <QRScannerClose onPress={() => navigation.goBack()} />
         <View style={styles.errorContainer}>
           {error ? (
             <>
-              <Icon style={styles.icon} name="cancel" size={30}></Icon>
+              <Icon style={styles.icon} name="cancel" size={30} />
               <Text style={[TextTheme.caption, { color: ColorPallet.grayscale.white }]}>{error.message}</Text>
             </>
           ) : (

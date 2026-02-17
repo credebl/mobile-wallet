@@ -1,4 +1,4 @@
-import { IndyVdrPoolConfig } from '@adeya/ssi'
+import { IndyVdrPoolConfig } from '@credebl/ssi-mobile-didcomm'
 
 import _ledgers from './ledgers.json'
 

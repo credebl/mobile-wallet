@@ -1,11 +1,10 @@
-import { DidExchangeState } from '@credebl/ssi-mobile-core'
+import { DidCommDidExchangeState } from '@credebl/ssi-mobile-didcomm'
 import { useNavigation } from '@react-navigation/core'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Vibration, View, StyleSheet, Text, ScrollView, Dimensions } from 'react-native'
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera'
 
 import { useStore } from '../../contexts/store'
 import { useTheme } from '../../contexts/theme'
@@ -18,63 +17,36 @@ import LoadingIndicator from '../animated/LoadingIndicator'
 
 import QRRenderer from './QRRenderer'
 import QRScannerTorch from './QRScannerTorch'
+import ScanCamera from './ScanCamera'
 import ScanTab from './ScanTab'
 
 const windowDimensions = Dimensions.get('window')
 const qrSize = windowDimensions.width - 40
 
-interface VisionCameraCodeScanEvent {
-  data: string
-}
-
 interface Props {
   defaultToConnect: boolean
-  handleCodeScan: (event: VisionCameraCodeScanEvent) => Promise<void>
+  handleCodeScan: (value: string) => Promise<void>
   error?: QrCodeScanError | null
   enableCameraOnError?: boolean
+  isCameraActive: boolean
 }
 
-const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, enableCameraOnError }) => {
+const NewQRView: React.FC<Props> = ({
+  defaultToConnect,
+  handleCodeScan,
+  error,
+  enableCameraOnError,
+  isCameraActive,
+}) => {
   const navigation = useNavigation()
   const [store] = useStore()
-  const [cameraActive, setCameraActive] = useState(true)
   const [torchActive, setTorchActive] = useState(false)
   const [firstTabActive, setFirstTabActive] = useState(!defaultToConnect)
   const [invitation, setInvitation] = useState<string | undefined>(undefined)
   const [recordId, setRecordId] = useState<string | undefined>(undefined)
   const { t } = useTranslation()
-  const invalidQrCodes = new Set<string>()
   const { ColorPallet, TextTheme } = useTheme()
   const { sdk } = useSdk()
-
-  const device = useCameraDevice('back')
-
-  const codeScanner = useCodeScanner({
-    codeTypes: ['qr'],
-    onCodeScanned: codes => {
-      if (codes.length > 0 && codes[0].value) {
-        const qrData = codes[0].value
-
-        if (invalidQrCodes.has(qrData)) {
-          return
-        }
-
-        if (error?.data === qrData) {
-          invalidQrCodes.add(error.data)
-          if (enableCameraOnError) {
-            return setCameraActive(true)
-          }
-        }
-
-        if (cameraActive) {
-          Vibration.vibrate()
-          handleCodeScan({ data: qrData })
-          setCameraActive(false)
-        }
-      }
-    },
-  })
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -124,8 +96,12 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
       borderTopColor: ColorPallet.brand.primaryBackground,
     },
     qrContainer: {
-      marginTop: 10,
+      marginTop: 60,
       flex: 1,
+      alignSelf: 'center',
+      justifyContent: 'center',
+      alignContent: 'center',
+      alignItems: 'center',
     },
     walletName: {
       ...TextTheme.headingTwo,
@@ -136,6 +112,14 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
       ...TextTheme.normal,
       textAlign: 'center',
     },
+    qrCodeMainContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'center',
+    },
+    walletNameMainContainer: { paddingHorizontal: 20, flex: 1, marginTop: 20 },
   })
 
   const createInvitation = useCallback(async () => {
@@ -157,7 +141,7 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
   const record = useConnectionByOutOfBandId(recordId || '')
 
   useEffect(() => {
-    if (record?.state === DidExchangeState.Completed) {
+    if (record?.state === DidCommDidExchangeState.Completed) {
       navigation.getParent()?.navigate(Stacks.ConnectionStack, {
         screen: Screens.Connection,
         params: { connectionId: record.id },
@@ -168,22 +152,15 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
   return (
     <SafeAreaView edges={['bottom', 'left', 'right']} style={styles.container}>
       {firstTabActive ? (
-        <>
-          {device ? (
-            <Camera
-              style={styles.camera}
-              device={device}
-              isActive={cameraActive && firstTabActive}
-              codeScanner={codeScanner}
-              torch={torchActive ? 'on' : 'off'}
-            />
-          ) : (
-            <View style={styles.camera}>
-              <Text style={[TextTheme.normal, { color: ColorPallet.grayscale.white }]}>
-                {t('QRScanner.CameraNotAvailable')}
-              </Text>
-            </View>
-          )}
+        <View style={styles.camera}>
+          <ScanCamera
+            handleCodeScan={handleCodeScan}
+            error={error}
+            enableCameraOnError={enableCameraOnError}
+            torchActive={torchActive}
+            isCameraActive={isCameraActive}
+          />
+
           <View style={styles.cameraViewContainer}>
             <View style={styles.errorContainer}>
               {error ? (
@@ -202,15 +179,15 @@ const NewQRView: React.FC<Props> = ({ defaultToConnect, handleCodeScan, error, e
             </View>
             <QRScannerTorch active={torchActive} onPress={() => setTorchActive(!torchActive)} />
           </View>
-        </>
+        </View>
       ) : (
-        <ScrollView>
+        <ScrollView contentContainerStyle={styles.qrCodeMainContainer}>
           <View style={{ alignItems: 'center' }}>
             <View style={styles.qrContainer}>
               {!invitation && <LoadingIndicator />}
               {invitation && <QRRenderer value={invitation} size={qrSize} />}
             </View>
-            <View style={{ paddingHorizontal: 20, flex: 1 }}>
+            <View style={styles.walletNameMainContainer}>
               <Text style={styles.walletName}>{store.preferences.walletName}</Text>
               <Text style={styles.secondaryText}>{t('Connection.ShareQR')}</Text>
             </View>

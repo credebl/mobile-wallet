@@ -4,11 +4,9 @@ import {
   AnonCredsProofRequest,
   DidCommProofExchangeRecord,
   DidCommProofState,
-  GetProofFormatDataReturn,
-  updateProofRecord,
 } from '@credebl/ssi-mobile-didcomm'
 
-import { AdeyaAgent } from '../../app/utils/agent'
+import { AdeyaSdk } from '../../app/utils/agent'
 import { ProofMetadata } from '../types/metadata'
 import {
   CredentialSharedProofData,
@@ -136,8 +134,8 @@ export const groupSharedProofDataByCredential = (data: ParsedAnonCredsProof): Gr
 /*
  * Retrieve proof details from AFJ record
  * */
-export const getProofData = async (agent: AdeyaAgent, recordId: string) => {
-  const data = await GetProofFormatDataReturn(agent, recordId)
+export const getProofData = async (sdk: AdeyaSdk, recordId: string) => {
+  const data = await sdk.modules.didcomm.proofs.getProofFormatData(recordId)
   if (data.request?.anoncreds && data.presentation?.anoncreds) {
     return parseAnonCredsProof(data.request.anoncreds, data.presentation.anoncreds)
   } else if (data.request?.indy && data.presentation?.indy) {
@@ -146,8 +144,8 @@ export const getProofData = async (agent: AdeyaAgent, recordId: string) => {
   return undefined
 }
 
-export const getProofDataForHistory = async (agent: AdeyaAgent, recordId: string) => {
-  const data = await GetProofFormatDataReturn(agent, recordId)
+export const getProofDataForHistory = async (sdk: AdeyaSdk, recordId: string) => {
+  const data = await sdk.modules.didcomm.proofs.getProofFormatData(recordId)
   return data
 }
 
@@ -168,22 +166,18 @@ export const isPresentationFailed = (record: DidCommProofExchangeRecord) => {
 /*
  * Mark Proof record as viewed
  * */
-export const markProofAsViewed = async (agent: AdeyaAgent, record: DidCommProofExchangeRecord) => {
+export const markProofAsViewed = async (sdk: AdeyaSdk, record: DidCommProofExchangeRecord) => {
   record.metadata.set(ProofMetadata.customMetadata, { ...record.metadata.data.customMetadata, details_seen: true })
-  return updateProofRecord(agent, record)
+  return sdk.modules.didcomm.proofs.updateProofRecord(record)
 }
 
 /*
  * Add template reference to Proof Exchange record
  * */
-export const linkProofWithTemplate = async (
-  agent: AdeyaAgent,
-  record: DidCommProofExchangeRecord,
-  templateId: string,
-) => {
+export const linkProofWithTemplate = async (sdk: AdeyaSdk, record: DidCommProofExchangeRecord, templateId: string) => {
   record.metadata.set(ProofMetadata.customMetadata, {
     ...record.metadata.data.customMetadata,
     proof_request_template_id: templateId,
   })
-  return updateProofRecord(agent, record)
+  return sdk.modules.didcomm.proofs.updateProofRecord(record)
 }

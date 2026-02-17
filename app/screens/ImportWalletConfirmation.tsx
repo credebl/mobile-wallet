@@ -1,4 +1,7 @@
-import { importWalletWithAgent, ConsoleLogger, LogLevel, InitConfig } from '@adeya/ssi'
+// TODO: migrate to new SDK import
+// import { importWalletWithAgent, ConsoleLogger, LogLevel, InitConfig } from '@adeya/ssi'
+import { ConsoleLogger, LogLevel } from '@credebl/ssi-mobile-core'
+import { InitConfig } from '@credebl/ssi-mobile-didcomm'
 import { pick, types } from '@react-native-documents/picker'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'

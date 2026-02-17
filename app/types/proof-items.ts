@@ -1,9 +1,9 @@
-import { CredentialExchangeRecord } from '@adeya/ssi'
+import { DidCommCredentialExchangeRecord } from '@credebl/ssi-mobile-didcomm'
 import { Attribute, Predicate } from '@hyperledger/aries-oca/build/legacy'
 
 export interface ProofCredentialAttributes {
   altCredentials?: string[]
-  credExchangeRecord?: CredentialExchangeRecord
+  credExchangeRecord?: DidCommCredentialExchangeRecord
   credId: string
   credDefId?: string
   schemaId?: string
@@ -14,7 +14,7 @@ export interface ProofCredentialAttributes {
 
 export interface ProofCredentialPredicates {
   altCredentials?: string[]
-  credExchangeRecord?: CredentialExchangeRecord
+  credExchangeRecord?: DidCommCredentialExchangeRecord
   credId: string
   credDefId?: string
   schemaId?: string

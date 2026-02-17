@@ -1,41 +1,34 @@
+import { MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credebl/ssi-mobile-core'
 import {
   AnonCredsCredentialsForProofRequest,
   AnonCredsPredicateType,
-  AnonCredsProofFormat,
-  AnonCredsProofFormatService,
+  AnonCredsDidCommProofFormat,
   AnonCredsProofRequestRestriction,
   AnonCredsRequestedAttribute,
   AnonCredsRequestedAttributeMatch,
   AnonCredsRequestedPredicate,
   AnonCredsRequestedPredicateMatch,
-  BasicMessageRecord,
-  BasicMessageRole,
   Buffer,
-  ConnectionRecord,
-  CredentialExchangeRecord,
-  CredentialState,
+  DidCommBasicMessageRecord,
+  DidCommBasicMessageRole,
+  DidCommConnectionRecord,
+  DidCommCredentialExchangeRecord,
+  DidCommCredentialState,
+  DidCommProofExchangeRecord,
+  DidCommProofState,
   DidRecord,
-  DidRepository,
-  DifPresentationExchangeProofFormatService,
+  LegacyIndyDidCommProofFormat,
+  useConnectionById,
+} from '@credebl/ssi-mobile-didcomm'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { DifPresentationExchangeDefinitionV1 } from '@credo-ts/core'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  DidCommDifPresentationExchangeProofFormat,
+  DidCommMessageReceiver,
   GetCredentialsForProofRequestReturn,
-  KeyType,
-  LegacyIndyProofFormat,
-  LegacyIndyProofFormatService,
-  MdocRecord,
-  ProofExchangeRecord,
-  ProofState,
-  SdJwtVcRecord,
-  W3cCredentialRecord,
-  acceptInvitationFromUrl,
-  createInvitation,
-  findByReceivedInvitationId,
-  getCredentialsForProofRequest,
-  parseInvitationFromUrl,
-} from '@credebl/ssi-mobile-core'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { DifPresentationExchangeProofFormat, MessageReceiver, useConnectionById } from '@credebl/ssi-mobile-didcomm'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ProofFormatDataMessagePayload } from '@credo-ts/didcomm/build/modules/proofs/protocol/ProofProtocolOptions'
+  GetProofFormatDataReturn,
+} from '@credo-ts/didcomm'
 import { CaptureBaseAttributeType } from '@hyperledger/aries-oca'
 import { TFunction } from 'i18next'
 import moment from 'moment'
@@ -52,7 +45,7 @@ import { ProofCredentialAttributes, ProofCredentialItems, ProofCredentialPredica
 import { Attribute, Predicate } from '../types/record'
 import { ChildFn } from '../types/tour'
 
-import { AdeyaAgent } from './agent'
+import { AdeyaSdk } from './agent'
 import { parseCredDefFromId } from './cred-def'
 
 export { parsedCredDefNameFromCredential } from './cred-def'
@@ -293,13 +286,13 @@ export function formatIfDate(format: string | undefined, value: string | number 
 /**
  * @deprecated The function should not be used
  */
-export function connectionRecordFromId(connectionId?: string): ConnectionRecord | void {
+export function connectionRecordFromId(connectionId?: string): DidCommConnectionRecord | void {
   if (connectionId) {
     return useConnectionById(connectionId)
   }
 }
 
-export function getConnectionName(connection: ConnectionRecord | void): string | void {
+export function getConnectionName(connection: DidCommConnectionRecord | void): string | void {
   if (!connection) {
     return
   }
@@ -307,8 +300,8 @@ export function getConnectionName(connection: ConnectionRecord | void): string |
 }
 
 export function getCredentialConnectionLabel(
-  connections: ConnectionRecord[],
-  credential?: CredentialExchangeRecord,
+  connections: DidCommConnectionRecord[],
+  credential?: DidCommCredentialExchangeRecord,
   connectionLabel?: string,
 ) {
   if (!credential) {
@@ -357,13 +350,13 @@ export function firstValidCredential(
   return first
 }
 
-export const getOobDeepLink = async (url: string, agent: AdeyaAgent): Promise<any> => {
+export const getOobDeepLink = async (url: string, sdk: AdeyaSdk): Promise<any> => {
   const queryParams = queryString.parseUrl(url).query
   const b64Message = queryParams['d_m'] ?? queryParams['c_i']
   const rawmessage = Buffer.from(b64Message as string, 'base64').toString()
   const message = JSON.parse(rawmessage)
-  const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
-  await messageReceiver.receiveMessage(message)
+  const messageReceiver = sdk?.agent?.context.dependencyManager.resolve(DidCommMessageReceiver)
+  await messageReceiver?.receiveMessage(message)
   return message
 }
 
@@ -554,8 +547,8 @@ const addW3CMissingDisplayAttributes = (attrReq: DifPresentationExchangeDefiniti
 }
 
 export const processW3CProofAttributes = (
-  request?: ProofFormatDataMessagePayload<[DifPresentationExchangeProofFormat], 'request'> | undefined,
-  credentials?: GetCredentialsForProofRequestReturn<[DifPresentationExchangeProofFormatService]>,
+  request?: GetProofFormatDataReturn<[DidCommDifPresentationExchangeProofFormat]>['request'] | undefined,
+  credentials?: GetCredentialsForProofRequestReturn,
 ): { [key: string]: ProofCredentialAttributes } => {
   const processedAttributes = {} as { [key: string]: ProofCredentialAttributes }
 
@@ -634,9 +627,11 @@ export const processW3CProofAttributes = (
 }
 
 export const processProofAttributes = (
-  request?: ProofFormatDataMessagePayload<[LegacyIndyProofFormat, AnonCredsProofFormat], 'request'> | undefined,
-  credentials?: GetCredentialsForProofRequestReturn<[LegacyIndyProofFormatService, AnonCredsProofFormatService]>,
-  credentialRecords?: CredentialExchangeRecord[],
+  request?:
+    | GetProofFormatDataReturn<[LegacyIndyDidCommProofFormat, AnonCredsDidCommProofFormat]>['request']
+    | undefined,
+  credentials?: GetCredentialsForProofRequestReturn,
+  credentialRecords?: DidCommCredentialExchangeRecord[],
 ): { [key: string]: ProofCredentialAttributes } => {
   const processedAttributes = {} as { [key: string]: ProofCredentialAttributes }
 
@@ -769,9 +764,11 @@ const addMissingDisplayPredicates = (predReq: AnonCredsRequestedPredicate) => {
 }
 
 export const processProofPredicates = (
-  request?: ProofFormatDataMessagePayload<[LegacyIndyProofFormat, AnonCredsProofFormat], 'request'> | undefined,
-  credentials?: GetCredentialsForProofRequestReturn<[LegacyIndyProofFormatService, AnonCredsProofFormatService]>,
-  credentialRecords?: CredentialExchangeRecord[],
+  request?:
+    | GetProofFormatDataReturn<[LegacyIndyDidCommProofFormat, AnonCredsDidCommProofFormat]>['request']
+    | undefined,
+  credentials?: GetCredentialsForProofRequestReturn,
+  credentialRecords?: DidCommCredentialExchangeRecord[],
 ): { [key: string]: ProofCredentialPredicates } => {
   const processedPredicates = {} as { [key: string]: ProofCredentialPredicates }
   const requestedProofPredicates = request?.anoncreds?.requested_predicates ?? request?.indy?.requested_predicates
@@ -853,18 +850,18 @@ export const processProofPredicates = (
 }
 
 export const retrieveCredentialsForProof = async (
-  agent: AdeyaAgent,
-  proof: ProofExchangeRecord,
-  fullCredentials: CredentialExchangeRecord[],
+  sdk: AdeyaSdk,
+  proof: DidCommProofExchangeRecord,
+  fullCredentials: DidCommCredentialExchangeRecord[],
   t: TFunction<'translation', undefined>,
 ) => {
   try {
-    const format = await agent.modules.proofs.getFormatData(proof.id)
+    const format = await sdk.modules.didcomm.proofs.getProofFormatData(proof.id)
     const hasPresentationExchange = format.request?.presentationExchange !== undefined
     const hasAnonCreds = format.request?.anoncreds !== undefined
     const hasIndy = format.request?.indy !== undefined
-    const credentials = await getCredentialsForProofRequest(agent, {
-      proofRecordId: proof.id,
+    const credentials = await sdk.modules.didcomm.proofs.getCredentialsForProofRequest({
+      proofExchangeRecordId: proof.id,
       proofFormats: {
         // AFJ will try to use the format, even if the value is undefined (but the key is present)
         // We should ignore the key, if the value is undefined. For now this is a workaround.
@@ -1002,14 +999,14 @@ export const isValidUrl = (url: string) => {
  * @param agent an Agent instance
  * @returns payload from following the redirection
  */
-export const receiveMessageFromUrlRedirect = async (url: string, agent: AdeyaAgent) => {
+export const receiveMessageFromUrlRedirect = async (url: string, sdk: AdeyaSdk) => {
   const res = await fetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
   })
   const message = await res.json()
-  const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
-  await messageReceiver.receiveMessage(message)
+  const messageReceiver = sdk?.agent?.context.dependencyManager.resolve(DidCommMessageReceiver)
+  await messageReceiver?.receiveMessage(message)
   return message
 }
 
@@ -1019,14 +1016,14 @@ export const receiveMessageFromUrlRedirect = async (url: string, agent: AdeyaAge
  * @param agent an Agent instance
  * @returns payload from following the redirection
  */
-export const receiveMessageFromDeepLink = async (url: string, agent: AdeyaAgent) => {
+export const receiveMessageFromDeepLink = async (url: string, sdk: AdeyaSdk) => {
   const res = await fetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
   })
   const message = await res.json()
-  const messageReceiver = agent.context.dependencyManager.resolve(MessageReceiver)
-  await messageReceiver.receiveMessage(message)
+  const messageReceiver = sdk?.agent?.context.dependencyManager.resolve(DidCommMessageReceiver)
+  await messageReceiver?.receiveMessage(message)
   return message
 }
 
@@ -1036,9 +1033,9 @@ export const receiveMessageFromDeepLink = async (url: string, agent: AdeyaAgent)
  * @param uri a URI containing a base64 encoded connection invite in the query parameter
  * @returns boolean indicating if the connection was already established
  */
-export const checkIfAlreadyConnected = async (agent: AdeyaAgent, invitationUrl: string) => {
-  const invitation = await parseInvitationFromUrl(agent, invitationUrl)
-  const outOfBandRecord = await findByReceivedInvitationId(agent, invitation.id)
+export const checkIfAlreadyConnected = async (sdk: AdeyaSdk, invitationUrl: string) => {
+  const invitation = await sdk.modules.didcomm.connections.parseInvitationFromUrl(invitationUrl)
+  const outOfBandRecord = await sdk.modules.didcomm.connections.findByReceivedInvitationId(invitation.id)
 
   if (outOfBandRecord) {
     return true
@@ -1052,9 +1049,10 @@ export const checkIfAlreadyConnected = async (agent: AdeyaAgent, invitationUrl: 
  * @param uri a URI containing a base64 encoded connection invite in the query parameter
  * @returns a connection record from parsing and receiving the invitation
  */
-export const connectFromInvitation = async (agent: AdeyaAgent, uri: string) => {
-  return await acceptInvitationFromUrl(agent, uri, {
+export const connectFromInvitation = async (sdk: AdeyaSdk, uri: string, label: string) => {
+  return await sdk.modules.didcomm.connections.acceptInvitationFromUrl(uri, {
     reuseConnection: true,
+    label,
   })
 }
 
@@ -1064,8 +1062,8 @@ export const connectFromInvitation = async (agent: AdeyaAgent, uri: string) => {
  * @param goalCode add goalCode to connection invitation
  * @returns a connection record
  */
-export const createConnectionInvitation = async (agent: AdeyaAgent, goalCode?: string) => {
-  return createInvitation(agent, domain, { goalCode })
+export const createConnectionInvitation = async (sdk: AdeyaSdk, goalCode?: string) => {
+  return sdk.modules.didcomm.connections.createInvitation(domain, { goalCode })
 }
 
 /**
@@ -1075,8 +1073,8 @@ export const createConnectionInvitation = async (agent: AdeyaAgent, goalCode?: s
  * @param type add goalCode to connection invitation
  * @returns a connection record
  */
-export const createTempConnectionInvitation = async (agent: AdeyaAgent, type: 'issue' | 'verify') => {
-  return createConnectionInvitation(agent, `aries.vc.${type}.once`)
+export const createTempConnectionInvitation = async (sdk: AdeyaSdk, type: 'issue' | 'verify') => {
+  return createConnectionInvitation(sdk, `aries.vc.${type}.once`)
 }
 
 /**
@@ -1127,94 +1125,94 @@ export function isChildFunction<T>(children: ReactNode | ChildFn<T>): children i
   return typeof children === 'function'
 }
 
-export function getCredentialEventRole(record: CredentialExchangeRecord) {
+export function getCredentialEventRole(record: DidCommCredentialExchangeRecord) {
   switch (record.state) {
     // assuming only Holder states are supported here
-    case CredentialState.ProposalSent:
+    case DidCommCredentialState.ProposalSent:
       return Role.me
-    case CredentialState.OfferReceived:
+    case DidCommCredentialState.OfferReceived:
       return Role.them
-    case CredentialState.RequestSent:
+    case DidCommCredentialState.RequestSent:
       return Role.me
-    case CredentialState.Declined:
+    case DidCommCredentialState.Declined:
       return Role.me
-    case CredentialState.CredentialReceived:
+    case DidCommCredentialState.CredentialReceived:
       return Role.me
-    case CredentialState.Done:
+    case DidCommCredentialState.Done:
       return Role.me
     default:
       return Role.me
   }
 }
 
-export function getCredentialEventLabel(record: CredentialExchangeRecord) {
+export function getCredentialEventLabel(record: DidCommCredentialExchangeRecord) {
   switch (record.state) {
     // assuming only Holder states are supported here
-    case CredentialState.ProposalSent:
+    case DidCommCredentialState.ProposalSent:
       return 'Chat.CredentialProposalSent'
-    case CredentialState.OfferReceived:
+    case DidCommCredentialState.OfferReceived:
       return 'Chat.CredentialOfferReceived'
-    case CredentialState.RequestSent:
+    case DidCommCredentialState.RequestSent:
       return 'Chat.CredentialRequestSent'
-    case CredentialState.Declined:
+    case DidCommCredentialState.Declined:
       return 'Chat.CredentialDeclined'
-    case CredentialState.CredentialReceived:
-    case CredentialState.Done:
+    case DidCommCredentialState.CredentialReceived:
+    case DidCommCredentialState.Done:
       return 'Chat.CredentialReceived'
     default:
       return ''
   }
 }
 
-export function getProofEventRole(record: ProofExchangeRecord) {
+export function getProofEventRole(record: DidCommProofExchangeRecord) {
   switch (record.state) {
-    case ProofState.RequestSent:
+    case DidCommProofState.RequestSent:
       return Role.me
-    case ProofState.ProposalReceived:
+    case DidCommProofState.ProposalReceived:
       return Role.me
-    case ProofState.PresentationReceived:
+    case DidCommProofState.PresentationReceived:
       return Role.them
-    case ProofState.RequestReceived:
+    case DidCommProofState.RequestReceived:
       return Role.me
-    case ProofState.ProposalSent:
-    case ProofState.PresentationSent:
+    case DidCommProofState.ProposalSent:
+    case DidCommProofState.PresentationSent:
       return Role.me
-    case ProofState.Declined:
+    case DidCommProofState.Declined:
       return Role.me
-    case ProofState.Abandoned:
+    case DidCommProofState.Abandoned:
       return Role.them
-    case ProofState.Done:
+    case DidCommProofState.Done:
       return record.isVerified !== undefined ? Role.them : Role.me
     default:
       return Role.me
   }
 }
 
-export function getProofEventLabel(record: ProofExchangeRecord) {
+export function getProofEventLabel(record: DidCommProofExchangeRecord) {
   switch (record.state) {
-    case ProofState.RequestSent:
-    case ProofState.ProposalReceived:
+    case DidCommProofState.RequestSent:
+    case DidCommProofState.ProposalReceived:
       return 'Chat.ProofRequestSent'
-    case ProofState.PresentationReceived:
+    case DidCommProofState.PresentationReceived:
       return 'Chat.ProofPresentationReceived'
-    case ProofState.RequestReceived:
+    case DidCommProofState.RequestReceived:
       return 'Chat.ProofRequestReceived'
-    case ProofState.ProposalSent:
-    case ProofState.PresentationSent:
+    case DidCommProofState.ProposalSent:
+    case DidCommProofState.PresentationSent:
       return 'Chat.ProofRequestSatisfied'
-    case ProofState.Declined:
+    case DidCommProofState.Declined:
       return 'Chat.ProofRequestRejected'
-    case ProofState.Abandoned:
+    case DidCommProofState.Abandoned:
       return 'Chat.ProofRequestRejectReceived'
-    case ProofState.Done:
+    case DidCommProofState.Done:
       return record.isVerified !== undefined ? 'Chat.ProofPresentationReceived' : 'Chat.ProofRequestSatisfied'
     default:
       return ''
   }
 }
 
-export function getMessageEventRole(record: BasicMessageRecord) {
-  return record.role === BasicMessageRole.Sender ? Role.me : Role.them
+export function getMessageEventRole(record: DidCommBasicMessageRecord) {
+  return record.role === DidCommBasicMessageRole.Sender ? Role.me : Role.them
 }
 
 export function generateRandomWalletName() {
@@ -1234,37 +1232,28 @@ export function generateRandomWalletName() {
   return name
 }
 
-export const getDefaultHolderDidDocument = async (agent: AdeyaAgent) => {
+export const getDefaultHolderDidDocument = async (sdk: AdeyaSdk) => {
   try {
-    let defaultDidRecord: DidRecord | null
-    const didRepository = await agent.dependencyManager.resolve(DidRepository)
-
-    defaultDidRecord = await didRepository.findSingleByQuery(agent.context, {
-      isDefault: true,
-    })
+    const existingDids = await sdk.getDids({ tag: 'isDefault', tagValue: true })
+    let defaultDidRecord: DidRecord | null = existingDids.length > 0 ? existingDids[0] : null
 
     if (!defaultDidRecord) {
-      const did = await agent.dids.create({
+      const did = await sdk.createDid({
         method: 'key',
         options: {
-          keyType: KeyType.Ed25519,
+          createKey: { type: { kty: 'OKP', crv: 'Ed25519' } },
         },
       })
 
-      const [didRecord] = await agent.dids.getCreatedDids({
-        did: did.didState.did,
-        method: 'key',
-      })
+      const [didRecord] = await sdk.getDids({ did: did.didState.did, method: 'key' })
 
-      didRecord.setTag('isDefault', true)
-
-      await didRepository.update(agent.context, didRecord)
+      await sdk.addTagToDid({ did: didRecord.did, tag: 'isDefault', tagValue: true })
       defaultDidRecord = didRecord
     }
 
-    const resolvedDidDocument = await agent.dids.resolveDidDocument(defaultDidRecord.did)
+    const resolved = await sdk.resolveDid({ did: defaultDidRecord.did })
 
-    return resolvedDidDocument
+    return resolved.didDocument
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('Error did create', error)
@@ -1278,7 +1267,7 @@ export const getCredentialFormat = (credential: any): string => {
     return 'mDoc'
   } else if (credential instanceof W3cCredentialRecord) {
     return 'JSON-LD'
-  } else if (credential instanceof CredentialExchangeRecord) {
+  } else if (credential instanceof DidCommCredentialExchangeRecord) {
     return 'AnonCreds'
   }
   return ''

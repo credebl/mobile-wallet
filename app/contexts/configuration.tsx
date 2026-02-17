@@ -1,6 +1,6 @@
-import { IndyVdrPoolConfig } from '@adeya/ssi'
+import { IndyVdrPoolConfig } from '@credebl/ssi-mobile-didcomm'
 import { OCABundleResolverType } from '@hyperledger/aries-oca/build/legacy'
-import { createContext, ReducerAction, useContext } from 'react'
+import { createContext, useContext } from 'react'
 
 import { ProofRequestTemplate } from '../../verifier'
 import { EmptyListProps } from '../components/misc/EmptyList'
@@ -9,6 +9,8 @@ import OnboardingPages from '../screens/OnboardingPages'
 import { ScanProps } from '../screens/Scan'
 import { PINSecurityParams } from '../types/security'
 import { SettingSection } from '../types/settings'
+
+import { ReducerAction } from './reducers/store'
 
 interface NotificationConfiguration {
   component: React.FC

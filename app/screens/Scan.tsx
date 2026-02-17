@@ -1,6 +1,7 @@
-import { DidCommConnectionRecord, DidCommMessageReceiver, parseInvitationUrl } from '@credebl/ssi-mobile-didcomm'
-import { getOID4VCCredentialsForProofRequest } from '@credebl/ssi-mobile-openid4vc'
+import { DidCommConnectionRecord } from '@credebl/ssi-mobile-didcomm'
+import { parseInvitationUrl } from '@credebl/ssi-mobile-openid4vc'
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { DidCommMessageReceiver } from '@credo-ts/didcomm'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,17 +35,13 @@ import {
 
 export type ScanProps = StackScreenProps<ConnectStackParams>
 
-// Define the barcode scan event interface for react-native-vision-camera
-export interface VisionCameraCodeScanEvent {
-  data: string
-}
-
 const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
   const { sdk } = useSdk()
   const { t } = useTranslation()
   const [store] = useStore()
   const [loading, setLoading] = useState<boolean>(true)
   const [showDisclosureModal, setShowDisclosureModal] = useState<boolean>(true)
+  const [isCameraActive, setIsCameraActive] = useState(true)
   const [qrCodeScanError, setQrCodeScanError] = useState<QrCodeScanError | null>(null)
   let defaultToConnect = false
   if (route?.params && route.params['defaultToConnect']) {
@@ -56,8 +53,7 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         return
       }
       try {
-        const record = await getOID4VCCredentialsForProofRequest({
-          agent: sdk,
+        const record = await sdk.modules.openid.getCredentialsForProofRequest({
           uri: uri,
         })
         return record
@@ -95,8 +91,9 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
           correspondenceId: connectionRecord?.id,
           connection: contactLabel,
         }
+
         // Save the history record asynchronously
-        await saveHistory(recordData, sdk)
+        await saveHistory(recordData, sdk.agent)
       } catch (error) {
         // error when save history
       }
@@ -154,7 +151,11 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         return
       }
 
-      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, value)
+      const { connectionRecord, outOfBandRecord } = await connectFromInvitation(
+        sdk,
+        value,
+        store.preferences.walletName,
+      )
       setLoading(false)
       logHistoryRecord(connectionRecord)
       navigation.getParent()?.navigate(Stacks.ConnectionStack, {
@@ -166,8 +167,8 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         // if scanned value is json -> pass into AFJ as is
         const json = getJson(value)
         if (json) {
-          const messageReceiver = sdk.agent?.dependencyManager.resolve(DidCommMessageReceiver)
-          await messageReceiver.receiveMessage(json)
+          const messageReceiver = sdk?.agent?.context.dependencyManager.resolve(DidCommMessageReceiver)
+          await messageReceiver?.receiveMessage(json)
           setLoading(false)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
             screen: Screens.Connection,
@@ -193,7 +194,13 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
             return
           }
 
-          const { connectionRecord, outOfBandRecord } = await connectFromInvitation(sdk, urlData)
+          const { connectionRecord, outOfBandRecord } = await sdk.modules.didcomm.connections.acceptInvitationFromUrl(
+            urlData,
+            {
+              label: store.preferences.walletName,
+              reuseConnection: true,
+            },
+          )
           setLoading(false)
           logHistoryRecord(connectionRecord)
           navigation.getParent()?.navigate(Stacks.ConnectionStack, {
@@ -225,16 +232,33 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
     }
   }
 
-  const handleCodeScan = async (event: VisionCameraCodeScanEvent) => {
-    setQrCodeScanError(null)
-    try {
-      const uri = event.data
-      await handleInvitation(uri)
-    } catch (e: unknown) {
-      const error = new QrCodeScanError(t('Scan.InvalidQrCode'), event.data)
-      setQrCodeScanError(error)
+  const handleCodeScan = useCallback(
+    async (value: string) => {
+      if (!isCameraActive) return
+
+      setQrCodeScanError(null)
+      setIsCameraActive(false)
+
+      try {
+        if (!value || typeof value !== 'string') {
+          throw new Error('Invalid QR code format')
+        }
+
+        await handleInvitation(value)
+      } catch (e: unknown) {
+        const error = new QrCodeScanError('Invalid QR Code', value, (e as Error)?.message)
+        setQrCodeScanError(error)
+        setIsCameraActive(true)
+      }
+    },
+    [navigation, isCameraActive],
+  )
+
+  useEffect(() => {
+    if (!qrCodeScanError) {
+      setIsCameraActive(true)
     }
-  }
+  }, [qrCodeScanError])
 
   const permissionFlow = async (method: PermissionContract, permission: Permission): Promise<boolean> => {
     try {
@@ -294,10 +318,19 @@ const Scan: React.FC<ScanProps> = ({ navigation, route }) => {
         handleCodeScan={handleCodeScan}
         error={qrCodeScanError}
         enableCameraOnError={true}
+        isCameraActive={isCameraActive}
       />
     )
   } else {
-    return <QRScanner handleCodeScan={handleCodeScan} error={qrCodeScanError} enableCameraOnError={true} />
+    return (
+      <QRScanner
+        handleCodeScan={handleCodeScan}
+        error={qrCodeScanError}
+        enableCameraOnError={true}
+        navigation={navigation}
+        isCameraActive={isCameraActive}
+      />
+    )
   }
 }
 

@@ -25,6 +25,7 @@ import {
   Tours as ToursState,
 } from '../types/state'
 import { createConfig, useSdk } from '../utils/agent'
+import { getDefaultHolderDidDocument } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 enum InitErrorTypes {
@@ -290,7 +291,13 @@ const Splash: React.FC = () => {
         if (!Config.MEDIATOR_URL) {
           throw new Error('Missing mediator URL')
         }
-        const resp = await sdk.modules.didcomm.mediatorRecipient.startMediation(Config.MEDIATOR_URL, 'Holder')
+        await getDefaultHolderDidDocument(sdk)
+
+        const resp = await sdk.modules.didcomm.mediatorRecipient.startMediation(
+          Config.MEDIATOR_URL,
+          store.preferences.walletName,
+        )
+        await sdk.modules.didcomm.mediatorRecipient.initiateMessagePickup()
 
         if (resp) {
           setStep(6)

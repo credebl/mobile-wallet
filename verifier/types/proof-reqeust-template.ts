@@ -1,4 +1,8 @@
-import { AnonCredsNonRevokedInterval, AnonCredsPredicateType, AnonCredsProofRequestRestriction } from '@adeya/ssi'
+import {
+  AnonCredsNonRevokedInterval,
+  AnonCredsPredicateType,
+  AnonCredsProofRequestRestriction,
+} from '@credebl/ssi-mobile-didcomm'
 
 export interface AnonCredsRequestedPredicate {
   label?: string

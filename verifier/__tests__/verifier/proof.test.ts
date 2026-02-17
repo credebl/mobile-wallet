@@ -1,5 +1,5 @@
 import { getProofIdentifiers, groupSharedProofDataByCredential, parseAnonCredsProof } from '../../utils/proof'
-import { AnonCredsProof } from '@adeya/ssi'
+import { AnonCredsProof } from '@credebl/ssi-mobile-didcomm'
 const proof_request = {
   name: 'proof-request',
   version: '1.0',

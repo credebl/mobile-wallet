@@ -1,7 +1,4 @@
-import {
-  AnonCredsCredentialMetadataKey,
-  DidCommCredentialExchangeRecord as CredentialRecord,
-} from '@credebl/ssi-mobile-didcomm'
+import { AnonCredsCredentialMetadataKey, DidCommCredentialExchangeRecord } from '@credebl/ssi-mobile-didcomm'
 
 import { CREDENTIAL } from '../constants'
 
@@ -25,11 +22,11 @@ export function parseCredDefFromId(credDefId?: string, schemaId?: string): strin
   return name
 }
 
-function credentialDefinition(credential: CredentialRecord): string | undefined {
+function credentialDefinition(credential: DidCommCredentialExchangeRecord): string | undefined {
   return credential.metadata.get(AnonCredsCredentialMetadataKey)?.credentialDefinitionId
 }
 
-export function parsedCredDefNameFromCredential(credential: CredentialRecord): string {
+export function parsedCredDefNameFromCredential(credential: DidCommCredentialExchangeRecord): string {
   return parseCredDefFromId(credentialDefinition(credential), credentialSchema(credential))
 }
 

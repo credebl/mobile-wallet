@@ -1,4 +1,4 @@
-import { AnonCredsNonRevokedInterval, AnonCredsProofRequestRestriction } from '@adeya/ssi'
+import { AnonCredsNonRevokedInterval, AnonCredsProofRequestRestriction } from '@credebl/ssi-mobile-didcomm'
 export interface FieldParams {
   name: string | null
   format?: string

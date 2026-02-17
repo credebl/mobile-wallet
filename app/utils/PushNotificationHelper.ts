@@ -1,11 +1,11 @@
-import { DidCommConnectionRecord, getAllConnections } from '@credebl/ssi-mobile-didcomm'
+import { DidCommConnectionRecord } from '@credebl/ssi-mobile-didcomm'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import messaging from '@react-native-firebase/messaging'
 import { Platform } from 'react-native'
 import { Config } from 'react-native-config'
 import { request, check, PERMISSIONS, RESULTS, PermissionStatus } from 'react-native-permissions'
 
-import { AdeyaAgent } from './agent'
+import { AdeyaSdk } from './agent'
 
 const TOKEN_STORAGE_KEY = 'deviceToken'
 
@@ -29,37 +29,37 @@ const _foregroundHandler = (): (() => void) => {
  * Permissions Section
  */
 
-const _requestNotificationPermission = async (agent: AdeyaAgent): Promise<PermissionStatus> => {
-  agent.config.logger.info('Requesting push notification permission...')
+const _requestNotificationPermission = async (sdk: AdeyaSdk): Promise<PermissionStatus> => {
+  sdk.agent.config.logger.info('Requesting push notification permission...')
   const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS)
-  agent.config.logger.info(`push notification permission is now [${result}]`)
+  sdk.agent.config.logger.info(`push notification permission is now [${result}]`)
   return result
 }
 
-const _checkNotificationPermission = async (agent: AdeyaAgent): Promise<PermissionStatus> => {
-  agent.config.logger.info('Checking push notification permission...')
+const _checkNotificationPermission = async (sdk: AdeyaSdk): Promise<PermissionStatus> => {
+  sdk.agent.config.logger.info('Checking push notification permission...')
   const result = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS)
-  agent.config.logger.info(`push notification permission is [${result}]`)
+  sdk.agent.config.logger.info(`push notification permission is [${result}]`)
   return result
 }
 
-const _requestPermission = async (agent: AdeyaAgent): Promise<void> => {
+const _requestPermission = async (sdk: AdeyaSdk): Promise<void> => {
   // IOS doesn't need the extra permission logic like android
   if (Platform.OS === 'ios') {
     await messaging().requestPermission()
     return
   }
 
-  const checkPermission = await _checkNotificationPermission(agent)
+  const checkPermission = await _checkNotificationPermission(sdk)
   if (checkPermission === RESULTS.UNAVAILABLE) {
-    agent.config.logger.warn(`push notification permission is not available on this device`)
+    sdk.agent.config.logger.warn(`push notification permission is not available on this device`)
     return
   }
 
   if (checkPermission !== RESULTS.GRANTED) {
-    const request = await _requestNotificationPermission(agent)
+    const request = await _requestNotificationPermission(sdk)
     if (request !== RESULTS.GRANTED) {
-      agent.config.logger.warn(`push notification permission was not granted by user`)
+      sdk.agent.config.logger.warn(`push notification permission was not granted by user`)
     }
   }
 }
@@ -68,14 +68,14 @@ const _requestPermission = async (agent: AdeyaAgent): Promise<void> => {
  * Helper Functions Section
  */
 
-const _getMediatorConnection = async (agent: AdeyaAgent): Promise<DidCommConnectionRecord | undefined> => {
-  const connections = await getAllConnections(agent)
+const _getMediatorConnection = async (sdk: AdeyaSdk): Promise<DidCommConnectionRecord | undefined> => {
+  const connections = await sdk.modules.didcomm.connections.getAll()
   for (const connection of connections) {
     if (connection.theirLabel?.toUpperCase() === Config.MEDIATOR_LABEL) {
       return connection
     }
   }
-  agent.config.logger.warn(`Mediator connection with label [${Config.MEDIATOR_LABEL}] not found`)
+  sdk.agent.config.logger.warn(`Mediator connection with label [${Config.MEDIATOR_LABEL}] not found`)
   return undefined
 }
 
@@ -89,16 +89,16 @@ const isUserDenied = async (): Promise<boolean> => {
 
 /**
  * Uses the discover didcomm protocol to check with the mediator if it supports the firebase push notification protocol
- * @param agent - The active aries agent
+ * @param sdk - The active SDK instance
  * @returns {Promise<boolean>}
  */
-const isMediatorCapable = async (agent: AdeyaAgent): Promise<boolean | undefined> => {
+const isMediatorCapable = async (sdk: AdeyaSdk): Promise<boolean | undefined> => {
   if (!Config.MEDIATOR_LABEL || Config.MEDIATOR_USE_PUSH_NOTIFICATIONS === 'false') return false
 
-  const mediator = await _getMediatorConnection(agent)
+  const mediator = await _getMediatorConnection(sdk)
   if (!mediator) return
 
-  const response = await agent.modules.discovery.queryFeatures({
+  const response = await sdk.agent.modules.discovery.queryFeatures({
     awaitDisclosures: true,
     connectionId: mediator.id,
     protocolVersion: 'v1',
@@ -143,26 +143,26 @@ const isEnabled = async (): Promise<boolean> => {
 
 /**
  * Attempts to send the device token to the mediator agent. If the token is blank this is equivalent to disabling
- * @param agent - The active aries agent
+ * @param sdk - The active SDK instance
  * @param blankDeviceToken - If true, will send an empty string as the device token to the mediator
  * @returns {Promise<void>}
  */
-const setDeviceInfo = async (agent: AdeyaAgent, blankDeviceToken = false): Promise<void> => {
+const setDeviceInfo = async (sdk: AdeyaSdk, blankDeviceToken = false): Promise<void> => {
   let token
   if (blankDeviceToken) token = ''
   else token = await messaging().getToken()
   // console.log('token', token)
-  const mediator = await _getMediatorConnection(agent)
+  const mediator = await _getMediatorConnection(sdk)
   if (!mediator) return
 
   if (!Config.CLIENT_CODE) {
-    agent.config.logger.error('Client code is not set')
+    sdk.agent.config.logger.error('Client code is not set')
     return
   }
 
-  agent.config.logger.info(`Trying to send device info to mediator with connection [${mediator.id}]`)
+  sdk.agent.config.logger.info(`Trying to send device info to mediator with connection [${mediator.id}]`)
   try {
-    // await setPushNotificationDeviceInfo(agent, mediator.id, {
+    // await setPushNotificationDeviceInfo(sdk.agent, mediator.id, {
     //   deviceToken: token,
     //   devicePlatform: Platform.OS,
     //   clientCode: Config.CLIENT_CODE,
@@ -170,22 +170,22 @@ const setDeviceInfo = async (agent: AdeyaAgent, blankDeviceToken = false): Promi
     if (blankDeviceToken) AsyncStorage.setItem(TOKEN_STORAGE_KEY, 'blank')
     else AsyncStorage.setItem(TOKEN_STORAGE_KEY, token)
   } catch (error) {
-    agent.config.logger.error('Error sending device token info to mediator agent')
+    sdk.agent.config.logger.error('Error sending device token info to mediator agent')
   }
 }
 
 /**
  * Attempts to send the device token to the mediator agent, register handlers and requests permissions
- * @param agent - The active aries agent
- * @prarm blankDeviceToken - If true, will setup the device token as blank (disabled)
+ * @param sdk - The active SDK instance
+ * @param blankDeviceToken - If true, will setup the device token as blank (disabled)
  * @returns {Promise<void>}
  */
-const setup = async (agent: AdeyaAgent, blankDeviceToken = false): Promise<void> => {
+const setup = async (sdk: AdeyaSdk, blankDeviceToken = false): Promise<void> => {
   // FIXME: Currently set the token to blank (disabled) on initialization.
-  setDeviceInfo(agent, blankDeviceToken)
+  setDeviceInfo(sdk, blankDeviceToken)
   _backgroundHandler()
   _foregroundHandler()
-  _requestPermission(agent)
+  _requestPermission(sdk)
 }
 
 export { isEnabled, isRegistered, isMediatorCapable, isUserDenied, setDeviceInfo, setup }

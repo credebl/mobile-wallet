@@ -1,4 +1,4 @@
-import { W3cCredentialRecord } from '@adeya/ssi'
+import { W3cCredentialRecord } from '@credebl/ssi-mobile-core'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, FlatList, InteractionManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
