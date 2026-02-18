@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-global.Buffer = require('buffer').Buffer
+// global.Buffer = require('buffer').Buffer
 
 import { MobileSDKProvider, W3cCredentialRecordProvider } from '@credebl/ssi-mobile-core'
 import { DidCommSDK } from '@credebl/ssi-mobile-didcomm'

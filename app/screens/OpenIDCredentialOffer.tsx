@@ -232,15 +232,15 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
       const pidSchemes =
         credentialConfig?.format === 'mso_mdoc' && credentialConfig.doctype
           ? {
-            sdJwtVcVcts: [],
-            msoMdocDoctypes: [credentialConfig.doctype],
-          }
-          : credentialConfig?.format === 'vc+sd-jwt' && credentialConfig.vct
-            ? {
-              sdJwtVcVcts: [credentialConfig.vct as string],
+              sdJwtVcVcts: [],
               msoMdocDoctypes: [],
             }
-            : undefined
+          : credentialConfig?.format === 'vc+sd-jwt' && credentialConfig.vct
+          ? {
+              sdJwtVcVcts: [],
+              msoMdocDoctypes: [],
+            }
+          : undefined
 
       const credentialResponses = await sdk.modules.openid.receiveCredentialFromOpenId4VciOffer({
         resolvedCredentialOffer: resolvedOffer,
@@ -250,12 +250,13 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
         requestBatch: true,
         clientId: 'walletId',
       })
-      if (!credentialResponses || credentialResponses.length === 0) {
+      console.log('🚀 ~ OpenIdCredentialOffer ~ credentialResponses:', JSON.stringify(credentialResponses))
+      if (!credentialResponses) {
         throw new Error('No credentials received from issuer')
       }
 
-      const firstResponse = credentialResponses[0]
-      const credentialRecord = firstResponse?.credential || firstResponse
+      const firstResponse = await credentialResponses.credentials
+      const credentialRecord = firstResponse[0].credential || firstResponse
 
       if (!credentialRecord) {
         throw new Error('Credential record is undefined')

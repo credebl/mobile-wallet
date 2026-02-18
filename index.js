@@ -1,4 +1,6 @@
-import '@ethersproject/shims'
+import { install } from 'react-native-quick-crypto'
+install() // Polyfills global.crypto (including crypto.subtle) and global.Buffer
+// import '@ethersproject/shims'
 import 'react-native-gesture-handler'
 import 'react-native-url-polyfill/auto'
 import 'react-native-quick-base64'
@@ -23,8 +25,6 @@ import '@formatjs/intl'
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native'
 import * as React from 'react'
 import { AppRegistry, LogBox } from 'react-native'
-import { install } from 'react-native-quick-crypto'
-install() // Polyfills global.crypto (including crypto.subtle) and global.Buffer
 
 import App from './App.tsx'
 import { NavigationTheme } from './app/theme.ts'
