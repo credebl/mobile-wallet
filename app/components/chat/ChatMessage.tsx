@@ -1,8 +1,8 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View } from 'react-native'
 import { Bubble, IMessage, Message } from 'react-native-gifted-chat'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -43,7 +43,7 @@ const MessageIcon: React.FC = () => {
 
   return (
     <View style={{ ...theme.documentIconContainer }}>
-      <Icon name={'file-document-outline'} size={32} color={theme.documentIcon.color} />
+      <MaterialIcons name={'file-document-outline'} size={32} color={theme.documentIcon.color} />
     </View>
   )
 }

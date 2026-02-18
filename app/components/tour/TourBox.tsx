@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { tourMargin, hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -192,7 +192,7 @@ export function TourBox(props: TourBoxProps): ReactElement {
             accessibilityLabel={t('Global.Close')}
             accessibilityRole={'button'}
             hitSlop={hitSlop}>
-            <Icon name={dismissIconName} size={iconSize} color={iconColor} />
+            <MaterialIcons name={dismissIconName} size={iconSize} color={iconColor} />
           </TouchableOpacity>
         </View>
       </View>

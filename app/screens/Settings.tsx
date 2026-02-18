@@ -1,5 +1,6 @@
 // import AsyncStorage from '@react-native-async-storage/async-storage'
 import Clipboard from '@react-native-clipboard/clipboard'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +17,6 @@ import {
 import { getVersion, getBuildNumber } from 'react-native-device-info'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { ToastType } from '../components/toast/BaseToast'
 import { useAuth } from '../contexts/auth'
@@ -273,7 +273,7 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
             t('PushNotifications.PushNotifications') +
             (pushNotificationCapable ? '' : t('PushNotifications.NotAvailable')),
           testID: testIdWithKey('PushNotificationsSwitch'),
-          onPress: () => { },
+          onPress: () => {},
         },
       ],
     },
@@ -405,7 +405,12 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
 
   const SectionHeader: React.FC<{ icon: string; title: string }> = ({ icon, title }) => (
     <View style={[styles.section, styles.sectionHeader]}>
-      <Icon accessible={false} name={icon} size={24} style={{ marginRight: 10, color: SettingsTheme.iconColor }} />
+      <MaterialIcons
+        accessible={false}
+        name={icon}
+        size={24}
+        style={{ marginRight: 10, color: SettingsTheme.iconColor }}
+      />
       <Text accessibilityRole={'header'} style={[TextTheme.headingThree, { flexShrink: 1 }]}>
         {title}
       </Text>

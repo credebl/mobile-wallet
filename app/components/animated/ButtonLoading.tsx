@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useEffect, useRef } from 'react'
 import { Animated } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useTheme } from '../../contexts/theme'
 
@@ -23,7 +23,7 @@ const ButtonLoading: React.FC = () => {
 
   return (
     <Animated.View style={[{ transform: [{ rotate: rotation }] }]}>
-      <Icon style={{ color: ColorPallet.brand.icon }} size={25} name="refresh" />
+      <MaterialIcons style={{ color: ColorPallet.brand.icon }} size={25} name="refresh" />
     </Animated.View>
   )
 }

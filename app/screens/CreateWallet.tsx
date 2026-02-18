@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/core'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { View, StyleSheet, Text, Platform, Modal, TouchableOpacity } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import Button, { ButtonType } from '../components/buttons/Button'
 import { useTheme } from '../contexts/theme'
@@ -98,7 +98,7 @@ const CreateWallet: React.FC = () => {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('Restore.RestoreWallet')}</Text>
               <TouchableOpacity onPress={toggleModal}>
-                <Icon name="close" size={28} color={ColorPallet.brand.primary} />
+                <MaterialIcons name="close" size={28} color={ColorPallet.brand.primary} />
               </TouchableOpacity>
             </View>
             <Text style={styles.instructionsText}>{t('Restore.RestoreInstructions')}</Text>

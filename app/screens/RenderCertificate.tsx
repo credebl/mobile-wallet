@@ -1,11 +1,11 @@
 import type { StackScreenProps } from '@react-navigation/stack'
 
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useEffect } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import Pdf from 'react-native-pdf'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Share, { ShareOptions } from 'react-native-share'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { ColorPallet } from '../theme'
 import { CredentialStackParams, Screens } from '../types/navigators'
@@ -46,7 +46,7 @@ const RenderCertificate: React.FC<RenderCertificateProps> = ({ navigation, route
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={downloadPdf} style={{ marginRight: 20 }}>
-          <Icon style={{ color: ColorPallet.grayscale.white }} size={25} name="share" />
+          <MaterialIcons style={{ color: ColorPallet.grayscale.white }} size={25} name="share" />
         </TouchableOpacity>
       ),
     })

@@ -4,10 +4,11 @@ import {
   DidCommCredentialExchangeRecord,
   updateCredentialExchangeRecord,
   deleteCredentialExchangeRecordById,
-  useConnections
+  useConnections,
 } from '@credebl/ssi-mobile-didcomm'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { BrandingOverlayType, CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -22,7 +23,6 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import CredentialCard from '../components/misc/CredentialCard'
 import InfoBox, { InfoBoxType } from '../components/misc/InfoBox'
@@ -37,12 +37,12 @@ import { BifoldError } from '../types/error'
 import { CredentialMetadata, customMetadata } from '../types/metadata'
 import { CredentialStackParams, Screens } from '../types/navigators'
 import { ModalUsage } from '../types/remove'
+import { useSdk } from '../utils/agent'
 import { credentialTextColor, getCredentialIdentifiers, toImageSource } from '../utils/credential'
 import { formatTime, getCredentialConnectionLabel } from '../utils/helpers'
 import { buildFieldsFromAnonCredsCredential } from '../utils/oca'
 import { useSocialShare } from '../utils/social-share'
 import { testIdWithKey } from '../utils/testable'
-import { useSdk } from '../utils/agent'
 
 type CredentialDetailsProps = StackScreenProps<CredentialStackParams, Screens.CredentialDetails>
 
@@ -349,7 +349,7 @@ const CredentialDetails: React.FC<CredentialDetailsProps> = ({ navigation, route
             <View style={styles.shareIcon}>
               {!isPresentationFieldsEmpty && (
                 <TouchableOpacity onPress={() => socialShare(shareData)}>
-                  <Icon size={30} name="share-variant-outline" color={ColorPallet.grayscale.white} />
+                  <MaterialIcons size={30} name="share-variant-outline" color={ColorPallet.grayscale.white} />
                 </TouchableOpacity>
               )}
             </View>

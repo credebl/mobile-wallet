@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useTheme } from '../../contexts/theme'
 import { testIdWithKey } from '../../utils/testable'
@@ -35,7 +35,10 @@ const ScanTab: React.FC<Props> = ({ onPress, active, iconName, title }) => {
       onPress={onPress}
       accessibilityLabel={title}
       testID={testIdWithKey(title)}>
-      <Icon name={iconName} size={20} color={active ? styles.textActive.color : styles.text.color}></Icon>
+      <MaterialIcons
+        name={iconName}
+        size={20}
+        color={active ? styles.textActive.color : styles.text.color}></MaterialIcons>
       <Text style={[styles.text, active && styles.textActive]}>{title}</Text>
     </TouchableOpacity>
   )

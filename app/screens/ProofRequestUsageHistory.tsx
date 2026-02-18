@@ -1,10 +1,10 @@
 import { DidCommProofExchangeRecord, DidCommProofState, useConnectionById } from '@credebl/ssi-mobile-didcomm'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useProofsByTemplateId, isPresentationReceived } from '../../verifier'
 import EmptyList from '../components/misc/EmptyList'
@@ -107,7 +107,7 @@ const ProofRequestUsageHistoryRecord: React.FC<ProofRequestUsageHistoryRecordPro
         </View>
       </View>
       <View style={style.rightContainer}>
-        {presentationReceived && <Icon style={style.icon} name={'chevron-right'} />}
+        {presentationReceived && <MaterialIcons style={style.icon} name={'chevron-right'} />}
         <Text style={style.date}>{formatTime(record.createdAt, { shortMonth: true })}</Text>
       </View>
     </TouchableOpacity>

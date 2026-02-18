@@ -4,13 +4,13 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
 import { HomeStackParams, Screens } from '../../types/navigators'
 import { testIdWithKey } from '../../utils/testable'
 import Button, { ButtonType } from '../buttons/Button'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 
 interface NotificationModalProps {
   title: string
@@ -95,7 +95,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               style={styles.iconButton}
               onPress={onHome || closeHome}
               hitSlop={hitSlop}>
-              <Icon name="home" size={24} color={ColorPallet.notification.infoText}></Icon>
+              <MaterialIcons name="home" size={24} color={ColorPallet.notification.infoText}></MaterialIcons>
             </TouchableOpacity>
           </View>
         ) : null}

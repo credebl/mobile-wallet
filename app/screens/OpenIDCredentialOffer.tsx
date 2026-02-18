@@ -5,11 +5,7 @@ import {
   OpenId4VciResolvedCredentialOffer,
   SdJwtVcRecord,
   W3cCredentialRecord,
-  acquireAuthorizationCodeAccessToken,
-  acquirePreAuthorizedAccessToken,
   getCredentialForDisplay,
-  receiveCredentialFromOpenId4VciOffer,
-  resolveOpenId4VciOffer,
 } from '@credebl/ssi-mobile-openid4vc'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
@@ -236,18 +232,17 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
       const pidSchemes =
         credentialConfig?.format === 'mso_mdoc' && credentialConfig.doctype
           ? {
-              sdJwtVcVcts: [],
-              msoMdocDoctypes: [credentialConfig.doctype],
-            }
+            sdJwtVcVcts: [],
+            msoMdocDoctypes: [credentialConfig.doctype],
+          }
           : credentialConfig?.format === 'vc+sd-jwt' && credentialConfig.vct
-          ? {
+            ? {
               sdJwtVcVcts: [credentialConfig.vct as string],
               msoMdocDoctypes: [],
             }
-          : undefined
+            : undefined
 
-      const credentialResponses = await receiveCredentialFromOpenId4VciOffer({
-        sdk,
+      const credentialResponses = await sdk.modules.openid.receiveCredentialFromOpenId4VciOffer({
         resolvedCredentialOffer: resolvedOffer,
         credentialConfigurationIdsToRequest: [configurationId],
         accessToken: tokenResponse,
@@ -315,8 +310,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
 
       setFetchingPreview(true)
       try {
-        const tokenResponse = await acquireAuthorizationCodeAccessToken({
-          sdk,
+        const tokenResponse = await sdk.modules.openid.acquireAuthorizationCodeAccessToken({
           resolvedCredentialOffer: resolvedOffer,
           redirectUri: authorization.redirectUri,
           authorizationCode,
@@ -396,8 +390,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
         throw new Error('No credential configuration ID found')
       }
 
-      const tokenResponse = await acquirePreAuthorizedAccessToken({
-        sdk,
+      const tokenResponse = await sdk.modules.openid.acquirePreAuthorizedAccessToken({
         resolvedCredentialOffer: resolvedOffer,
         txCode,
       })
@@ -464,8 +457,7 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
         let currentResolvedAuthRequest: OpenId4VciResolvedAuthorizationRequest | undefined
 
         if ('uri' in route.params) {
-          const resolved = await resolveOpenId4VciOffer({
-            sdk,
+          const resolved = await sdk.modules.openid.resolveOpenId4VciOffer({
             offer: {
               uri: route.params.uri,
             },

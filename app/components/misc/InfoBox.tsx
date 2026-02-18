@@ -1,7 +1,7 @@
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -181,7 +181,7 @@ const InfoBox: React.FC<BifoldErrorProps> = ({
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={[styles.icon]}>
-          <Icon accessible={false} name={iconName} size={iconSize} color={iconColor} />
+          <MaterialIcons accessible={false} name={iconName} size={iconSize} color={iconColor} />
         </View>
         <Text style={styles.headerText} testID={testIdWithKey('HeaderText')}>
           {title}
@@ -203,7 +203,7 @@ const InfoBox: React.FC<BifoldErrorProps> = ({
             hitSlop={hitSlop}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.showDetailsText}>{t('Global.ShowDetails')} </Text>
-              <Icon name="chevron-right" size={iconSize} color={ColorPallet.brand.link} />
+              <MaterialIcons name="chevron-right" size={iconSize} color={ColorPallet.brand.link} />
             </View>
           </TouchableOpacity>
         )}

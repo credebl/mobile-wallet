@@ -1,10 +1,10 @@
 import { DidCommDidExchangeState } from '@credebl/ssi-mobile-didcomm'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { useNavigation } from '@react-navigation/core'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useStore } from '../../contexts/store'
 import { useTheme } from '../../contexts/theme'
@@ -165,7 +165,7 @@ const NewQRView: React.FC<Props> = ({
             <View style={styles.errorContainer}>
               {error ? (
                 <>
-                  <Icon style={styles.icon} name="cancel" size={30}></Icon>
+                  <MaterialIcons style={styles.icon} name="cancel" size={30}></MaterialIcons>
                   <Text style={[TextTheme.normal, { color: ColorPallet.grayscale.white }]}>{error.message}</Text>
                 </>
               ) : (

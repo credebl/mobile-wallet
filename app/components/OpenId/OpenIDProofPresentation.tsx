@@ -10,7 +10,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { EventTypes } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -245,7 +245,7 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
                     testID={testIdWithKey('changeCredential')}
                     style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
                     <Text style={styles.credActionText}>{t('ProofRequest.ChangeCredential')}</Text>
-                    <Icon
+                    <MaterialIcons
                       style={{ ...styles.credActionText, fontSize: styles.credActionText.fontSize + 5 }}
                       name="chevron-right"
                     />

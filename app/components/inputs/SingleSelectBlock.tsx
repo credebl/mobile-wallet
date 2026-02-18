@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -43,7 +43,9 @@ const SingleSelectBlock: React.FC<Props> = ({ selection, onSelect, initialSelect
       {selection.map(item => (
         <TouchableOpacity key={item.id} style={styles.row} onPress={() => handleSelect(item)} hitSlop={hitSlop}>
           <Text style={Inputs.singleSelectText}>{item.value}</Text>
-          {item.id === selected.id ? <Icon name={'check'} size={25} color={Inputs.singleSelectIcon.color} /> : null}
+          {item.id === selected.id ? (
+            <MaterialIcons name={'check'} size={25} color={Inputs.singleSelectIcon.color} />
+          ) : null}
         </TouchableOpacity>
       ))}
     </View>

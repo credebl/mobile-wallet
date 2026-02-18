@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useEffect, useRef } from 'react'
 import { Animated } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 interface LoadingIconProps {
   size: number
@@ -33,7 +33,7 @@ const LoadingIcon: React.FC<LoadingIconProps> = ({ size, color, active }) => {
 
   return (
     <Animated.View style={[{ transform: [{ rotate: rotation }] }]}>
-      <Icon style={{ color }} size={size} name="refresh" />
+      <MaterialIcons style={{ color }} size={size} name="refresh" />
     </Animated.View>
   )
 }

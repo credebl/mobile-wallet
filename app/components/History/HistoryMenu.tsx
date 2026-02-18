@@ -20,7 +20,7 @@ const HistoryMenu: React.FC<{ type?: boolean; notificationCount?: number }> = ({
       accessibilityLabel={t('Screens.Settings')}
       testID={testIdWithKey('Settings')}
       onPress={() => navigation.navigate(Screens.Notifications)}
-      icon={'bell'}
+      icon={'notifications'}
       badgeShow={type}
       notificationCount={notificationCount}
     />

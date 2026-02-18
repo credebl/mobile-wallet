@@ -13,11 +13,11 @@ import {
 } from '@credebl/ssi-mobile-didcomm'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { DifPexCredentialsForRequestRequirement, SubmissionEntryCredential } from '@credo-ts/core'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import Button, { ButtonType } from '../components/buttons/Button'
 import { CredentialCard } from '../components/misc'
@@ -34,10 +34,10 @@ import { BifoldError } from '../types/error'
 import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/navigators'
 import { ProofCredentialItems } from '../types/proof-items'
 import { ModalUsage } from '../types/remove'
+import { useSdk } from '../utils/agent'
 import { testIdWithKey } from '../utils/testable'
 
 import ProofRequestAccept from './ProofRequestAccept'
-import { useSdk } from '../utils/agent'
 
 type ProofRequestProps = StackScreenProps<NotificationStackParams, Screens.ProofRequestW3C>
 
@@ -336,7 +336,7 @@ const ProofRequestW3C: React.FC<ProofRequestProps> = ({ navigation, route }) => 
                     borderRadius: 4,
                     flexDirection: 'row',
                   }}>
-                  <Icon
+                  <MaterialIcons
                     style={{ marginTop: 15, marginLeft: 10 }}
                     name="warning"
                     color={ColorPallet.notification.warnIcon}

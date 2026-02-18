@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { Actions, ActionsProps } from 'react-native-gifted-chat'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 export const renderActions = (
   props: ActionsProps,
@@ -16,7 +16,7 @@ export const renderActions = (
         marginBottom: 6,
         marginLeft: 20,
       }}
-      icon={() => <Icon name={'plus-box-outline'} size={40} color={theme.options} />}
+      icon={() => <MaterialIcons name={'plus-box-outline'} size={40} color={theme.options} />}
       optionTintColor={theme.optionsText}
     />
   ) : null

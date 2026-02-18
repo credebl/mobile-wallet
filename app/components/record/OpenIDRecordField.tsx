@@ -1,7 +1,7 @@
 import { Field } from '@hyperledger/aries-oca/build/legacy'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
 
 import { useTheme } from '../../contexts/theme'
 import { W3CCredentialAttribute } from '../../types/record'
@@ -74,7 +74,11 @@ const NestedAttribute: React.FC<{
           </Text>
           {attribute.isExpandable && (
             <TouchableOpacity onPress={toggleExpand} style={styles.expandButton} testID={testIdWithKey('ExpandToggle')}>
-              <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} color={ColorPallet.brand.primary} size={20} />
+              <MaterialIcons
+                name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                color={ColorPallet.brand.primary}
+                size={20}
+              />
             </TouchableOpacity>
           )}
         </View>

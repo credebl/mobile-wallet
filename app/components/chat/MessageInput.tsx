@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { Composer, InputToolbar, Send } from 'react-native-gifted-chat'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 export const renderInputToolbar = (props: any, theme: any) => (
   <InputToolbar
@@ -38,6 +38,6 @@ export const renderSend = (props: any, theme: any) => (
     containerStyle={{
       ...theme.sendContainer,
     }}>
-    <Icon name="arrow-up-circle" size={38} color={props.text ? theme.sendEnabled : theme.sendDisabled} />
+    <MaterialIcons name="arrow-up-circle" size={38} color={props.text ? theme.sendEnabled : theme.sendDisabled} />
   </Send>
 )

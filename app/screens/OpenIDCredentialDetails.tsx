@@ -1,15 +1,14 @@
 import { getCredentialForDisplay } from '@credebl/ssi-mobile-openid4vc'
 import Clipboard from '@react-native-clipboard/clipboard'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import OpenIdCredentialCard from '../components/OpenId/OpenIDCredentialCard'
-import { useOpenIDCredentials } from '../components/Provider/OpenIDCredentialRecordProvider'
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import RecordRemove from '../components/record/RecordRemove'
 import W3CCredentialRecord from '../components/record/W3CCredentialRecord'
@@ -119,7 +118,7 @@ const OpenIDCredentialDetails: React.FC<OpenIDCredentialDetailsProps> = ({ navig
           onPress={handleCopyCredential}
           style={{ marginRight: 15 }}
           testID={testIdWithKey('CopyCredentialButton')}>
-          <Icon name="content-copy" size={24} color={'#FFF'} />
+          <MaterialIcons name="content-copy" size={24} color={'#FFF'} />
         </TouchableOpacity>
       ),
     })

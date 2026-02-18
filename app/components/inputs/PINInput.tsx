@@ -1,8 +1,8 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useState, forwardRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { CodeField, Cursor, useClearByFocusCell } from 'react-native-confirmation-code-field'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { hitSlop, minPINLength } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -124,7 +124,10 @@ const PINInput: React.FC<PINInputProps & React.RefAttributes<TextInput>> = forwa
             testID={showPIN ? testIdWithKey('Hide') : testIdWithKey('Show')}
             onPress={() => setShowPIN(!showPIN)}
             hitSlop={hitSlop}>
-            <Icon color={PINInputTheme.icon.color} name={showPIN ? 'visibility-off' : 'visibility'} size={30}></Icon>
+            <MaterialIcons
+              color={PINInputTheme.icon.color}
+              name={showPIN ? 'visibility_off' : 'visibility'}
+              size={30}></MaterialIcons>
           </TouchableOpacity>
         </View>
       </View>

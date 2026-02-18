@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { useNavigation } from '@react-navigation/core'
 import { CommonActions } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -14,7 +15,6 @@ import {
   TouchableOpacity,
   findNodeHandle,
 } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 // eslint-disable-next-line import/no-named-as-default
 import Button, { ButtonType } from '../components/buttons/Button'
@@ -169,9 +169,9 @@ const PINCreate: React.FC<PINCreateProps> = ({ setAuthenticated }) => {
                 return (
                   <View style={{ flexDirection: 'row' }} key={index}>
                     {validation.isInvalid ? (
-                      <Icon name="clear" size={iconSize} color={ColorPallet.notification.errorIcon} />
+                      <MaterialIcons name="clear" size={iconSize} color={ColorPallet.notification.errorIcon} />
                     ) : (
-                      <Icon name="check" size={iconSize} color={ColorPallet.notification.successIcon} />
+                      <MaterialIcons name="check" size={iconSize} color={ColorPallet.notification.successIcon} />
                     )}
                     <Text style={[TextTheme.normal, { paddingLeft: 4 }]}>
                       {t(`PINCreate.Helper.${validation.errorName}`)}

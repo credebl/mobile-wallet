@@ -5,12 +5,12 @@ import {
 } from '@credebl/ssi-mobile-didcomm'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { DidCommRequestPresentationV2Message } from '@credo-ts/didcomm'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, View, ViewStyle, Text, TextStyle, DeviceEventEmitter, TouchableOpacity } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { markProofAsViewed } from '../../../verifier'
 import { EventTypes, hitSlop } from '../../constants'
@@ -398,7 +398,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
     <View style={[styles.container, styleConfig.containerStyle]} testID={testIdWithKey('NotificationListItem')}>
       <View style={styles.headerContainer}>
         <View style={styles.icon}>
-          <Icon accessible={false} name={styleConfig.iconName} size={iconSize} color={styleConfig.iconColor} />
+          <MaterialIcons accessible={false} name={styleConfig.iconName} size={iconSize} color={styleConfig.iconColor} />
         </View>
         <Text style={[styles.headerText, styleConfig.textStyle]} testID={testIdWithKey('HeaderText')}>
           {details.title}
@@ -413,7 +413,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({ notificatio
               testID={testIdWithKey(`Dismiss${notificationType}`)}
               onPress={onClose}
               hitSlop={hitSlop}>
-              <Icon name={'close'} size={iconSize} color={styleConfig.iconColor} />
+              <MaterialIcons name={'close'} size={iconSize} color={styleConfig.iconColor} />
             </TouchableOpacity>
           </View>
         )}

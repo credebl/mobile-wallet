@@ -6,13 +6,13 @@ import {
   DidCommProofState,
   DidCommProofExchangeRecord,
 } from '@credebl/ssi-mobile-didcomm'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { useFocusEffect } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BackHandler, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { ProofCustomMetadata, ProofMetadata, GroupedSharedProofDataItem, markProofAsViewed } from '../../verifier'
 import InformationReceived from '../assets/img/information-received.svg'
@@ -21,9 +21,9 @@ import SharedProofData from '../components/misc/SharedProofData'
 import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { ProofRequestsStackParams, Screens } from '../types/navigators'
+import { useSdk } from '../utils/agent'
 import { getConnectionName } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
-import { useSdk } from '../utils/agent'
 
 type ProofDetailsProps = StackScreenProps<ProofRequestsStackParams, Screens.ProofDetails>
 
@@ -245,7 +245,7 @@ const UnverifiedProof: React.FC<UnverifiedProofProps> = ({ record, navigation })
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} testID={testIdWithKey('UnverifiedProofView')}>
       <View style={styles.header}>
         <View style={styles.headerTitleContainer}>
-          <Icon name="bookmark-remove" size={45} color={'white'} />
+          <MaterialIcons name="bookmark-remove" size={45} color={'white'} />
           {record.state === DidCommProofState.Abandoned && (
             <Text style={styles.headerTitle}>{t('Verifier.PresentationDeclined')}</Text>
           )}

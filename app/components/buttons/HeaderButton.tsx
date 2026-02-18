@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -71,7 +71,7 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({
       case ButtonLocation.Left:
         return (
           <>
-            <Icon name={icon} size={defaultIconSize} color={ColorPallet.brand.headerIcon} />
+            <MaterialIcons name={icon} size={defaultIconSize} color={ColorPallet.brand.headerIcon} />
             {text && <Text style={[style.title]}>{text}</Text>}
           </>
         )
@@ -79,7 +79,7 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({
         return (
           <>
             {text && <Text style={[style.title]}>{text}</Text>}
-            <Icon name={icon} size={defaultIconSize} color={ColorPallet.brand.headerIcon} />
+            <MaterialIcons name={icon} size={defaultIconSize} color={ColorPallet.brand.headerIcon} />
             {badgeShow && notificationCount > 0 && (
               <View style={style.badge}>
                 <Text style={style.badgeText}>{notificationCount}</Text>

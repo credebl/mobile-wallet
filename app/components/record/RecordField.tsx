@@ -1,10 +1,10 @@
 import { CaptureBaseAttributeType } from '@hyperledger/aries-oca'
 import { Attribute, Field } from '@hyperledger/aries-oca/build/legacy'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import startCase from 'lodash.startcase'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
 
 import { hiddenFieldValue } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -133,9 +133,9 @@ const RecordField: React.FC<RecordFieldProps> = ({
             style={styles.link}
             hitSlop={{ bottom: 10, top: 10, left: 10, right: 10 }}>
             {shown ? (
-              <Icon name="eye" color={ColorPallet.brand.primary} size={25} />
+              <MaterialIcons name="eye" color={ColorPallet.brand.primary} size={25} />
             ) : (
-              <Icon name="eye-off" color={ColorPallet.brand.primary} size={25} />
+              <MaterialIcons name="eye-off" color={ColorPallet.brand.primary} size={25} />
             )}
           </TouchableOpacity>
         ) : null}

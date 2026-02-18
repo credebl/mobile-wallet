@@ -1,12 +1,11 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Text, useWindowDimensions, View, StyleSheet } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { AttachTourStep } from '../components/tour/AttachTourStep'
-// import { useConfiguration } from '../contexts/configuration'
 import { useTheme } from '../contexts/theme'
 import { Assets } from '../theme'
 import { TabStackParams, TabStacks } from '../types/navigators'
@@ -60,7 +59,7 @@ const TabStack: React.FC = () => {
             tabBarIconStyle: styles.tabBarIcon,
             tabBarIcon: ({ color, focused }) => (
               <View style={{ ...TabTheme.tabBarContainerStyle, justifyContent: showLabels ? 'flex-end' : 'center' }}>
-                <Icon name={focused ? 'home' : 'home-outline'} color={color} size={30} />
+                <MaterialIcons name={focused ? 'home' : 'home'} color={color} size={30} />
                 {showLabels && (
                   <Text
                     style={{
@@ -104,7 +103,6 @@ const TabStack: React.FC = () => {
               </View>
             ),
             tabBarShowLabel: false,
-
             tabBarTestID: testIdWithKey(t('TabStack.Explore')),
           }}
         />
@@ -116,7 +114,7 @@ const TabStack: React.FC = () => {
             tabBarIcon: ({ color, focused }) => (
               <AttachTourStep index={2}>
                 <View style={{ ...TabTheme.tabBarContainerStyle, justifyContent: showLabels ? 'flex-end' : 'center' }}>
-                  <Icon name={focused ? 'wallet' : 'wallet-outline'} color={color} size={30} />
+                  <MaterialIcons name={focused ? 'wallet' : 'wallet'} color={color} size={30} />
                   {showLabels && (
                     <Text
                       style={{

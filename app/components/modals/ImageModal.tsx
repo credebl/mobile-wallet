@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal, StyleSheet, View, Dimensions, TouchableOpacity, TouchableWithoutFeedback, Image } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -63,7 +63,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ uri, onDismissPressed }) => {
                   accessibilityLabel={t('Global.Dismiss')}
                   accessibilityRole={'button'}
                   hitSlop={hitSlop}>
-                  <Icon name={dismissIconName} size={iconSize} color={iconColor} />
+                  <MaterialIcons name={dismissIconName} size={iconSize} color={iconColor} />
                 </TouchableOpacity>
               </View>
               <Image style={styles.image} source={{ uri }} />

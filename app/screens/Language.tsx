@@ -1,9 +1,9 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useTheme } from '../contexts/theme'
 import { Locales, storeLanguage } from '../localization'
@@ -69,7 +69,9 @@ const Language = () => {
                 unfillColor={ColorPallet.brand.secondaryBackground}
                 size={36}
                 innerIconStyle={{ borderColor: ColorPallet.brand.primary, borderWidth: 2 }}
-                ImageComponent={() => <Icon name="circle" size={18} color={ColorPallet.brand.primary}></Icon>}
+                ImageComponent={() => (
+                  <MaterialIcons name="circle" size={18} color={ColorPallet.brand.primary}></MaterialIcons>
+                )}
                 onPress={async () => await handleLanguageChange(language)}
                 isChecked={id === i18n.language}
                 disableBuiltInState

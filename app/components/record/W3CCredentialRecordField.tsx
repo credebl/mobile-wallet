@@ -3,7 +3,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import Icon from 'react-native-vector-icons/Ionicons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { hiddenFieldValue } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -169,7 +169,7 @@ const W3CCredentialRecordField: React.FC<W3CCredentialRecordFieldProps> = ({
             }}
             style={styles.expandIcon}>
             {field.isExpandable && (
-              <Icon
+              <MaterialIcons
                 name={field.isExpanded ? 'chevron-down' : 'chevron-forward'}
                 size={20}
                 color={ColorPallet.brand.primary}
@@ -198,9 +198,9 @@ const W3CCredentialRecordField: React.FC<W3CCredentialRecordFieldProps> = ({
                 style={styles.link}
                 hitSlop={{ bottom: 10, top: 10, left: 10, right: 10 }}>
                 {shown ? (
-                  <Icon name="eye" color={ColorPallet.brand.primary} size={20} />
+                  <MaterialIcons name="eye" color={ColorPallet.brand.primary} size={20} />
                 ) : (
-                  <Icon name="eye-off" color={ColorPallet.brand.primary} size={20} />
+                  <MaterialIcons name="eye-off" color={ColorPallet.brand.primary} size={20} />
                 )}
               </TouchableOpacity>
             )}

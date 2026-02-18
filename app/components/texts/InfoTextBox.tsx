@@ -1,8 +1,8 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useTheme } from '../../contexts/theme'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 
 export interface TextBoxProps {
   children: React.ReactElement | string
@@ -41,7 +41,7 @@ const InfoTextBox: React.FC<TextBoxProps> = ({ children }) => {
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.iconContainer}>
-          <Icon name={'info'} size={iconSize} color={ColorPallet.notification.infoIcon} />
+          <MaterialIcons name={'info'} size={iconSize} color={ColorPallet.notification.infoIcon} />
         </View>
         {typeof children === 'string' ? <Text style={styles.textContainer}>{children}</Text> : <>{children}</>}
       </View>

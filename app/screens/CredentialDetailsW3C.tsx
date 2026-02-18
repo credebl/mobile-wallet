@@ -13,6 +13,7 @@ import {
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { CredentialOverlay } from '@hyperledger/aries-oca/build/legacy'
 import Clipboard from '@react-native-clipboard/clipboard'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import * as CryptoJS from 'crypto-js'
 import { toString as toQRCodeString } from 'qrcode'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -21,7 +22,6 @@ import { DeviceEventEmitter, Image, ImageBackground, StyleSheet, Text, Touchable
 import { Config } from 'react-native-config'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import CommonRemoveModal from '../components/modals/CommonRemoveModal'
 import RecordRemove from '../components/record/RecordRemove'
@@ -344,7 +344,7 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
           onPress={handleCopyCredential}
           style={{ marginRight: 15 }}
           testID={testIdWithKey('CopyCredentialButton')}>
-          <Icon name="content-copy" size={24} color={'#FFF'} />
+          <MaterialIcons name="content-copy" size={24} color={'#FFF'} />
         </TouchableOpacity>
       ),
     })

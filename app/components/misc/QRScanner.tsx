@@ -1,6 +1,6 @@
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import React, { useState } from 'react'
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useTheme } from '../../contexts/theme'
 import { QrCodeScanError } from '../../types/error'
@@ -78,7 +78,7 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
         <View style={styles.errorContainer}>
           {error ? (
             <>
-              <Icon style={styles.icon} name="cancel" size={30} />
+              <MaterialIcons style={styles.icon} name="cancel" size={30} />
               <Text style={[TextTheme.caption, { color: ColorPallet.grayscale.white }]}>{error.message}</Text>
             </>
           ) : (

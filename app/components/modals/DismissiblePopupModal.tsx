@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal, StyleSheet, View, Text, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -96,7 +96,7 @@ const DismissiblePopupModal: React.FC<DismissiblePopupModalProps> = ({
             <View style={styles.container}>
               <View style={styles.headerContainer}>
                 <View style={[styles.infoIcon]}>
-                  <Icon name={infoIconName} size={iconSize} color={iconColor} />
+                  <MaterialIcons name={infoIconName} size={iconSize} color={iconColor} />
                 </View>
                 <View style={styles.headerTextContainer}>
                   <Text style={styles.headerText} testID={testIdWithKey('HeaderText')}>
@@ -110,7 +110,7 @@ const DismissiblePopupModal: React.FC<DismissiblePopupModalProps> = ({
                     accessibilityLabel={t('Global.Dismiss')}
                     accessibilityRole={'button'}
                     hitSlop={hitSlop}>
-                    <Icon name={dismissIconName} size={iconSize} color={iconColor} />
+                    <MaterialIcons name={dismissIconName} size={iconSize} color={iconColor} />
                   </TouchableOpacity>
                 </View>
               </View>

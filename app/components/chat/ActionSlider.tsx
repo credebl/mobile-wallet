@@ -1,7 +1,7 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -76,7 +76,7 @@ const ActionSlider: React.FC<Props> = ({ actions, onDismiss }) => {
             onPress={onDismiss}
             hitSlop={hitSlop}
             style={{ alignSelf: 'flex-end' }}>
-            <Icon name="window-close" size={35} style={styles.drawerRowItem}></Icon>
+            <MaterialIcons name="window-close" size={35} style={styles.drawerRowItem}></MaterialIcons>
           </TouchableOpacity>
           {actions?.map(action => {
             return (

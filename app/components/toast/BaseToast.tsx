@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, useWindowDimensions, StyleSheet, TouchableOpacity } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { useTheme } from '../../contexts/theme'
 import { GenericFn } from '../../types/fn'
@@ -96,7 +96,7 @@ const BaseToast: React.FC<BaseToastProps> = ({ title, body, toastType, onPress =
   return (
     <TouchableOpacity activeOpacity={1} onPress={() => onPress()}>
       <View style={[styles.container, { backgroundColor, borderColor, width: width - width * 0.1 }]}>
-        <Icon style={[styles.icon]} name={iconName} color={iconColor} size={iconSize} />
+        <MaterialIcons style={[styles.icon]} name={iconName} color={iconColor} size={iconSize} />
         <View style={[styles.textContainer]}>
           <Text style={[TextTheme.normal, styles.title, { color: textColor }]} testID={testIdWithKey('ToastTitle')}>
             {title}

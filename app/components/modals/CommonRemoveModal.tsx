@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import * as React from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +15,6 @@ import {
 } from 'react-native'
 import Collapsible from 'react-native-collapsible'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -62,7 +62,11 @@ const Dropdown: React.FC<RemoveProps> = ({ title, content }) => {
           },
         ]}>
         <Text style={[TextTheme.modalNormal, { fontWeight: 'bold' }]}>{title}</Text>
-        <Icon name={isCollapsed ? 'expand-more' : 'expand-less'} size={24} color={TextTheme.modalNormal.color} />
+        <MaterialIcons
+          name={isCollapsed ? 'expand-more' : 'expand-less'}
+          size={24}
+          color={TextTheme.modalNormal.color}
+        />
       </TouchableOpacity>
       <Collapsible collapsed={isCollapsed} enablePointerEvents={true}>
         <View
@@ -86,7 +90,7 @@ const BulletPoint: React.FC<BulletPointProps> = ({ text, textStyle }) => {
   return (
     <View style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'flex-start' }}>
       <View style={styles.iconContainer}>
-        <Icon name={'circle'} size={9} color={ColorPallet.brand.modalIcon} />
+        <MaterialIcons name={'circle'} size={9} color={ColorPallet.brand.modalIcon} />
       </View>
       <Text style={[textStyle, { flexShrink: 1 }]}>{text}</Text>
     </View>
@@ -368,7 +372,7 @@ const CommonRemoveModal: React.FC<CommonRemoveModalProps> = ({ usage, visible, d
           testID={testIdWithKey('Close')}
           onPress={() => onCancel && onCancel()}
           hitSlop={hitSlop}>
-          <Icon name={'close'} size={42} color={ColorPallet.brand.modalIcon} />
+          <MaterialIcons name={'close'} size={42} color={ColorPallet.brand.modalIcon} />
         </TouchableOpacity>
       </View>
       <SafeAreaView
@@ -398,10 +402,10 @@ const CommonRemoveModal: React.FC<CommonRemoveModalProps> = ({ usage, visible, d
                   usage === ModalUsage.ContactRemoveWithCredentials
                     ? ButtonType.ModalPrimary
                     : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithCredentialsOffer
-                      ? ButtonType.ModalPrimary
-                      : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithProofRequest
-                        ? ButtonType.ModalPrimary
-                        : ButtonType.ModalCritical
+                    ? ButtonType.ModalPrimary
+                    : ButtonType.ModalCritical && usage === ModalUsage.ContactRemoveWithProofRequest
+                    ? ButtonType.ModalPrimary
+                    : ButtonType.ModalCritical
                 }
               />
             </View>

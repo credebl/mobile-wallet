@@ -1,7 +1,7 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, StyleSheet } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -53,7 +53,7 @@ const TorchIcon: React.FC<Props> = ({ active }) => {
   const theme = useTheme()
   const styles = createStyles(theme)
   return (
-    <Icon
+    <MaterialIcons
       name={active ? 'flash-on' : 'flash-off'}
       color={active ? theme.ColorPallet.grayscale.black : theme.ColorPallet.grayscale.white}
       size={24}

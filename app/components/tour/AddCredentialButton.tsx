@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, TouchableOpacity, DeviceEventEmitter } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { useTheme } from '../../contexts/theme'
 import { WalletEventTypes } from '../../types/events/eventTypes'
@@ -27,7 +27,7 @@ const AddCredentialButton: React.FC = () => {
       testID={testIdWithKey('AddCredential')}
       style={styles.button}
       onPress={activateSlider}>
-      <Icon name="plus-circle-outline" size={24} color={ColorPallet.grayscale.white} />
+      <MaterialIcons name="plus-circle-outline" size={24} color={ColorPallet.grayscale.white} />
     </TouchableOpacity>
   )
 }

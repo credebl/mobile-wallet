@@ -1,9 +1,9 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -86,7 +86,7 @@ const ConnectionAlert: React.FC<ConnectionAlertProps> = ({ connectionID }) => {
           accessibilityRole={'button'}
           onPress={toggleInfoCard}
           hitSlop={hitSlop}>
-          <Icon name={'information-outline'} size={30} style={styles.informationIcon} />
+          <MaterialIcons name={'information-outline'} size={30} style={styles.informationIcon} />
         </TouchableOpacity>
       </View>
       {infoCardVisible && (

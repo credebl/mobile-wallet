@@ -1,7 +1,7 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -34,7 +34,7 @@ const CloseButton: React.FC<Props> = ({ onPress }) => {
         style={styles.button}
         onPress={onPress}
         hitSlop={hitSlop}>
-        <Icon name="close" size={24} color={ColorPallet.grayscale.white}></Icon>
+        <MaterialIcons name="close" size={24} color={ColorPallet.grayscale.white}></MaterialIcons>
       </TouchableOpacity>
     </View>
   )

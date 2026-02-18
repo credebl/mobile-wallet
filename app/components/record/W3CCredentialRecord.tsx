@@ -1,9 +1,8 @@
 import { W3cCredentialRecord } from '@credebl/ssi-mobile-core'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, FlatList, InteractionManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
-import Document from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { useTheme } from '../../contexts/theme'
 import { Field, W3CCredentialAttribute, W3CCredentialAttributeField } from '../../types/record'
@@ -222,7 +221,7 @@ const W3CCredentialRecord: React.FC<RecordProps> = ({
                     testID={testIdWithKey('ViewDocument')}
                     accessible={true}
                     accessibilityLabel={t('Record.ViewDocument')}>
-                    <Document name="file-document-multiple-outline" color={ColorPallet.brand.primary} size={20} />
+                    <MaterialIcons name="file-document-multiple-outline" color={ColorPallet.brand.primary} size={20} />
                     <Text style={[ListItems.recordLink, styles.linkText]}>{t('Record.ViewDocument')}</Text>
                   </TouchableOpacity>
                 )}
@@ -239,9 +238,9 @@ const W3CCredentialRecord: React.FC<RecordProps> = ({
                   accessible={true}
                   accessibilityLabel={showAll ? t('Record.ShowAll') : t('Record.HideAll')}>
                   {showAll ? (
-                    <Icon name="eye" color={ColorPallet.brand.primary} size={30} />
+                    <MaterialIcons name="eye" color={ColorPallet.brand.primary} size={30} />
                   ) : (
-                    <Icon name="eye-off" color={ColorPallet.brand.primary} size={30} />
+                    <MaterialIcons name="eye-off" color={ColorPallet.brand.primary} size={30} />
                   )}
                 </TouchableOpacity>
               </View>

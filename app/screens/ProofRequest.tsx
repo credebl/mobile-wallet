@@ -11,12 +11,12 @@ import {
   sendProofProblemReport,
 } from '@credebl/ssi-mobile-core'
 import { DidCommCredentialExchangeRecord, useProofById, useConnectionById } from '@credebl/ssi-mobile-didcomm'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { getProofDataForHistory } from '../../verifier/utils/proof'
 import { saveHistory } from '../components/History/HistoryManager'
@@ -38,11 +38,11 @@ import { NotificationStackParams, Screens, Stacks, TabStacks } from '../types/na
 import { ProofCredentialAttributes, ProofCredentialItems, ProofCredentialPredicates } from '../types/proof-items'
 import { Attribute, Predicate } from '../types/record'
 import { ModalUsage } from '../types/remove'
+import { useSdk } from '../utils/agent'
 import { evaluatePredicates } from '../utils/helpers'
 import { testIdWithKey } from '../utils/testable'
 
 import ProofRequestAccept from './ProofRequestAccept'
-import { useSdk } from '../utils/agent'
 
 type ProofRequestProps = StackScreenProps<NotificationStackParams, Screens.ProofRequest>
 type Fields = Record<string, AnonCredsRequestedAttributeMatch[] | AnonCredsRequestedPredicateMatch[]>
@@ -213,16 +213,16 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
 
           const selectRetrievedCredentials: AnonCredsCredentialsForProofRequest | undefined = retrievedCredentials
             ? {
-              ...retrievedCredentials,
-              attributes: formatCredentials(retrievedCredentials.attributes, credList) as Record<
-                string,
-                AnonCredsRequestedAttributeMatch[]
-              >,
-              predicates: formatCredentials(retrievedCredentials.predicates, credList) as Record<
-                string,
-                AnonCredsRequestedPredicateMatch[]
-              >,
-            }
+                ...retrievedCredentials,
+                attributes: formatCredentials(retrievedCredentials.attributes, credList) as Record<
+                  string,
+                  AnonCredsRequestedAttributeMatch[]
+                >,
+                predicates: formatCredentials(retrievedCredentials.predicates, credList) as Record<
+                  string,
+                  AnonCredsRequestedPredicateMatch[]
+                >,
+              }
             : undefined
           setRetrievedCredentials(selectRetrievedCredentials)
 
@@ -426,7 +426,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
             <View style={styles.headerTextContainer}>
               {!hasSatisfiedPredicates(getCredentialsFields()) ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Icon
+                  <MaterialIcons
                     style={{ marginLeft: -2, marginRight: 10 }}
                     name="highlight-off"
                     color={ListItems.proofIcon.color}
@@ -457,7 +457,7 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
                     borderRadius: 4,
                     flexDirection: 'row',
                   }}>
-                  <Icon
+                  <MaterialIcons
                     style={{ marginTop: 15, marginLeft: 10 }}
                     name="warning"
                     color={ColorPallet.notification.warnIcon}
@@ -562,8 +562,8 @@ const ProofRequest: React.FC<ProofRequestProps> = ({ navigation, route }) => {
                     handleAltCredChange={
                       item.altCredentials && item.altCredentials.length > 1
                         ? () => {
-                          handleAltCredChange(item.credId, item.altCredentials ?? [item.credId])
-                        }
+                            handleAltCredChange(item.credId, item.altCredentials ?? [item.credId])
+                          }
                         : undefined
                     }
                     proof={true}></CredentialCard>

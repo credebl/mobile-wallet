@@ -1,12 +1,12 @@
 import { DidCommCredentialExchangeRecord, useConnections } from '@credebl/ssi-mobile-didcomm'
 import { BrandingOverlay } from '@hyperledger/aries-oca'
 import { Attribute, CredentialOverlay, Predicate } from '@hyperledger/aries-oca/build/legacy'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import startCase from 'lodash.startcase'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dimensions, FlatList, Image, ImageBackground, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
@@ -292,7 +292,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
             {!predicateError && !error ? (
               (overlay.metaOverlay?.name ?? overlay.metaOverlay?.issuer ?? 'C')?.charAt(0).toUpperCase()
             ) : (
-              <Icon name={'warning'} size={30} style={styles.errorIcon} />
+              <MaterialIcons name={'warning'} size={30} style={styles.errorIcon} />
             )}
           </Text>
         )}
@@ -365,7 +365,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
         <View style={{ marginTop: 15 }}>
           {!(item?.value || item?.pValue) ? (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon
+              <MaterialIcons
                 style={{ paddingTop: 2, paddingHorizontal: 2 }}
                 name="close"
                 color={ListItems.proofError.color}
@@ -423,7 +423,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
           </View>
           {(error || isProofRevoked) && (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon style={[styles.errorIcon]} name="close" size={30} />
+              <MaterialIcons style={[styles.errorIcon]} name="close" size={30} />
 
               <Text style={[styles.errorText]} testID={testIdWithKey('RevokedOrNotAvailable')} numberOfLines={1}>
                 {error ? t('ProofRequest.NotAvailableInYourWallet') : t('CredentialDetails.Revoked')}
@@ -447,7 +447,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
                       testID={testIdWithKey('changeCredential')}
                       style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                       <Text style={styles.credActionText}>{t('ProofRequest.ChangeCredential')}</Text>
-                      <Icon
+                      <MaterialIcons
                         style={{ ...styles.credActionText, fontSize: styles.credActionText.fontSize + 5 }}
                         name="chevron-right"
                       />
@@ -516,7 +516,7 @@ const CredentialCard11: React.FC<CredentialCard11Props> = ({
                   backgroundColor: ColorPallet.notification.error,
                 },
               ]}>
-              <Icon size={0.7 * logoHeight} style={{ color: ColorPallet.semantic.error }} name="error" />
+              <MaterialIcons size={0.7 * logoHeight} style={{ color: ColorPallet.semantic.error }} name="error" />
             </View>
           )
         default:
