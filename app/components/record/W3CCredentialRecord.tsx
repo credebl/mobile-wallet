@@ -237,11 +237,10 @@ const W3CCredentialRecord: React.FC<RecordProps> = ({
                   testID={testIdWithKey('HideAll')}
                   accessible={true}
                   accessibilityLabel={showAll ? t('Record.ShowAll') : t('Record.HideAll')}>
-                  {showAll ? (
-                    <MaterialIcons name="eye" color={ColorPallet.brand.primary} size={30} />
-                  ) : (
-                    <MaterialIcons name="eye-off" color={ColorPallet.brand.primary} size={30} />
-                  )}
+                  <MaterialIcons
+                    color={ColorPallet.brand.primary}
+                    name={showAll ? 'visibility' : 'visibility-off'}
+                    size={20}></MaterialIcons>
                 </TouchableOpacity>
               </View>
             )}

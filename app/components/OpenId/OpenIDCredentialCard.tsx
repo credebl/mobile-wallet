@@ -1,18 +1,8 @@
-import {
-  ClaimFormat,
-  GenericCredentialExchangeRecord,
-  getW3cIssuerDisplay,
-  JsonTransformer,
-  W3cCredentialRecord,
-} from '@credebl/ssi-mobile-didcomm'
-import {
-  W3cCredentialJson,
-  getW3cCredentialDisplay,
-  getOpenId4VcCredentialMetadata,
-} from '@credebl/ssi-mobile-openid4vc'
+import { GenericCredentialExchangeRecord } from '@credebl/ssi-mobile-didcomm'
 import React from 'react'
 import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
+import { openId4VcCredentialMetadataKey } from '../../constants'
 import { useTheme } from '../../contexts/theme'
 import { ColorPallet } from '../../theme'
 
@@ -34,14 +24,17 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({
   onPress,
   credentialFormat,
 }) => {
-  const credential = JsonTransformer.toJSON(
-    (credentialRecord as W3cCredentialRecord).credential.claimFormat === ClaimFormat.JwtVc
-      ? credentialRecord?.credential?.credential
-      : credentialRecord?.credential,
-  ) as W3cCredentialJson
-  const openId4VcMetadata = getOpenId4VcCredentialMetadata(credentialRecord as W3cCredentialRecord)
-  const issuerShow = getW3cIssuerDisplay(credential, openId4VcMetadata)
-  const credentialShow = getW3cCredentialDisplay(credential, openId4VcMetadata)
+  let openId4VcMetadata: any = null
+  if (credentialRecord?.credentialInstances?.length) {
+    openId4VcMetadata =
+      credentialRecord?.metadata?.data?.[openId4VcCredentialMetadataKey] ??
+      credentialRecord?.metadata?.data?.openId4VcCredentialMetadataKey
+  }
+
+  const issuerShow = openId4VcMetadata?.issuer?.display?.[0]
+
+  const credentialShow = openId4VcMetadata?.credential?.display?.[0]
+
   const { TextTheme } = useTheme()
 
   const styles = StyleSheet.create({
@@ -135,8 +128,8 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({
     },
   })
 
-  textColor = credentialShow.textColor
-    ? credentialShow.textColor
+  textColor = credentialShow.text_color
+    ? credentialShow.text_color
     : getTextColorBasedOnBg(ColorPallet.brand.primary ?? '#000')
 
   return (
@@ -146,8 +139,8 @@ const OpenIdCredentialCard: React.FC<OpenIdCredentialCardProps> = ({
         onPress={onPress}
         activeOpacity={0.7}>
         <ImageBackground
-          source={{ uri: credentialShow?.backgroundImage?.url }}
-          style={[styles.backgroundView, { backgroundColor: credentialShow.backgroundColor }]}
+          source={{ uri: credentialShow?.background_image?.uri }}
+          style={[styles.backgroundView, { backgroundColor: credentialShow.background_color }]}
           imageStyle={styles.backgroundImage}
           resizeMode="cover">
           {credentialFormat && (

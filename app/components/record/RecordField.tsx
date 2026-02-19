@@ -132,11 +132,10 @@ const RecordField: React.FC<RecordFieldProps> = ({
             onPress={onToggleViewPressed}
             style={styles.link}
             hitSlop={{ bottom: 10, top: 10, left: 10, right: 10 }}>
-            {shown ? (
-              <MaterialIcons name="eye" color={ColorPallet.brand.primary} size={25} />
-            ) : (
-              <MaterialIcons name="eye-off" color={ColorPallet.brand.primary} size={25} />
-            )}
+            <MaterialIcons
+              color={ColorPallet.brand.primary}
+              name={shown ? 'visibility' : 'visibility-off'}
+              size={30}></MaterialIcons>
           </TouchableOpacity>
         ) : null}
       </View>

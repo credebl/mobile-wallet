@@ -126,7 +126,7 @@ const PINInput: React.FC<PINInputProps & React.RefAttributes<TextInput>> = forwa
             hitSlop={hitSlop}>
             <MaterialIcons
               color={PINInputTheme.icon.color}
-              name={showPIN ? 'visibility_off' : 'visibility'}
+              name={showPIN ? 'visibility-off' : 'visibility'}
               size={30}></MaterialIcons>
           </TouchableOpacity>
         </View>

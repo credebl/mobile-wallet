@@ -3,11 +3,12 @@ import {
   AnonCredsCredentialMetadataKey,
   DidCommCredentialExchangeRecord,
   DidCommCredentialState,
-  W3cCredentialRecord,
   SdJwtVcRecord,
-  useCredentialByState,
   useConnections,
+  useCredentialByState,
+  W3cCredentialRecord,
 } from '@credebl/ssi-mobile-didcomm'
+import { useMdocRecords, useSdJwtVcRecords } from '@credebl/ssi-mobile-openid4vc'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
@@ -17,13 +18,13 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 
 import ScanButton from '../components/common/ScanButton'
 import CredentialCard from '../components/misc/CredentialCard'
-import { OpenIDCredScreenMode } from '../constants'
+import { openId4VcCredentialMetadataKey, OpenIDCredScreenMode } from '../constants'
 import { useConfiguration } from '../contexts/configuration'
 import { CredentialStackParams, Screens } from '../types/navigators'
 import { useSdk } from '../utils/agent'
 import { getCredentialFormat } from '../utils/helpers'
 
-const openId4VcCredentialMetadataKey = '_credebl/openId4VcCredentialMetadata'
+
 
 interface EnhancedW3CRecord extends W3cCredentialRecord {
   connectionLabel?: string
@@ -37,13 +38,20 @@ const ListCredentials: React.FC<Props> = ({ isHorizontal = false }) => {
   const { t } = useTranslation()
   const { sdk } = useSdk()
   const { credentialEmptyList: CredentialEmptyList } = useConfiguration()
+  const sdJwtVcRecords = useSdJwtVcRecords()
+  const mDocRecords = useMdocRecords()
+
   const credentials: (DidCommCredentialExchangeRecord | W3cCredentialRecord | SdJwtVcRecord | MdocRecord)[] = [
     ...useCredentialByState(DidCommCredentialState.CredentialReceived),
     ...useCredentialByState(DidCommCredentialState.Done),
+    ...(sdJwtVcRecords.sdJwtVcRecords ?? []),
+    ...(mDocRecords.mdocRecords ?? []),
   ]
+  console.log('🚀 ~ ListCredentials.tsx:44 ~ ListCredentials ~ credentials:', credentials)
   const [credentialList, setCredentialList] = useState<
     (DidCommCredentialExchangeRecord | EnhancedW3CRecord | SdJwtVcRecord | MdocRecord)[]
   >([])
+  console.log('🚀 ~ ListCredentials.tsx:47 ~ ListCredentials ~ credentialList:', credentialList)
   const { records: connectionRecords } = useConnections()
 
   const navigation = useNavigation<StackNavigationProp<CredentialStackParams>>()

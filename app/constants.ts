@@ -9,6 +9,7 @@ export const hiddenFieldValue = Array(lengthOfhiddenAttributes).fill(unicodeForB
 // Used to property prefix TestIDs so they can be looked up
 // by on-device automated testing systems like SauceLabs.
 export const testIdPrefix = 'com.ariesbifold:id/'
+export const openId4VcCredentialMetadataKey = '_credebl/openId4VcCredentialMetadata'
 
 export enum LocalStorageKeys {
   Onboarding = 'OnboardingState',

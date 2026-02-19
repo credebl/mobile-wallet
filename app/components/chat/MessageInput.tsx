@@ -38,6 +38,6 @@ export const renderSend = (props: any, theme: any) => (
     containerStyle={{
       ...theme.sendContainer,
     }}>
-    <MaterialIcons name="arrow-up-circle" size={38} color={props.text ? theme.sendEnabled : theme.sendDisabled} />
+    <MaterialIcons name="arrow-circle-up" size={38} color={props.text ? theme.sendEnabled : theme.sendDisabled} />
   </Send>
 )

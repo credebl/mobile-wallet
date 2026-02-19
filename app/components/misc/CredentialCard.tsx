@@ -1,7 +1,6 @@
 import {
   DidCommCredentialExchangeRecord,
   GenericCredentialExchangeRecord,
-  openId4VcCredentialMetadataKey,
   SdJwtVcRecord,
   W3cCredentialRecord,
 } from '@credebl/ssi-mobile-didcomm'
@@ -9,6 +8,7 @@ import { Attribute, BrandingOverlayType, Predicate } from '@hyperledger/aries-oc
 import React from 'react'
 import { ViewStyle } from 'react-native'
 
+import { openId4VcCredentialMetadataKey } from '../../constants'
 import { useConfiguration } from '../../contexts/configuration'
 import { useTheme } from '../../contexts/theme'
 import OpenIdCredentialCard from '../OpenId/OpenIDCredentialCard'
@@ -49,6 +49,8 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
   connectionLabel = '',
   credentialFormat,
 }) => {
+  console.log('🚀 ~ CredentialCard.tsx:52 ~ CredentialCard ~ displayItems:', displayItems)
+  console.log('🚀 ~ CredentialCard.tsx:52 ~ CredentialCard ~ credential:', credential)
   // add ability to reference credential by ID, allows us to get past react hook restrictions
   const { OCABundleResolver } = useConfiguration()
   const { ColorPallet } = useTheme()

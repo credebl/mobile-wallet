@@ -1,9 +1,9 @@
 import { sanitizeString } from '@credebl/ssi-mobile-openid4vc'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { hiddenFieldValue } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -170,7 +170,7 @@ const W3CCredentialRecordField: React.FC<W3CCredentialRecordFieldProps> = ({
             style={styles.expandIcon}>
             {field.isExpandable && (
               <MaterialIcons
-                name={field.isExpanded ? 'chevron-down' : 'chevron-forward'}
+                name={field.isExpanded ? 'expand-more' : 'chevron-right'}
                 size={20}
                 color={ColorPallet.brand.primary}
                 style={{ marginRight: 8 }}
@@ -198,9 +198,9 @@ const W3CCredentialRecordField: React.FC<W3CCredentialRecordFieldProps> = ({
                 style={styles.link}
                 hitSlop={{ bottom: 10, top: 10, left: 10, right: 10 }}>
                 {shown ? (
-                  <MaterialIcons name="eye" color={ColorPallet.brand.primary} size={20} />
+                  <MaterialIcons color={ColorPallet.brand.primary} name={'visibility'} size={20}></MaterialIcons>
                 ) : (
-                  <MaterialIcons name="eye-off" color={ColorPallet.brand.primary} size={20} />
+                  <MaterialIcons color={ColorPallet.brand.primary} name={'visibility-off'} size={20}></MaterialIcons>
                 )}
               </TouchableOpacity>
             )}

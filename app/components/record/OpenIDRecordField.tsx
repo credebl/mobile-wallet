@@ -75,7 +75,7 @@ const NestedAttribute: React.FC<{
           {attribute.isExpandable && (
             <TouchableOpacity onPress={toggleExpand} style={styles.expandButton} testID={testIdWithKey('ExpandToggle')}>
               <MaterialIcons
-                name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                name={field.isExpanded ? 'expand-more' : 'chevron-right'}
                 color={ColorPallet.brand.primary}
                 size={20}
               />

@@ -1,16 +1,11 @@
-import {
-  ClaimFormat,
-  CredentialMetadata,
-  DisplayImage,
-  FormattedSubmissionEntrySatisfied,
-  shareProof,
-} from '@credebl/ssi-mobile-openid4vc'
+import { ClaimFormat } from '@credebl/ssi-mobile-didcomm'
+import { CredentialMetadata, DisplayImage, FormattedSubmissionEntrySatisfied } from '@credebl/ssi-mobile-openid4vc'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeviceEventEmitter, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { EventTypes } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -112,8 +107,7 @@ const OpenIDProofPresentation: React.FC<OpenIDProofPresentationProps> = ({
 
       setButtonsVisible(false)
 
-      await shareProof({
-        sdk,
+      await sdk.modules.openid.shareProof({
         resolvedRequest: credential,
         selectedCredentials,
       })

@@ -28,7 +28,6 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
 
   const styles = StyleSheet.create({
     container: {
-      height: '100%',
       backgroundColor: ColorPallet.brand.modalPrimaryBackground,
       padding: 20,
     },
@@ -78,13 +77,13 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
   }, [proof, proofDeliveryStatus, confirmationOnly])
 
   return (
-    <Modal visible={visible} transparent={true} animationType={'none'}>
+    <Modal visible={visible} transparent={true} animationType={'none'} >
       <StatusBar
         barStyle={
           Platform.OS === 'android' ? StatusBarStyles.Light : statusBarStyleForColor(styles.container.backgroundColor)
         }
       />
-      <SafeAreaView style={{ backgroundColor: ColorPallet.brand.modalPrimaryBackground }}>
+      <SafeAreaView style={{ backgroundColor: ColorPallet.brand.modalPrimaryBackground, flex: 1 }}>
         <ScrollView style={[styles.container]}>
           <View style={[styles.messageContainer]}>
             {proofDeliveryStatus === DidCommProofState.RequestReceived && (
@@ -97,12 +96,12 @@ const ProofRequestAccept: React.FC<ProofRequestAcceptProps> = ({ visible, proofI
 
             {(proofDeliveryStatus === DidCommProofState.PresentationSent ||
               proofDeliveryStatus === DidCommProofState.Done) && (
-              <Text
-                style={[TextTheme.modalHeadingThree, styles.messageText]}
-                testID={testIdWithKey('SentProofRequest')}>
-                {t('ProofRequest.InformationSentSuccessfully')}
-              </Text>
-            )}
+                <Text
+                  style={[TextTheme.modalHeadingThree, styles.messageText]}
+                  testID={testIdWithKey('SentProofRequest')}>
+                  {t('ProofRequest.InformationSentSuccessfully')}
+                </Text>
+              )}
           </View>
 
           <View style={[styles.image, { minHeight: 250, alignItems: 'center', justifyContent: 'flex-end' }]}>
