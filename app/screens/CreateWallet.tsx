@@ -1,8 +1,8 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { useNavigation } from '@react-navigation/core'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { View, StyleSheet, Text, Platform, Modal, TouchableOpacity } from 'react-native'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import Button, { ButtonType } from '../components/buttons/Button'
 import { useTheme } from '../contexts/theme'

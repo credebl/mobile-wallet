@@ -1,7 +1,7 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, TouchableOpacity, DeviceEventEmitter } from 'react-native'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { useTheme } from '../../contexts/theme'
 import { WalletEventTypes } from '../../types/events/eventTypes'

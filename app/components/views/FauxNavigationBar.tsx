@@ -1,8 +1,8 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, View, Text, Platform } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'

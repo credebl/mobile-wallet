@@ -1,7 +1,7 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal, StyleSheet, View, Dimensions, TouchableOpacity, TouchableWithoutFeedback, Image } from 'react-native'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'

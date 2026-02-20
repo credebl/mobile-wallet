@@ -1,7 +1,7 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React, { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { tourMargin, hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'

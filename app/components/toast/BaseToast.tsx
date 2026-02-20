@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { View, Text, useWindowDimensions, StyleSheet, TouchableOpacity } from 'react-native'
-import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 
 import { useTheme } from '../../contexts/theme'
 import { GenericFn } from '../../types/fn'

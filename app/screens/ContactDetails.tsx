@@ -139,7 +139,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ route }) => {
   }
 
   const handleGoToCredentials = () => {
-    navigation.getParent()?.navigate(Stacks.TabStack, { screen: TabStacks.CredentialStack, params: { screen: Screens.Credentials } })
+    navigation
+      .getParent()
+      ?.navigate(Stacks.TabStack, { screen: TabStacks.CredentialStack, params: { screen: Screens.Credentials } })
   }
   const handleGoToCredentialsOffer = () => {
     navigation.getParent()?.navigate(Stacks.TabStack, { screen: TabStacks.HomeStack, params: { screen: Screens.Home } })

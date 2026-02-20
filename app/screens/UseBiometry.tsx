@@ -169,7 +169,6 @@ const UseBiometry: React.FC<UseBiometryProps> = () => {
             </Pressable>
           </View>
         </View>
-
       </ScrollView>
       <View style={{ marginTop: 'auto', margin: 20 }}>
         {store.onboarding.didConsiderBiometry || (

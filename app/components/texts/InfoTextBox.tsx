@@ -1,8 +1,8 @@
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
 import { useTheme } from '../../contexts/theme'
-import MaterialIcons from '@react-native-vector-icons/material-icons'
 
 export interface TextBoxProps {
   children: React.ReactElement | string

@@ -1,3 +1,4 @@
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
@@ -10,7 +11,6 @@ import { useTheme } from '../../contexts/theme'
 import { HomeStackParams, Screens } from '../../types/navigators'
 import { testIdWithKey } from '../../utils/testable'
 import Button, { ButtonType } from '../buttons/Button'
-import MaterialIcons from '@react-native-vector-icons/material-icons'
 
 interface NotificationModalProps {
   title: string
