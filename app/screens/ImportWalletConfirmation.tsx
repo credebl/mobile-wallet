@@ -94,7 +94,6 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
     setVerify(true)
     Keyboard.dismiss()
     const credentials = await getWalletCredentials()
-    console.log('🚀 ~ initAgent ~ credentials:', credentials)
     if (!credentials?.id || !credentials.key) {
       // Cannot find wallet id/secret
       return
@@ -144,7 +143,6 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
       })
       navigation.navigate(Screens.UseBiometry)
     } catch (e: unknown) {
-      console.error('Wallet import error:', e)
       Toast.show({
         type: ToastType.Error,
         text1: 'Wallet import failed. Please try again',

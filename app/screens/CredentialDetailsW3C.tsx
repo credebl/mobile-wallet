@@ -5,8 +5,6 @@ import {
   DidCommCredentialExchangeRecord,
   DidCommCredentialState,
   W3cCredentialRecord,
-  deleteCredentialExchangeRecordById,
-  getW3cCredentialRecordById,
   useCredentialByState,
   useConnections,
 } from '@credebl/ssi-mobile-didcomm'
@@ -34,14 +32,13 @@ import { BifoldError } from '../types/error'
 import { ContactStackParams, CredentialStackParams, Screens } from '../types/navigators'
 import { W3CCredentialAttributeField } from '../types/record'
 import { ModalUsage } from '../types/remove'
+import { useSdk } from '../utils/agent'
 import {
   buildFieldsFromJSONLDCredential,
   credentialTextColor,
   formatCredentialSubject,
-  getCredentialSubject,
   toImageSource,
 } from '../utils/credential'
-import { useSdk } from '../utils/agent'
 import { testIdWithKey } from '../utils/testable'
 
 type CredentialDetailsProps = StackScreenProps<CredentialStackParams | ContactStackParams, Screens.CredentialDetailsW3C>
@@ -134,7 +131,7 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
           return credential
         } else if (credential instanceof DidCommCredentialExchangeRecord) {
           const credentialRecordId = credential.credentials[0].credentialRecordId
-          const record = await getW3cCredentialRecordById(sdk, credentialRecordId)
+          const record = await sdk.agent?.w3cCredentials.getById(credentialRecordId)
           const connection = connectionRecords.find(connection => connection.id === credential?.connectionId)
           record.connectionLabel = connection?.theirLabel
           return record
@@ -181,7 +178,7 @@ const CredentialDetailsW3C: React.FC<CredentialDetailsProps> = ({ navigation, ro
       const rec = credentialsList.find(cred => cred.credentials[0]?.credentialRecordId === credential.id)
       setIsDeletingCredential(true)
       if (rec) {
-        await deleteCredentialExchangeRecordById(sdk, rec.id, {
+        await sdk.modules.didcomm.credentials.deleteCredentialExchangeRecordById(rec.id, {
           deleteAssociatedCredentials: true,
         })
       }

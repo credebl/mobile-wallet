@@ -250,7 +250,6 @@ const OpenIdCredentialOffer: React.FC<OpenIdCredentialOfferProps> = ({ navigatio
         requestBatch: true,
         clientId: 'walletId',
       })
-      console.log('🚀 ~ OpenIdCredentialOffer ~ credentialResponses:', JSON.stringify(credentialResponses))
       if (!credentialResponses) {
         throw new Error('No credentials received from issuer')
       }

@@ -35,7 +35,7 @@ const Connection: React.FC<ConnectionProps> = ({ navigation, route }) => {
   // delay message, the user should be redirected to the home screen.
   const { connectionTimerDelay, autoRedirectConnectionToHome } = useConfiguration()
   const connTimerDelay = connectionTimerDelay ?? 10000 // in ms
-  const { connectionId, outOfBandId, threadId } = route.params
+  const { connectionId, outOfBandId } = route.params
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const connection = connectionId ? useConnectionById(connectionId) : undefined
   const { t } = useTranslation()

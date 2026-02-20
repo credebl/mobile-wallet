@@ -47,7 +47,6 @@ const VerifiedProof: React.FC<VerifiedProofProps> = ({
 }: VerifiedProofProps) => {
   const { t } = useTranslation()
   const { ColorPallet, TextTheme } = useTheme()
-  const { sdk } = useSdk()
 
   const styles = StyleSheet.create({
     container: {
@@ -275,14 +274,15 @@ const ProofDetails: React.FC<ProofDetailsProps> = ({ route, navigation }) => {
   const { recordId, isHistory, senderReview } = route?.params
   const record = useProofById(recordId)
   const [store] = useStore()
+  const { sdk } = useSdk()
 
   useEffect(() => {
     return () => {
       if (!store.preferences.useDataRetention) {
-        sdk?.modules.proofs.deleteById(recordId)
+        sdk?.modules.didcomm.agent.didcomm.proofs.deleteById(recordId)
       }
       if ((record?.metadata.get(ProofMetadata.customMetadata) as ProofCustomMetadata).delete_conn_after_seen) {
-        sdk?.modules.connections.deleteById(record?.connectionId ?? '')
+        sdk?.modules.didcomm.connections.deleteById(record?.connectionId ?? '')
       }
     }
   }, [])
@@ -304,9 +304,9 @@ const ProofDetails: React.FC<ProofDetailsProps> = ({ route, navigation }) => {
         return true
       }
 
-      BackHandler.addEventListener('hardwareBackPress', onBackPress)
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
 
-      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+      return () => subscription.remove()
     }, []),
   )
 

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/order
 import { install } from 'react-native-quick-crypto'
 install() // Polyfills global.crypto (including crypto.subtle) and global.Buffer
 // import '@ethersproject/shims'

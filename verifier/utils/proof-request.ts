@@ -10,7 +10,7 @@ import { AdeyaSdk } from '../../app/utils/agent'
 import { ProofRequestTemplate, ProofRequestType } from '../types/proof-reqeust-template'
 
 const protocolVersion = 'v2'
-const domain = 'http://aries-mobile-agent.com'
+export const domain = 'http://aries-mobile-agent.com'
 
 /*
  * Find Proof Request message in the storage by the given id

@@ -311,7 +311,6 @@ const Splash: React.FC = () => {
           }),
         )
       } catch (error) {
-        console.log('🚀 ~ Splash.tsx:322 ~ startMediation ~ error:', error)
         setMediationStarted(false)
         setInitErrorType(InitErrorTypes.Agent)
         setInitError(error as Error)

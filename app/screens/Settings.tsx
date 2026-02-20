@@ -45,6 +45,7 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
   const { SettingsTheme, TextTheme, ColorPallet, Assets } = useTheme()
   const { settings, enableTours } = useConfiguration()
   const [enablePushNotifications, setEnablePushNotifications] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [pushNotificationCapable, setPushNotificationCapable] = useState(true)
   const [holderDid, setHolderDid] = useState('')
   const { isGoogleAccountSignedIn, googleSignOut } = useAuth()
