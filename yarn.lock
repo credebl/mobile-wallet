@@ -1264,22 +1264,22 @@
     ieee754 "^1.2.1"
     react-native-quick-base64 "^2.0.5"
 
-"@credebl/ssi-mobile-core@2.0.3-alpha-20260217073920":
-  version "2.0.3-alpha-20260217073920"
-  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-core/-/ssi-mobile-core-2.0.3-alpha-20260217073920.tgz#f343157590c3f7c50fd80b2857b754434804130e"
-  integrity sha512-bbWD6BGkFwnXLcctzZos/y3xTuIDdqEG5ts/5OeYEQddronKrR6oB2rp7WA8hggGRTYVpoofiWEl4z/HDvObFQ==
+"@credebl/ssi-mobile-core@2.0.3-alpha-20260220063221":
+  version "2.0.3-alpha-20260220063221"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-core/-/ssi-mobile-core-2.0.3-alpha-20260220063221.tgz#d5e24a4330bc324af629430783470e7e28a5c245"
+  integrity sha512-iwqIH4AMPBwhjZsvgv/QrwxMI8Bp07HfQRKD3ZZWNEZqswC/cKhRv16G1v24EeQ0E6dzhNIXlbMyvzmCPpF6vg==
   dependencies:
     "@credo-ts/askar" "0.6.1"
     "@credo-ts/core" "0.6.1"
     "@credo-ts/react-native" "0.6.1"
     rxjs "^7.8.2"
 
-"@credebl/ssi-mobile-didcomm@2.0.3-alpha-20260217073920":
-  version "2.0.3-alpha-20260217073920"
-  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-didcomm/-/ssi-mobile-didcomm-2.0.3-alpha-20260217073920.tgz#d8d9fd9551fcbee34539b82c55bea85d01efb8e6"
-  integrity sha512-p8FrCh2z+TlvoPYeYauSrlXszsblsNQiHcVBPDUc2FwuBfaKhCwcfl6XBSZra2Z7RmQ5IaQsSfXT2+KdzKU0zA==
+"@credebl/ssi-mobile-didcomm@2.0.3-alpha-20260220063221":
+  version "2.0.3-alpha-20260220063221"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-didcomm/-/ssi-mobile-didcomm-2.0.3-alpha-20260220063221.tgz#c75c50c460f6940ab947efd8c7d9585f5f533076"
+  integrity sha512-GqBDuXEnqp6ZtJPylr3tpV0/XW8RqKobi6NiYooLW3B7yjThf2igCs7zkHonJRB0rcKVUHr+iX7PmLY0I3pKJw==
   dependencies:
-    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260217073920"
+    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260220063221"
     "@credo-ts/anoncreds" "0.6.1"
     "@credo-ts/askar" "0.6.1"
     "@credo-ts/core" "0.6.1"
@@ -1289,15 +1289,15 @@
     "@credo-ts/react-native" "0.6.1"
     rxjs "^7.8.2"
 
-"@credebl/ssi-mobile-openid4vc@2.0.3-alpha-20260217073920":
-  version "2.0.3-alpha-20260217073920"
-  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-openid4vc/-/ssi-mobile-openid4vc-2.0.3-alpha-20260217073920.tgz#7be2b384802af3c62d2634ed7479d8e8ef3e14cc"
-  integrity sha512-SneGITuhA8XhaeyAj/QQb0BEWt0r79ictqPM791iwcoZKyv11AmpyHLNZXWo5Uhj4fIzsdNA5inQme5W+9rHPA==
+"@credebl/ssi-mobile-openid4vc@2.0.3-alpha-20260220063221":
+  version "2.0.3-alpha-20260220063221"
+  resolved "https://registry.yarnpkg.com/@credebl/ssi-mobile-openid4vc/-/ssi-mobile-openid4vc-2.0.3-alpha-20260220063221.tgz#53f3d3d1df8f5e35d1d1c8a764a239389ecabf99"
+  integrity sha512-R3K6RFQNBI0K4Z8qEzor36Ovs76j5J0phzaOwdqwfSb4awcoW+a8RV4G1TWrtsgdG5rnwgRPNLQd//xctdkFHw==
   dependencies:
     "@animo-id/expo-digital-credentials-api" "^0.4.0"
     "@animo-id/mdoc" "0.5.2"
     "@astronautlabs/jsonpath" "^1.1.2"
-    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260217073920"
+    "@credebl/ssi-mobile-core" "2.0.3-alpha-20260220063221"
     "@credo-ts/core" "0.6.1"
     "@credo-ts/openid4vc" "0.6.1"
     expo-asset "^12.0.10"

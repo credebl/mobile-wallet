@@ -1,4 +1,3 @@
-import { addWalletRecord, findWalletRecordsByQuery, utils } from '@credebl/ssi-mobile-core'
 import { useNavigation, useRoute } from '@react-navigation/core'
 import { generateMnemonic } from 'bip39'
 import React, { useEffect, useState } from 'react'
@@ -92,7 +91,7 @@ const ExportWallet: React.FC = () => {
 
   useEffect(() => {
     const createMnemonic = async () => {
-      const mnemonicRecord = await findWalletRecordsByQuery(sdk, { type: 'mnemonic' })
+      const mnemonicRecord = await sdk.findGenericRecordsByQuery({ type: 'mnemonic' })
       if (mnemonicRecord?.length > 0) {
         const mnemonic = mnemonicRecord[0].content.mnemonic as string
         const mnemonicArray = mnemonic.split(' ')
@@ -112,8 +111,7 @@ const ExportWallet: React.FC = () => {
           mnemonicIndividualWordsArray.push(word)
         })
 
-        await addWalletRecord(sdk, {
-          id: utils.uuid(),
+        await sdk.addGenericRecord({
           content: {
             mnemonic,
           },

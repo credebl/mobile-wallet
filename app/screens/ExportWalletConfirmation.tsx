@@ -1,5 +1,3 @@
-// TODO: migrate to new SDK export
-// import { exportWallet as exportAdeyaWallet } from '@adeya/ssi'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { useNavigation, useRoute } from '@react-navigation/core'
 import { GDrive, ListQueryBuilder, MimeTypes } from '@robinbobin/react-native-google-drive-api-wrapper'
@@ -25,6 +23,7 @@ import { zip } from 'react-native-zip-archive'
 import ButtonLoading from '../components/animated/ButtonLoading'
 import Button, { ButtonType } from '../components/buttons/Button'
 import { ToastType } from '../components/toast/BaseToast'
+import { walletId } from '../constants'
 import { useTheme } from '../contexts/theme'
 import { Screens } from '../types/navigators'
 import { useSdk } from '../utils/agent'
@@ -136,7 +135,6 @@ function ExportWalletConfirmation() {
 
   const exportWallet = async (seed: string) => {
     setMatchPhrase(true)
-    const encodeHash = seed
 
     try {
       let downloadDirectory = ''
@@ -164,11 +162,17 @@ function ExportWalletConfirmation() {
       const destinationZipPath = `${downloadDirectory}/${zipFileName}`
 
       const exportConfig = {
-        key: encodeHash,
-        path: encryptedFileLocation,
+        id: walletId,
+        key: seed,
+        database: {
+          type: 'sqlite' as const,
+          config: {
+            path: encryptedFileLocation,
+          },
+        },
       }
 
-      await exportAdeyaWallet(sdk, exportConfig)
+      await sdk.exportWallet(exportConfig)
 
       await zip(zipUpDirectory, destinationZipPath)
 
@@ -215,7 +219,6 @@ function ExportWalletConfirmation() {
             type: ToastType.Success,
             text1: t('GoogleDrive.BackupSuccess'),
           })
-          setMatchPhrase(true)
           navigation.navigate(Screens.Success, {
             encryptedFileLocation: `Backup file uploaded successfully to Google Drive\n\nFolder: ${folderData.name}\n\nFile: ${fileData.name}`,
           })
@@ -226,6 +229,7 @@ function ExportWalletConfirmation() {
             text1: t('GoogleDrive.BackupFailed'),
             position: 'bottom',
           })
+          setMatchPhrase(false)
           return
         }
       } else {
@@ -241,21 +245,18 @@ function ExportWalletConfirmation() {
         type: ToastType.Success,
         text1: 'Backup successfully completed',
       })
-      setMatchPhrase(true)
       navigation.navigate(Screens.Success, { encryptedFileLocation: destinationZipPath })
     } catch (e) {
       Toast.show({
         type: ToastType.Error,
         text1: 'Backup failed',
       })
+      setMatchPhrase(false)
     }
   }
 
   const addPhrase = (item: string) => {
-    if (nextPhraseIndex <= 7) {
-      const updatedPhraseData = [...phraseData]
-      updatedPhraseData[nextPhraseIndex] = item
-
+    if (nextPhraseIndex < phraseData.length) {
       const updatedArraySetPhraseData = [...arraySetPhraseData]
       updatedArraySetPhraseData[nextPhraseIndex] = item
 

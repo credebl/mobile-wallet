@@ -13,9 +13,9 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@credebl/ssi-mobile-core": "2.0.3-alpha-20260217073920",
-    "@credebl/ssi-mobile-didcomm": "2.0.3-alpha-20260217073920",
-    "@credebl/ssi-mobile-openid4vc": "2.0.3-alpha-20260217073920",
+    "@credebl/ssi-mobile-core": "2.0.3-alpha-20260220063221",
+    "@credebl/ssi-mobile-didcomm": "2.0.3-alpha-20260220063221",
+    "@credebl/ssi-mobile-openid4vc": "2.0.3-alpha-20260220063221",
     "@ethersproject/shims": "^5.7.0",
     "@formatjs/intl": "^3.1.3",
     "@hyperledger/anoncreds-react-native": "0.3.4",

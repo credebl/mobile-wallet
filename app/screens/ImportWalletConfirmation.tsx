@@ -1,7 +1,4 @@
-// TODO: migrate to new SDK import
-// import { importWalletWithAgent, ConsoleLogger, LogLevel, InitConfig } from '@adeya/ssi'
-import { ConsoleLogger, LogLevel } from '@credebl/ssi-mobile-core'
-import { InitConfig } from '@credebl/ssi-mobile-didcomm'
+import { importWalletToStore } from '@credebl/ssi-mobile-core'
 import { pick, types } from '@react-native-documents/picker'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
@@ -25,22 +22,19 @@ import { unzip } from 'react-native-zip-archive'
 import ButtonLoading from '../components/animated/ButtonLoading'
 import Button, { ButtonType } from '../components/buttons/Button'
 import { ToastType } from '../components/toast/BaseToast'
+import { walletId } from '../constants'
 import { useAuth } from '../contexts/auth'
-import { useStore } from '../contexts/store'
 import { useTheme } from '../contexts/theme'
 import { AuthenticateStackParams, Screens } from '../types/navigators'
-// import { useSdk } from '../utils/agent'
 
 type ImportWalletVerifyProps = StackScreenProps<AuthenticateStackParams, Screens.ImportWalletVerify>
 
 const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) => {
   const { ColorPallet } = useTheme()
-  const [store] = useStore()
   const [PassPhrase, setPassPhrase] = useState('')
   const { getWalletCredentials } = useAuth()
   const [verify, setVerify] = useState(false)
   const [selectedFilePath, setSelectedFilePath] = useState('')
-  // const { sdk } = useSdk()
   const { height } = Dimensions.get('window')
   const { width } = Dimensions.get('window')
 
@@ -100,7 +94,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
     setVerify(true)
     Keyboard.dismiss()
     const credentials = await getWalletCredentials()
-    console.log("🚀 ~ ImportWalletConfirmation.tsx:100 ~ initAgent ~ credentials:", credentials)
+    console.log('🚀 ~ initAgent ~ credentials:', credentials)
     if (!credentials?.id || !credentials.key) {
       // Cannot find wallet id/secret
       return
@@ -112,14 +106,10 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
           type: ToastType.Error,
           text1: `Please enter passphrase`,
         })
+        return
       }
 
       const encodeHash = seed.replaceAll(' ', '').trim()
-
-      const walletConfig = {
-        id: credentials.id,
-        key: credentials.key,
-      }
 
       const { fs } = ReactNativeBlobUtil
       const restoreDirectoryPath = `${fs.dirs.DocumentDir}`
@@ -127,30 +117,25 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
 
       await unzip(selectedFilePath, restoreDirectoryPath + '/CREDEBL_WALLET_RESTORE')
 
-      const importConfig = {
-        key: encodeHash,
-        path: walletFilePath,
-      }
-
-      const agentConfig: InitConfig = {
-        label: store.preferences.walletName,
-        walletConfig,
-        logger: new ConsoleLogger(LogLevel.debug),
-        autoUpdateStorageOnStartup: true,
-      }
-
-      // const agent = await importWalletWithAgent({
-      //   agentConfig,
-      //   importConfig,
-      //   modules: {
-      //     ...adeyaAgentModules(),
-      //   },
-      // })
+      await importWalletToStore(
+        {
+          id: walletId,
+          key: credentials.key,
+        },
+        {
+          id: walletId,
+          key: encodeHash,
+          database: {
+            type: 'sqlite' as const,
+            config: {
+              path: walletFilePath,
+            },
+          },
+        },
+      )
 
       await RNFS.unlink(restoreDirectoryPath + '/CREDEBL_WALLET_RESTORE')
 
-      // setAgent(agent!)
-      setVerify(true)
       Toast.show({
         type: ToastType.Success,
         text1: `Wallet imported successfully`,
@@ -159,6 +144,7 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
       })
       navigation.navigate(Screens.UseBiometry)
     } catch (e: unknown) {
+      console.error('Wallet import error:', e)
       Toast.show({
         type: ToastType.Error,
         text1: 'Wallet import failed. Please try again',
@@ -168,10 +154,11 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
       setVerify(false)
     }
   }
+
   const verifyPassPhrase = async (seed: string) => {
     const result = seed.replaceAll(',', ' ')
     if (result) {
-      initAgent(result)
+      await initAgent(result)
     } else {
       Toast.show({
         type: ToastType.Error,
@@ -189,24 +176,25 @@ const ImportWalletVerify: React.FC<ImportWalletVerifyProps> = ({ navigation }) =
         copyTo: 'documentDirectory',
       })
 
+      if (res.fileCopyUri) {
+        // Already copied to document directory — strip file:// to get a plain fs path
+        setSelectedFilePath(res.fileCopyUri.replace(/^file:\/\//, ''))
+        return
+      }
+
       if (!res.uri) {
         Toast.show({
           type: ToastType.Error,
+          text1: 'Could not access the selected file',
         })
         navigation.goBack()
         return
       }
 
-      RNFS.stat(res.uri)
-        .then(stats => {
-          setSelectedFilePath(stats.path)
-        })
-        .catch(err => {
-          Toast.show({
-            type: ToastType.Error,
-            text1: err,
-          })
-        })
+      // fileCopyUri was null (copy failed) — manually copy from content URI to a local path
+      const destPath = `${RNFS.DocumentDirectoryPath}/wallet_import_temp.zip`
+      await RNFS.copyFile(res.uri, destPath)
+      setSelectedFilePath(destPath)
     } catch (error) {
       navigation.goBack()
 
