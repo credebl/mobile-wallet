@@ -1,0 +1,36 @@
+# .github/dependabot.yml
+
+version: 2
+
+updates:
+  # =========================
+  # Yarn Dependencies (via npm ecosystem)
+  # =========================
+  - package-ecosystem: "npm"
+    directory: "/"              # or "/client" / "/frontend" where package.json is
+    target-branch: "main"       # always open PRs against main
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 10
+
+    groups:
+      # 1 PR for all patch updates (e.g. 1.2.3 → 1.2.4)
+      patch-updates:
+        update-types:
+          - "patch"
+
+      # 1 PR for all minor updates (e.g. 1.2.4 → 1.3.0)
+      minor-updates:
+        update-types:
+          - "minor"
+
+    labels:
+      - "dependencies"
+      - "yarn"
+
+    commit-message:
+      prefix: "chore"
+      include: "scope"
