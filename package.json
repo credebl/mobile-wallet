@@ -44,7 +44,7 @@
     "lodash.shuffle": "^4.2.0",
     "lodash.startcase": "^4.4.0",
     "moment": "^2.29.4",
-    "nanoid": "^5.0.9",
+    "nanoid": "^5.1.16",
     "process": "^0.11.0",
     "qrcode": "^1.5.3",
     "query-string": "^8.1.0",
@@ -148,7 +148,7 @@
   "resolutions": {
     "@credo-ts/core": "0.5.11",
     "@credo-ts/askar": "0.5.11",
-    "nanoid": "^5.0.9",
+    "nanoid": "^5.1.16",
     "react-native-screens": "^3.22.0"
   },
   "packageManager": "yarn@1.22.22"
