@@ -1,6 +1,7 @@
 import { MobileSDK, MobileSDKOptions, useMobileSDK } from '@credebl/ssi-mobile-core'
 import { ConsoleLogger, DidCommMediatorPickupStrategy, DidCommSDK, LogLevel } from '@credebl/ssi-mobile-didcomm'
 import { OpenID4VCSDK } from '@credebl/ssi-mobile-openid4vc'
+import { WebDidResolver } from '@credo-ts/core'
 
 import ledgers from '../../configs/ledgers/indy'
 
@@ -37,6 +38,13 @@ export const createConfig = (walletId: string, walletKey: string): MobileSDKOpti
   askarConfig: {
     id: walletId,
     key: walletKey,
+  },
+  // did:web resolution isn't registered by default (MobileSDK's core dids
+  // module only wires up JwkDidResolver/KeyDidResolver out of the box) -
+  // without this, the holder can't resolve a did:web issuer's DID document
+  // during credential binding, and credentials from a did:web issuer fail.
+  dids: {
+    resolvers: [new WebDidResolver()],
   },
   modules: {
     didcomm: new DidCommSDK({
