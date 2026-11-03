@@ -1,3 +1,14 @@
+// Hermes doesn't provide TextEncoder/TextDecoder, which the OID4VC DPoP
+// (proof-of-possession) crypto path requires - without this the app crashes
+// with "ReferenceError: Property 'TextEncoder' doesn't exist" during OID4VCI
+// credential acquisition. Must run before any other import. CredentialDetailsW3C.tsx
+// already pulls in 'text-encoding' locally, but only once that screen has
+// mounted - this polyfill needs to exist from app startup, since OID4VC
+// credential acquisition can happen before the user ever opens that screen.
+if (typeof TextEncoder === 'undefined' || typeof TextDecoder === 'undefined') {
+  require('text-encoding')
+}
+
 // eslint-disable-next-line import/order
 import { install } from 'react-native-quick-crypto'
 install() // Polyfills global.crypto (including crypto.subtle) and global.Buffer

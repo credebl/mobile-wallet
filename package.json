@@ -48,6 +48,7 @@
     "events": "^1.1.1",
     "expo": "^54.0.33",
     "expo-modules-core": "^3.0.29",
+    "false": "0.0.4",
     "i18next": "^24.2.1",
     "lodash.flatten": "^4.4.0",
     "lodash.shuffle": "^4.2.0",

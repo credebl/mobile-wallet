@@ -6402,6 +6402,11 @@ express@^5.2.0:
     type-is "^2.0.1"
     vary "^1.1.2"
 
+"false@0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/false/-/false-0.0.4.tgz#8f55de5af5c03f50bf68aed57ed80e3d2176a517"
+  integrity sha512-CPAG3ud9Cz8NvLKlsTLr/F1aoJL6tPyhNTzaDFzS5CX6id21hVuS5sBK8wlTLuvFklpvH1idvPbW8Lbri3G7qA==
+
 fast-base64-decode@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fast-base64-decode/-/fast-base64-decode-1.0.0.tgz#b434a0dd7d92b12b43f26819300d2dafb83ee418"
