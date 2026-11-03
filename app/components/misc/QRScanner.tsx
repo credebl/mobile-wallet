@@ -1,6 +1,7 @@
+import Clipboard from '@react-native-clipboard/clipboard'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
-import React, { useState } from 'react'
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+import React, { useRef, useState } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native'
 
 import { useTheme } from '../../contexts/theme'
 import { QrCodeScanError } from '../../types/error'
@@ -32,9 +33,26 @@ const CameraViewContainer: React.FC<{ portrait: boolean; children: React.ReactNo
 
 const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError, navigation, isCameraActive }) => {
   const [torchActive, setTorchActive] = useState(false)
+  const [manualUrl, setManualUrl] = useState('')
+  const scanningRef = useRef(false)
   const { width, height } = useWindowDimensions()
   const portraitMode = height > width
   const { ColorPallet, TextTheme } = useTheme()
+
+  const submitManualUrl = (urlToSubmit: string) => {
+    const trimmed = urlToSubmit.trim()
+    if (!trimmed || scanningRef.current) return
+    scanningRef.current = true
+    handleCodeScan(trimmed)
+  }
+
+  const handlePasteAndSubmit = async () => {
+    const text = await Clipboard.getString()
+    if (text && text.trim()) {
+      setManualUrl(text.trim())
+      submitManualUrl(text.trim())
+    }
+  }
   const styles = StyleSheet.create({
     container: {
       height: '100%',
@@ -63,6 +81,40 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
       color: ColorPallet.grayscale.white,
       padding: 4,
     },
+    manualContainer: {
+      width: '90%',
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      marginBottom: 16,
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      borderRadius: 12,
+    },
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    input: {
+      flex: 1,
+      backgroundColor: ColorPallet.grayscale.white,
+      color: ColorPallet.grayscale.black,
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      fontSize: 13,
+      marginRight: 8,
+    },
+    actionButton: {
+      backgroundColor: ColorPallet.brand.primary,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
+      marginLeft: 4,
+    },
+    actionButtonText: {
+      color: ColorPallet.grayscale.white,
+      fontWeight: 'bold',
+      fontSize: 12,
+    },
   })
   return (
     <View style={styles.container}>
@@ -87,6 +139,25 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
         </View>
         <View style={styles.viewFinderContainer}>
           <View style={styles.viewFinder} />
+        </View>
+        <View style={styles.manualContainer}>
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.input}
+              placeholder="Paste QR / Offer / Invitation URL..."
+              placeholderTextColor="#888"
+              value={manualUrl}
+              onChangeText={setManualUrl}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <TouchableOpacity style={styles.actionButton} onPress={() => submitManualUrl(manualUrl)}>
+              <Text style={styles.actionButtonText}>Go</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton} onPress={handlePasteAndSubmit}>
+              <Text style={styles.actionButtonText}>Paste</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <QRScannerTorch active={torchActive} onPress={() => setTorchActive(!torchActive)} />
       </CameraViewContainer>
