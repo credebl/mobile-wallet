@@ -1,3 +1,6 @@
 {
-  "**/*.{js,jsx,ts,tsx}": ["yarn lint -- --fix", "npx prettier --write"]
+  "**/*.{js,jsx,ts,tsx}": [
+    "eslint --ext .js,.jsx,.ts,.tsx --color --fix",
+    "npx prettier --write"
+  ]
 }
