@@ -291,17 +291,27 @@ const Splash: React.FC = () => {
       try {
         setMediationStarted(true)
         if (!Config.MEDIATOR_URL) {
-          throw new Error('Missing mediator URL')
+          // A mediator lets the wallet receive messages while the app isn't
+          // open - not every test/dev setup has one configured, and the
+          // agent works fine without one for mediator-less flows like
+          // OID4VCI. Skip mediation instead of blocking the user on an
+          // error screen.
+          // eslint-disable-next-line no-console
+          console.warn('MEDIATOR_URL is not set. Proceeding without mediator.')
+        } else {
+          await getDefaultHolderDidDocument(sdk)
+
+          const isConfigured = await isMediationConfigured(sdk)
+
+          if (!isConfigured) {
+            await sdk.modules.didcomm.mediatorRecipient.startMediation(
+              Config.MEDIATOR_URL,
+              store.preferences.walletName,
+            )
+          }
+
+          await sdk.modules.didcomm.mediatorRecipient.initiateMessagePickup()
         }
-        await getDefaultHolderDidDocument(sdk)
-
-        const isConfigured = await isMediationConfigured(sdk)
-
-        if (!isConfigured) {
-          await sdk.modules.didcomm.mediatorRecipient.startMediation(Config.MEDIATOR_URL, store.preferences.walletName)
-        }
-
-        await sdk.modules.didcomm.mediatorRecipient.initiateMessagePickup()
 
         setStep(6)
         navigation.dispatch(
