@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "386865711438",
-    "project_id": "adeya-dev",
-    "storage_bucket": "adeya-dev.appspot.com"
+    "project_number": "700271685008",
+    "project_id": "credebl-wallet",
+    "storage_bucket": "credebl-wallet.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:386865711438:android:0f47392fa853dd6acef61f",
+        "mobilesdk_app_id": "1:700271685008:android:096d5946670aba40605715",
         "android_client_info": {
           "package_name": "id.credebl"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBp8evwDYBweWgsnMOnY35_Yqd6QjHWsFM"
+          "current_key": "AIzaSyAytod3jjY70Bzj-JgoX-Wg-wzyyZz5ZhE"
         }
       ],
       "services": {
