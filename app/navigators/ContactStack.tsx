@@ -22,8 +22,10 @@ import { testIdWithKey } from '../utils/testable'
 
 import { createDefaultStackOptions } from './defaultStackOptions'
 
+// See ConnectStack.tsx for why this is hoisted out of the component body.
+const Stack = createStackNavigator<ContactStackParams>()
+
 const ContactStack: React.FC = () => {
-  const Stack = createStackNavigator<ContactStackParams>()
   const theme = useTheme()
   const { t } = useTranslation()
   const defaultStackOptions = createDefaultStackOptions(theme)

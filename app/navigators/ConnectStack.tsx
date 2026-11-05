@@ -8,8 +8,13 @@ import { ConnectStackParams, Screens } from '../types/navigators'
 
 import { createDefaultStackOptions } from './defaultStackOptions'
 
+// Hoisted to module scope: creating the navigator inline on every render
+// gives it a new component identity each time, which can tear down and
+// reset in-flight navigation state in the parent navigator (observed as
+// TabStack silently reverting navigation right after it succeeded).
+const Stack = createStackNavigator<ConnectStackParams>()
+
 const ConnectStack: React.FC = () => {
-  const Stack = createStackNavigator<ConnectStackParams>()
   const theme = useTheme()
   const defaultStackOptions = createDefaultStackOptions(theme)
   const { scan } = useConfiguration()

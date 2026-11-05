@@ -15,8 +15,10 @@ import { CredentialStackParams, Screens } from '../types/navigators'
 
 import { createDefaultStackOptions } from './defaultStackOptions'
 
+// See ConnectStack.tsx for why this is hoisted out of the component body.
+const Stack = createStackNavigator<CredentialStackParams>()
+
 const CredentialStack: React.FC = () => {
-  const Stack = createStackNavigator<CredentialStackParams>()
   const theme = useTheme()
   const { t } = useTranslation()
   const { credentialListHeaderRight: CredentialListHeaderRight } = useConfiguration()

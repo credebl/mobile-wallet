@@ -47,6 +47,16 @@ import SettingStack from './SettingStack'
 import TabStack from './TabStack'
 import { createDefaultStackOptions } from './defaultStackOptions'
 
+// Hoisted to module scope: calling createStackNavigator() inside RootStack's
+// render body would create a new navigator component type on every re-render
+// (e.g. the store dispatches Splash fires during onboarding init), causing
+// React to unmount/remount the whole navigator tree. Any navigation.dispatch
+// in flight at that point (like Splash's reset to TabStack) then silently
+// targets the torn-down navigator and does nothing.
+const AuthStack = createStackNavigator()
+const MainStack = createStackNavigator()
+const OnboardingStack = createStackNavigator()
+
 const RootStack: React.FC = () => {
   const [state, dispatch] = useStore()
   const { removeSavedWalletSecret } = useAuth()
@@ -234,7 +244,7 @@ const RootStack: React.FC = () => {
   }
 
   const authStack = () => {
-    const Stack = createStackNavigator()
+    const Stack = AuthStack
 
     return (
       <Stack.Navigator initialRouteName={Screens.Splash} screenOptions={{ ...defaultStackOptions, headerShown: false }}>
@@ -270,7 +280,7 @@ const RootStack: React.FC = () => {
   }
 
   const mainStack = () => {
-    const Stack = createStackNavigator()
+    const Stack = MainStack
 
     // This function is to make the fade in behavior of both iOS and Android consistent for the settings menu
     const forFade: StackCardStyleInterpolator = ({ current }) => ({
@@ -306,7 +316,7 @@ const RootStack: React.FC = () => {
   }
 
   const onboardingStack = () => {
-    const Stack = createStackNavigator()
+    const Stack = OnboardingStack
     const carousel = createCarouselStyle(OnboardingTheme)
     return (
       <Stack.Navigator initialRouteName={Screens.Splash} screenOptions={{ ...defaultStackOptions, headerShown: false }}>

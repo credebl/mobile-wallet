@@ -28,8 +28,10 @@ import { testIdWithKey } from '../utils/testable'
 
 import { createDefaultStackOptions } from './defaultStackOptions'
 
+// See ConnectStack.tsx for why this is hoisted out of the component body.
+const Stack = createStackNavigator<SettingStackParams>()
+
 const SettingStack: React.FC = () => {
-  const Stack = createStackNavigator<SettingStackParams>()
   const theme = useTheme()
   const [biometryUpdatePending, setBiometryUpdatePending] = useState<boolean>(false)
   const { t } = useTranslation()

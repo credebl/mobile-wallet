@@ -12,8 +12,10 @@ interface AuthenticateStackProps {
   setAuthenticated: (status: boolean) => void
 }
 
+// See ConnectStack.tsx for why this is hoisted out of the component body.
+const Stack = createStackNavigator<AuthenticateStackParams>()
+
 const AuthenticateStack: React.FC<AuthenticateStackProps> = ({ setAuthenticated }) => {
-  const Stack = createStackNavigator<AuthenticateStackParams>()
   const theme = useTheme()
   const defaultStackOptions = createDefaultStackOptions(theme)
 

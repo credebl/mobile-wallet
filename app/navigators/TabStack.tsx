@@ -16,12 +16,19 @@ import CredentialStack from './CredentialStack'
 import HomeStack from './HomeStack'
 import OrganizationStack from './OrganizationStack'
 
+// Hoisted to module scope so the Tab Navigator keeps a stable component
+// identity across TabStack re-renders (e.g. from useWindowDimensions/theme
+// context updates right after mount). Creating it inline on every render
+// makes React treat it as a brand-new navigator each time, which can tear
+// down and reset the in-progress navigation state of the parent stack that
+// just navigated here.
+const Tab = createBottomTabNavigator<TabStackParams>()
+
 const TabStack: React.FC = () => {
   const { width, height } = useWindowDimensions()
   // const { useCustomNotifications } = useConfiguration()
   // const { total } = useCustomNotifications()
   const { t } = useTranslation()
-  const Tab = createBottomTabNavigator<TabStackParams>()
   const { ColorPallet, TabTheme } = useTheme()
   const { fontScale } = useWindowDimensions()
 
