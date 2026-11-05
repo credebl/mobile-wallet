@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/core'
 import { CommonActions } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { Image, InteractionManager, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import Config from 'react-native-config'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -245,7 +245,19 @@ const Splash: React.FC = () => {
   useEffect(() => {
     const initAgent = async (): Promise<void> => {
       try {
-        if (!store.authentication.didAuthenticate || !store.onboarding.didConsiderBiometry) {
+        const onboardingReadyForMainStack =
+          store.onboarding.didAgreeToTerms &&
+          store.onboarding.didCompleteTutorial &&
+          store.onboarding.didCreatePIN &&
+          (!enableWalletNaming || store.onboarding.didNameWallet) &&
+          store.onboarding.didConsiderBiometry
+
+        // RootStack only mounts TabStack once onboarding is fully complete and
+        // authenticated (see RootStack.tsx). Initializing the agent and
+        // navigating to TabStack before that leaves us stuck on this screen:
+        // the dispatch silently no-ops because TabStack isn't in the active
+        // navigator (onboardingStack/authStack don't register it).
+        if (!store.authentication.didAuthenticate || !onboardingReadyForMainStack) {
           return
         }
 
@@ -314,12 +326,21 @@ const Splash: React.FC = () => {
         }
 
         setStep(6)
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: Stacks.TabStack }],
-          }),
-        )
+        // When the mediator step is skipped (no MEDIATOR_URL), this fires
+        // almost immediately after the SDK finishes initializing - racing
+        // SDKProviders (App.tsx) swapping in its context providers the
+        // moment sdk.agent becomes available. That race was previously
+        // masked by the mediator path's network round-trips giving React
+        // time to settle before this ran. Deferring until interactions
+        // finish avoids resetting navigation mid-render.
+        InteractionManager.runAfterInteractions(() => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: Stacks.TabStack }],
+            }),
+          )
+        })
       } catch (error) {
         setMediationStarted(false)
         setInitErrorType(InitErrorTypes.Agent)
